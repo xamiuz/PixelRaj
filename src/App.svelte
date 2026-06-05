@@ -2085,7 +2085,7 @@
       if (error) {
         showToast(`Gagal mendaftar: ${error.message}`, "error");
       } else {
-        showToast("Pendaftaran berhasil! Silakan masuk.", "success");
+        showToast("Pendaftaran berhasil! Silakan periksa kotak masuk email Anda untuk verifikasi akun.", "success");
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({
