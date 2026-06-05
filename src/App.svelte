@@ -13713,6 +13713,7 @@
     justify-content: center;
     align-items: center;
     padding: 50px;
+    touch-action: none;
   }
 
   .canvas-viewport[data-selected-tool="move"] {
