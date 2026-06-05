@@ -13052,7 +13052,7 @@
   }
 
   .mobile-only {
-    display: none;
+    display: none !important;
   }
   .sidebar-overlay {
     display: none;
