@@ -1,0 +1,22 @@
+{
+  "name": "pixellab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@pixelation/aseprite": "^1.2.6",
+    "@supabase/supabase-js": "^2.43.2",
+    "idb-keyval": "^6.2.4",
+    "lucide-svelte": "^0.368.0",
+    "svelte": "^4.2.12"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.0.2",
+    "vite": "^5.2.8"
+  }
+}
