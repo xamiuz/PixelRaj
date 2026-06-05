@@ -8270,8 +8270,8 @@
       <div class="modal-card">
         <!-- Header -->
         <div class="modal-hero">
-          <div class="modal-hero-icon">
-            <Palette size={32} color="#a855f7" />
+          <div class="modal-hero-icon-wrap">
+            <Palette size={28} color="white" />
           </div>
           <h2 class="modal-title">Buat Kanvas Baru</h2>
           <p class="modal-subtitle">
@@ -12436,30 +12436,41 @@
 
   /* Hero header */
   .modal-hero {
-    background: linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(168,85,247,0.12) 100%);
+    background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(168,85,247,0.1) 100%);
     border-bottom: 1px solid rgba(99,102,241,0.15);
-    padding: 28px 28px 20px;
+    padding: 32px 28px 24px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
   }
-  .modal-hero-icon {
-    font-size: 2.8rem;
-    margin-bottom: 8px;
-    filter: drop-shadow(0 4px 16px rgba(99,102,241,0.5));
+  .modal-hero-icon-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 28px rgba(99,102,241,0.45), 0 0 0 1px rgba(255,255,255,0.08) inset;
+    margin-bottom: 4px;
   }
   .modal-title {
-    font-size: 1.55rem;
+    font-size: 1.5rem;
     font-weight: 800;
     letter-spacing: -0.5px;
     background: linear-gradient(135deg, #fff 40%, #a78bfa);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin: 0 0 6px;
+    margin: 0;
   }
   .modal-subtitle {
     color: var(--text-muted);
     font-size: 0.82rem;
     margin: 0;
+    opacity: 0.8;
   }
 
   /* Form body */
