@@ -3,3 +3,31 @@ dist/
 .svelte-kit/
 .env
 .DS_Store
+
+# Temporary Files & Scripts
+backup_content_*.txt
+body_dump*.html
+*.cjs
+temp.bin
+tmp-aseprite-readme.md
+
+# Testing & DB Scripts
+check_db.js
+test_db.js
+
+# Screenshots
+screenshot*.png
+
+# Agent & IDE Configurations
+.agent/
+.agent-mem/
+.agents/
+.brainsync/
+.cursor/
+.lean-ctx/
+.mcp.json
+.vscode/
+.windsurfrules
+AGENT*.md
+CLAUDE.md
+LEAN-CTX.md
