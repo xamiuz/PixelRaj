@@ -12393,6 +12393,9 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    padding: 24px 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
     animation: overlayIn 0.2s ease;
   }
   @keyframes overlayIn {
@@ -12418,10 +12421,16 @@
     border-radius: 20px;
     width: 92%;
     max-width: 460px;
+    max-height: calc(100vh - 48px);
     padding: 0;
     color: var(--text-main);
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     animation: cardIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    scrollbar-width: none;
+  }
+  .modal-card::-webkit-scrollbar {
+    display: none;
   }
   @keyframes cardIn {
     from {
