@@ -4013,8 +4013,16 @@
     activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
     if (activePointers.size >= 2) {
+      if (isDrawing && strokeBackupImageData && activeLayerIndex !== null) {
+        const layer = project.frames[activeFrameIndex].layers[activeLayerIndex];
+        const { ctx } = getLayerCanvas(layer.id, project.width, project.height);
+        ctx.putImageData(strokeBackupImageData, 0, 0);
+      }
+
       isDrawing = false;
       drawingPointerId = null;
+      localStrokeUpdates = []; // Hapus coretan yang tertunda dikirim
+
       const pts = Array.from(activePointers.values());
       multiTouchStartDist = Math.hypot(
         pts[0].x - pts[1].x,
