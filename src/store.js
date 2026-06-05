@@ -1,4 +1,4 @@
-﻿import { writable, derived } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 
 // ==========================================
 // CORE STATE
@@ -41,4 +41,5 @@ export const activeLayer = derived(
     return $activeFrame.layers[$activeLayerIndex];
   }
 );
+
 

@@ -1,4 +1,4 @@
-﻿<script>
+<script>
   import { createEventDispatcher, onMount } from 'svelte';
   import { LogIn, Sparkles, Mail, KeyRound, Eye, EyeOff, UserPlus } from 'lucide-svelte';
   
@@ -33,7 +33,8 @@
       <div class="icon-wrapper">
         <Sparkles size={28} class="hero-icon" />
       </div>
-      <h2>PixelRaj <span>PRO</span></h2>
+      <h2>PixelRaj</h2>
+
       <p>{isSignUp ? 'Daftar untuk membuat akun baru' : 'Masuk untuk mengakses workspace eksklusif'}</p>
     </div>
     
