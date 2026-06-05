@@ -41,7 +41,8 @@
           <input
             id="new-password"
             type={showPassword ? "text" : "password"}
-            bind:value={resetPasswordValue}
+            value={resetPasswordValue}
+            on:input={(e) => resetPasswordValue = e.target.value}
             required
             placeholder="Minimal 6 karakter"
             minlength="6"
