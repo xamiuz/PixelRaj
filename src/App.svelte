@@ -3993,6 +3993,9 @@
 
   function handleCanvasPointerDown(e) {
     if (isDraggingRefImage) return;
+    
+    // Cegah event bocor ke viewport yang bisa memicu panning secara tidak sengaja
+    e.stopPropagation();
 
     // Hapus fokus dari input apapun agar tombol shortcut (seperti Arrow) bisa bekerja
     if (document.activeElement && document.activeElement.blur) {
@@ -7629,7 +7632,17 @@
       activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       
       if (activePointers.size >= 2) {
+        e.preventDefault();
         if (isPanning) isPanning = false; // Batal pan 1 jari jika berubah jadi pinch
+
+        if (isDrawing && typeof strokeBackupImageData !== 'undefined' && strokeBackupImageData && activeLayerIndex !== null) {
+          const layer = project.frames[activeFrameIndex].layers[activeLayerIndex];
+          const { ctx } = getLayerCanvas(layer.id, project.width, project.height);
+          ctx.putImageData(strokeBackupImageData, 0, 0);
+          isDrawing = false;
+          drawingPointerId = null;
+          localStrokeUpdates = [];
+        }
         
         const pts = Array.from(activePointers.values());
         multiTouchStartDist = Math.hypot(
@@ -7677,65 +7690,12 @@
   }
 
   function handleViewportPointerMove(e) {
-    if (activePointers.has(e.pointerId)) {
-      activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    }
-
     if (activePointers.size >= 2) {
       e.preventDefault();
-
-      if (drawState.isPinchingRAF) return;
-      drawState.isPinchingRAF = true;
-
-      requestAnimationFrame(() => {
-        const pts = Array.from(activePointers.values());
-        if (pts.length < 2) {
-          drawState.isPinchingRAF = false;
-          return;
-        }
-        const currentDist = Math.hypot(
-          pts[0].x - pts[1].x,
-          pts[0].y - pts[1].y,
-        );
-        const currentCenter = {
-          x: (pts[0].x + pts[1].x) / 2,
-          y: (pts[0].y + pts[1].y) / 2,
-        };
-
-        if (multiTouchStartDist > 0) {
-          const scale = currentDist / multiTouchStartDist;
-          const newZoom = Math.max(
-            10,
-            Math.min(10000, multiTouchStartZoom * scale),
-          );
-
-          if (canvasViewportEl) {
-            const rect = canvasViewportEl.getBoundingClientRect();
-            const cursorX = currentCenter.x - rect.left - rect.width / 2;
-            const cursorY = currentCenter.y - rect.top - rect.height / 2;
-            const zScale = newZoom / 100 / (multiTouchStartZoom / 100);
-            const panDx = currentCenter.x - multiTouchCenterStart.x;
-            const panDy = currentCenter.y - multiTouchCenterStart.y;
-
-            translateX =
-              multiTouchStartPan.x +
-              panDx +
-              (cursorX - panDx) -
-              (cursorX - panDx) * zScale;
-            translateY =
-              multiTouchStartPan.y +
-              panDy +
-              (cursorY - panDy) -
-              (cursorY - panDy) * zScale;
-          }
-          zoom = newZoom;
-        }
-        drawState.isPinchingRAF = false;
-      });
       return;
     }
 
-    if (isPanning) {
+    if (isPanning && activePointers.size < 2) {
       e.preventDefault();
       const dx = e.clientX - panStart.x;
       const dy = e.clientY - panStart.y;
