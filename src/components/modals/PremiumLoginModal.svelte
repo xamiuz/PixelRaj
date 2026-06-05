@@ -24,6 +24,10 @@
   function handleGoogleLogin() {
     dispatch('googleLogin');
   }
+
+  function handleForgotPassword() {
+    dispatch('forgotPassword', { email });
+  }
 </script>
 
 <div class="modal-overlay premium-login-overlay" class:visible={isMounted}>
@@ -60,6 +64,11 @@
             {/if}
           </button>
         </div>
+        {#if !isSignUp}
+          <div style="text-align: right; margin-top: 6px;">
+            <button type="button" class="link-btn" style="font-size: 12px; color: var(--figma-text-muted);" on:click={handleForgotPassword}>Lupa password?</button>
+          </div>
+        {/if}
       </div>
       
       <button type="submit" class="premium-btn-primary">

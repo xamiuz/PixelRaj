@@ -1992,6 +1992,22 @@
     window.addEventListener("touchmove", blockTouchScroll, { passive: false });
 
     supabase.auth.onAuthStateChange((_event, session) => {
+      if (_event === 'PASSWORD_RECOVERY') {
+        setTimeout(async () => {
+          const newPassword = prompt("Masukkan password baru Anda (minimal 6 karakter):");
+          if (newPassword && newPassword.length >= 6) {
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) {
+              showToast("Gagal mengubah password: " + error.message, "error");
+            } else {
+              showToast("Password berhasil diperbarui!", "success");
+            }
+          } else {
+            showToast("Pembatalan atau password terlalu pendek.", "error");
+          }
+        }, 500);
+      }
+
       if (session) {
         authenticated = true;
         currentUserId = session.user.id;
@@ -2085,7 +2101,7 @@
       if (error) {
         showToast(`Gagal mendaftar: ${error.message}`, "error");
       } else {
-        showToast("Pendaftaran berhasil! Silakan periksa kotak masuk email Anda untuk verifikasi akun.", "success");
+        showToast("Pendaftaran berhasil!", "success");
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({
@@ -2109,6 +2125,22 @@
     });
     if (error) {
       showToast(`Gagal login dengan Google: ${error.message}`, "error");
+    }
+  }
+
+  async function handleForgotPassword(e) {
+    const email = e.detail.email;
+    if (!email) {
+      showToast("Silakan masukkan email Anda untuk reset password.", "error");
+      return;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    });
+    if (error) {
+      showToast(`Gagal: ${error.message}`, "error");
+    } else {
+      showToast("Tautan reset password telah dikirim ke email Anda.", "success");
     }
   }
 
@@ -7900,6 +7932,7 @@
   <PremiumLoginModal
     on:auth={handleAuthEvent}
     on:googleLogin={handleGoogleLoginEvent}
+    on:forgotPassword={handleForgotPassword}
   />
 {/if}
 
