@@ -12434,7 +12434,7 @@
     }
   }
 
-  /* Hero header -->
+  /* Hero header */
   .modal-hero {
     background: linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(168,85,247,0.12) 100%);
     border-bottom: 1px solid rgba(99,102,241,0.15);
