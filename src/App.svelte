@@ -67,6 +67,7 @@
     Moon,
     Menu,
     Crosshair,
+    KeyRound,
   } from "lucide-svelte";
 
   import AnimatorPanel from "./components/panels/AnimatorPanel.svelte";
@@ -147,6 +148,9 @@
   let currentUserEmail = "";
   let username = "";
   let loginPassword = "";
+  let showResetPasswordModal = false;
+  let resetPasswordValue = "";
+  let isResettingPassword = false;
   let showDashboardMobileSidebar = false;
 
   let foldersList = [];
@@ -1993,19 +1997,7 @@
 
     supabase.auth.onAuthStateChange((_event, session) => {
       if (_event === 'PASSWORD_RECOVERY') {
-        setTimeout(async () => {
-          const newPassword = prompt("Masukkan password baru Anda (minimal 6 karakter):");
-          if (newPassword && newPassword.length >= 6) {
-            const { error } = await supabase.auth.updateUser({ password: newPassword });
-            if (error) {
-              showToast("Gagal mengubah password: " + error.message, "error");
-            } else {
-              showToast("Password berhasil diperbarui!", "success");
-            }
-          } else {
-            showToast("Pembatalan atau password terlalu pendek.", "error");
-          }
-        }, 500);
+        showResetPasswordModal = true;
       }
 
       if (session) {
@@ -2141,6 +2133,24 @@
       showToast(`Gagal: ${error.message}`, "error");
     } else {
       showToast("Tautan reset password telah dikirim ke email Anda.", "success");
+    }
+  }
+
+  async function handleConfirmResetPassword() {
+    if (resetPasswordValue.length < 6) {
+      showToast("Password terlalu pendek (minimal 6 karakter)", "error");
+      return;
+    }
+    isResettingPassword = true;
+    const { error } = await supabase.auth.updateUser({ password: resetPasswordValue });
+    isResettingPassword = false;
+    
+    if (error) {
+      showToast("Gagal mengubah password: " + error.message, "error");
+    } else {
+      showToast("Password berhasil diperbarui!", "success");
+      showResetPasswordModal = false;
+      resetPasswordValue = "";
     }
   }
 
@@ -7934,6 +7944,39 @@
     on:googleLogin={handleGoogleLoginEvent}
     on:forgotPassword={handleForgotPassword}
   />
+{/if}
+
+{#if showResetPasswordModal}
+  <div class="modal-overlay premium-login-overlay visible" style="z-index: 100000; opacity: 1; transition: none;">
+    <div class="modal-card">
+      <div class="premium-glow"></div>
+      <div class="modal-hero">
+        <div class="icon-wrapper" style="margin-bottom: 12px; width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: inline-flex; align-items: center; justify-content: center;">
+          <KeyRound size={28} color="white" />
+        </div>
+        <h2>Reset Password</h2>
+        <p style="color: var(--figma-text-muted); font-size: 14px; margin-top: 6px;">Silakan masukkan password baru untuk akun Anda.</p>
+      </div>
+      
+      <div class="login-form" style="display: flex; flex-direction: column; gap: 16px; margin-top: 24px;">
+        <div class="premium-input-group">
+          <label for="new-password" style="display: block; font-size: 13px; font-weight: 600; color: var(--figma-text-muted); margin-bottom: 8px;">Password Baru</label>
+          <div class="input-wrapper" style="position: relative; display: flex; align-items: center;">
+            <KeyRound size={18} style="position: absolute; left: 14px; color: #71717a;" />
+            <input id="new-password" type="password" bind:value={resetPasswordValue} placeholder="Minimal 6 karakter" minlength="6" style="width: 100%; padding: 12px 12px 12px 38px; border-radius: 10px; border: 1px solid var(--figma-border); background: var(--bg-dark); color: var(--figma-text); outline: none;" />
+          </div>
+        </div>
+        
+        <button type="button" style="display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px;" on:click={handleConfirmResetPassword} disabled={isResettingPassword}>
+          {#if isResettingPassword}
+            <span>Menyimpan...</span>
+          {:else}
+            <span>Simpan Password Baru</span>
+          {/if}
+        </button>
+      </div>
+    </div>
+  </div>
 {/if}
 
 <ShareProjectModal
