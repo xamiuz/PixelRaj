@@ -9449,7 +9449,7 @@
                 "
               >
                 <!-- shape-rendering="crispEdges" untuk mencegah anti-aliasing buram pada zoom tinggi -->
-                <path d={gridPath} fill="none" stroke="rgba(128,128,128,0.5)" stroke-width="1" vector-effect="non-scaling-stroke" shape-rendering="crispEdges" />
+                <path d={gridPath} fill="none" stroke="rgba(128,128,128,0.5)" stroke-width={100 / zoom} shape-rendering="crispEdges" />
               </svg>
             {/if}
 
