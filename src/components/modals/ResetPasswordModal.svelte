@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher, onMount } from 'svelte';
-  import { KeyRound, Eye, EyeOff } from 'lucide-svelte';
+  import { KeyRound, Eye, EyeOff, ShieldCheck } from 'lucide-svelte';
   
   const dispatch = createEventDispatcher();
   let resetPasswordValue = '';
@@ -21,37 +21,47 @@
   }
 </script>
 
-<div class="modal-overlay premium-login-overlay" class:visible={isMounted}>
-  <div class="modal-card">
-    <div class="premium-glow"></div>
-    <div class="modal-hero">
-      <div class="icon-wrapper">
-        <KeyRound size={28} class="hero-icon" />
+<div class="reset-overlay" class:visible={isMounted}>
+  <div class="reset-card">
+    <div class="card-glow"></div>
+
+    <div class="card-header">
+      <div class="key-icon-wrap">
+        <KeyRound size={28} color="white" />
       </div>
       <h2>Reset Password</h2>
-      <p>Silakan masukkan password baru untuk akun Anda.</p>
+      <p>Masukkan password baru yang kuat untuk melindungi akun Anda.</p>
     </div>
-    
-    <form on:submit|preventDefault={handleSubmit} class="login-form">
-      <div class="premium-input-group">
+
+    <form on:submit|preventDefault={handleSubmit} class="reset-form">
+      <div class="field-group">
         <label for="new-password">Password Baru</label>
-        <div class="input-wrapper">
-          <KeyRound size={18} class="input-icon" />
-          <input id="new-password" type={showPassword ? "text" : "password"} bind:value={resetPasswordValue} required placeholder="Minimal 6 karakter" minlength="6" />
-          <button type="button" class="password-toggle-btn" on:click={togglePassword}>
+        <div class="field-wrap">
+          <KeyRound size={17} class="field-icon" />
+          <input
+            id="new-password"
+            type={showPassword ? "text" : "password"}
+            bind:value={resetPasswordValue}
+            required
+            placeholder="Minimal 6 karakter"
+            minlength="6"
+          />
+          <button type="button" class="eye-btn" on:click={togglePassword}>
             {#if showPassword}
-              <EyeOff size={18} />
+              <EyeOff size={17} />
             {:else}
-              <Eye size={18} />
+              <Eye size={17} />
             {/if}
           </button>
         </div>
       </div>
-      
-      <button type="submit" class="premium-btn-primary" disabled={isResettingPassword}>
+
+      <button type="submit" class="save-btn" disabled={isResettingPassword}>
         {#if isResettingPassword}
+          <div class="spinner"></div>
           <span>Menyimpan...</span>
         {:else}
+          <ShieldCheck size={18} />
           <span>Simpan Password Baru</span>
         {/if}
       </button>
@@ -60,255 +70,223 @@
 </div>
 
 <style>
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--figma-bg-darkest);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  opacity: 0;
-  transition: opacity 0.4s ease-out;
-}
+  .reset-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    padding: 20px;
+  }
 
-.modal-overlay.visible {
-  opacity: 1;
-}
+  .reset-overlay.visible {
+    opacity: 1;
+  }
 
-.modal-card {
-  position: relative;
-  background: var(--figma-bg-card);
-  padding: 32px;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 360px;
-  color: var(--figma-text);
-  border: 1px solid var(--figma-border);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  transform: translateY(20px);
-  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  overflow: hidden;
-}
+  .reset-card {
+    position: relative;
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 24px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow:
+      0 0 0 1px rgba(99, 102, 241, 0.1),
+      0 25px 60px rgba(0, 0, 0, 0.6),
+      0 0 80px rgba(99, 102, 241, 0.15);
+    animation: cardSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform: translateY(30px);
+    overflow: hidden;
+    color: #e4e4e7;
+  }
 
-@keyframes slideUp {
-  to { transform: translateY(0); }
-}
+  @keyframes cardSlideUp {
+    to { transform: translateY(0); }
+  }
 
-.premium-glow {
-  position: absolute;
-  top: -50px;
-  left: -50px;
-  right: -50px;
-  height: 200px;
-  background: radial-gradient(circle at top, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -1;
-}
+  .card-glow {
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-.modal-hero {
-  text-align: center;
-  margin-bottom: 24px;
-}
+  .card-header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    margin-bottom: 32px;
+  }
 
-.icon-wrapper {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  margin-bottom: 12px;
-  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
-}
+  .key-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow:
+      0 12px 28px rgba(99, 102, 241, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
 
-.hero-icon {
-  color: white;
-}
+  .card-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    background: linear-gradient(to right, #ffffff, #c4b5fd);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-.modal-hero h2 {
-  margin: 0 0 6px 0;
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
+  .card-header p {
+    margin: 0;
+    font-size: 14px;
+    color: #71717a;
+    line-height: 1.5;
+  }
 
-.modal-hero h2 span {
-  color: #ffaa00;
-  background: linear-gradient(to right, #ffaa00, #ffea00);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+  .reset-form {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-.modal-hero p {
-  margin: 0;
-  color: var(--figma-text-muted);
-  font-size: 14px;
-}
+  .field-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #a1a1aa;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
 
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  .field-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
 
-.premium-input-group label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--figma-text-muted);
-  margin-bottom: 8px;
-}
+  .field-wrap :global(.field-icon) {
+    position: absolute;
+    left: 14px;
+    color: #52525b;
+    pointer-events: none;
+    transition: color 0.3s;
+  }
 
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
+  .field-wrap input {
+    width: 100%;
+    padding: 14px 44px 14px 42px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+    color: #e4e4e7;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+  }
 
-.input-icon {
-  position: absolute;
-  left: 14px;
-  color: #71717a;
-  transition: color 0.3s;
-}
+  .field-wrap input::placeholder {
+    color: #3f3f46;
+  }
 
-.premium-input-group input {
-  width: 100%;
-  padding: 12px 38px 12px 38px;
-  border-radius: 10px;
-  border: 1px solid var(--figma-border);
-  background: var(--bg-dark);
-  color: var(--figma-text);
-  font-size: 14px;
-  transition: all 0.3s ease;
-  outline: none;
-}
+  .field-wrap input:focus {
+    border-color: rgba(99, 102, 241, 0.6);
+    background: rgba(99, 102, 241, 0.08);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+  }
 
-.password-toggle-btn {
-  position: absolute;
-  right: 10px;
-  background: transparent;
-  border: none;
-  color: #71717a;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
+  .field-wrap input:focus ~ :global(.field-icon) {
+    color: #6366f1;
+  }
 
-.password-toggle-btn:hover {
-  color: #d4d4d8;
-  background: rgba(255, 255, 255, 0.05);
-}
+  .eye-btn {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #52525b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
 
-.premium-input-group input:focus {
-  border-color: #6366f1;
-  background: var(--figma-bg-darkest);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-}
+  .eye-btn:hover {
+    color: #a1a1aa;
+    background: rgba(255, 255, 255, 0.06);
+  }
 
-.premium-input-group input:focus + .input-icon,
-.premium-input-group input:not(:placeholder-shown) ~ .input-icon {
-  color: #6366f1;
-}
+  .save-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    margin-top: 4px;
+  }
 
-.premium-btn-primary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px;
-  margin-top: 6px;
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-}
+  .save-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(99, 102, 241, 0.55);
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+  }
 
-.premium-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
-  background: linear-gradient(135deg, #4f46e5, #4338ca);
-}
+  .save-btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
 
-.premium-btn-primary:active {
-  transform: translateY(1px);
-}
+  .save-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 
-.link-btn {
-  background: none;
-  border: none;
-  color: #6366f1;
-  cursor: pointer;
-  padding: 0;
-  font-size: inherit;
-  font-family: inherit;
-}
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
 
-.link-btn:hover {
-  text-decoration: underline;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: #71717a;
-  font-size: 13px;
-  margin: 4px 0;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.divider span {
-  padding: 0 10px;
-}
-
-.google-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px;
-  background: white;
-  color: #3f3f46;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.google-btn:hover {
-  background: #f4f4f5;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.google-btn:active {
-  transform: translateY(1px);
-}
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 </style>
-
