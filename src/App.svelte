@@ -7625,6 +7625,40 @@
       return;
     }
 
+    if (e.pointerType === "touch") {
+      activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      
+      if (activePointers.size >= 2) {
+        if (isPanning) isPanning = false; // Batal pan 1 jari jika berubah jadi pinch
+        
+        const pts = Array.from(activePointers.values());
+        multiTouchStartDist = Math.hypot(
+          pts[0].x - pts[1].x,
+          pts[0].y - pts[1].y,
+        );
+        multiTouchStartZoom = zoom;
+        multiTouchStartPan = { x: translateX, y: translateY };
+        multiTouchCenterStart = {
+          x: (pts[0].x + pts[1].x) / 2,
+          y: (pts[0].y + pts[1].y) / 2,
+        };
+        return;
+      }
+      
+      // 1 jari di background -> Pan
+      e.preventDefault();
+      isPanning = true;
+      panStart = { x: e.clientX, y: e.clientY };
+      panTranslateStart = {
+        x: translateX,
+        y: translateY,
+      };
+      if (canvasViewportEl) {
+        canvasViewportEl.setPointerCapture(e.pointerId);
+      }
+      return;
+    }
+
     // Tombol klik tengah (button === 1) atau klik kiri dengan tool "move" (button === 0)
     if (e.button === 1 || (e.button === 0 && selectedTool === "move")) {
       e.preventDefault();
@@ -7643,6 +7677,64 @@
   }
 
   function handleViewportPointerMove(e) {
+    if (activePointers.has(e.pointerId)) {
+      activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+
+    if (activePointers.size >= 2) {
+      e.preventDefault();
+
+      if (drawState.isPinchingRAF) return;
+      drawState.isPinchingRAF = true;
+
+      requestAnimationFrame(() => {
+        const pts = Array.from(activePointers.values());
+        if (pts.length < 2) {
+          drawState.isPinchingRAF = false;
+          return;
+        }
+        const currentDist = Math.hypot(
+          pts[0].x - pts[1].x,
+          pts[0].y - pts[1].y,
+        );
+        const currentCenter = {
+          x: (pts[0].x + pts[1].x) / 2,
+          y: (pts[0].y + pts[1].y) / 2,
+        };
+
+        if (multiTouchStartDist > 0) {
+          const scale = currentDist / multiTouchStartDist;
+          const newZoom = Math.max(
+            10,
+            Math.min(10000, multiTouchStartZoom * scale),
+          );
+
+          if (canvasViewportEl) {
+            const rect = canvasViewportEl.getBoundingClientRect();
+            const cursorX = currentCenter.x - rect.left - rect.width / 2;
+            const cursorY = currentCenter.y - rect.top - rect.height / 2;
+            const zScale = newZoom / 100 / (multiTouchStartZoom / 100);
+            const panDx = currentCenter.x - multiTouchCenterStart.x;
+            const panDy = currentCenter.y - multiTouchCenterStart.y;
+
+            translateX =
+              multiTouchStartPan.x +
+              panDx +
+              (cursorX - panDx) -
+              (cursorX - panDx) * zScale;
+            translateY =
+              multiTouchStartPan.y +
+              panDy +
+              (cursorY - panDy) -
+              (cursorY - panDy) * zScale;
+          }
+          zoom = newZoom;
+        }
+        drawState.isPinchingRAF = false;
+      });
+      return;
+    }
+
     if (isPanning) {
       e.preventDefault();
       const dx = e.clientX - panStart.x;
@@ -7653,6 +7745,10 @@
   }
 
   function handleViewportPointerUp(e) {
+    if (e && e.pointerId) {
+      activePointers.delete(e.pointerId);
+    }
+    
     if (isPanning) {
       isPanning = false;
       if (canvasViewportEl) {
