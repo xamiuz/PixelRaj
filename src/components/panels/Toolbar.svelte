@@ -19,12 +19,24 @@
   function handlePencilClick() {
     if (selectedTool !== 'pencil' && selectedTool !== 'spray') {
       selectedTool = 'pencil';
+    } else {
+      showPencilMenu = !showPencilMenu;
     }
   }
 
   function handleShapeClick() {
     if (selectedTool !== 'line' && selectedTool !== 'rectangle' && selectedTool !== 'ellipse') {
       selectedTool = 'line';
+    } else {
+      showShapeMenu = !showShapeMenu;
+    }
+  }
+
+  function handleBucketClick() {
+    if (selectedTool !== 'bucket' && selectedTool !== 'bucketeraser') {
+      selectedTool = 'bucket';
+    } else {
+      showBucketMenu = !showBucketMenu;
     }
   }
 
@@ -73,7 +85,7 @@
     
     <button class="tool-btn" class:active={selectedTool === 'eraser'} on:click={() => selectedTool = 'eraser'} title="Penghapus (E)"><Eraser size={20} /></button>
     <div class="bucket-container" style="position: relative;" on:mouseenter={() => showBucketMenu = true} on:mouseleave={() => showBucketMenu = false}>
-      <button class="tool-btn" class:active={selectedTool === 'bucket' || selectedTool === 'bucketeraser'} on:click={() => { if (selectedTool !== 'bucket' && selectedTool !== 'bucketeraser') selectedTool = 'bucket'; }} title="Ember Cat / Penghapus (G / Shift+G)">
+      <button class="tool-btn" class:active={selectedTool === 'bucket' || selectedTool === 'bucketeraser'} on:click={handleBucketClick} title="Ember Cat / Penghapus (G / Shift+G)">
         {#if selectedTool === 'bucketeraser'}
           <div style="position:relative;">
             <PaintBucket size={20} />
