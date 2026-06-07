@@ -154,5 +154,33 @@
       "btn_create": "Create & Start Drawing",
       "btn_cancel": "Cancel"
     }
+  },
+  "tools": {
+    "tool_pencil": "Pencil",
+    "tool_eraser": "Eraser",
+    "tool_bucket": "Paint Bucket",
+    "tool_pipette": "Eyedropper",
+    "tool_shape_line": "Straight Line",
+    "tool_shape_rect": "Rectangle",
+    "tool_shape_ellipse": "Ellipse",
+    "tool_select_rect": "Rect Select",
+    "tool_select_lasso": "Lasso Fill",
+    "action_undo": "Undo",
+    "action_redo": "Redo",
+    "action_toggle_layers": "Toggle Layers",
+    "action_custom_color": "Choose Custom Color",
+    "action_add_color": "Add Active Color to Palette",
+    "action_remove_color": "Remove Color from Palette",
+    "action_add_layer": "Add Layer",
+    "action_add_folder": "Add Folder/Group",
+    "action_delete_layer": "Delete Layer",
+    "action_duplicate_layer": "Duplicate Layer",
+    "action_move_front": "Move to Front (Top)",
+    "action_move_back": "Move to Back (Bottom)",
+    "action_remove_folder": "Remove from Parent Folder",
+    "action_rename": "Double click to rename",
+    "action_import_image": "Upload / Import Image to Active Layer",
+    "action_export_png": "Export Active Frame as PNG",
+    "action_export_sprite": "Export all frames as horizontal Sprite Sheet"
   }
 }

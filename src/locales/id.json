@@ -154,5 +154,33 @@
       "btn_create": "Buat & Mulai Menggambar",
       "btn_cancel": "Batal"
     }
+  },
+  "tools": {
+    "tool_pencil": "Pensil",
+    "tool_eraser": "Penghapus",
+    "tool_bucket": "Ember Cat",
+    "tool_pipette": "Pipet Warna",
+    "tool_shape_line": "Garis Lurus",
+    "tool_shape_rect": "Kotak",
+    "tool_shape_ellipse": "Elips",
+    "tool_select_rect": "Seleksi Kotak",
+    "tool_select_lasso": "Isi Laso",
+    "action_undo": "Undo",
+    "action_redo": "Redo",
+    "action_toggle_layers": "Toggle Lapisan (Layers)",
+    "action_custom_color": "Pilih Warna Kustom",
+    "action_add_color": "Tambah Warna Aktif ke Palet",
+    "action_remove_color": "Hapus Warna Dari Palet",
+    "action_add_layer": "Tambah Lapisan",
+    "action_add_folder": "Tambah Folder/Grup",
+    "action_delete_layer": "Hapus Lapisan",
+    "action_duplicate_layer": "Salin Lapisan",
+    "action_move_front": "Pindah ke Depan (Atas)",
+    "action_move_back": "Pindah ke Belakang (Bawah)",
+    "action_remove_folder": "Keluarkan dari Folder Induk",
+    "action_rename": "Klik ganda untuk rename",
+    "action_import_image": "Unggah / Impor Gambar ke Lapisan Aktif",
+    "action_export_png": "Ekspor Frame Aktif sebagai PNG",
+    "action_export_sprite": "Ekspor semua frame sebagai Sprite Sheet horizontal"
   }
 }

@@ -5773,13 +5773,13 @@
         let points = [];
         if (selectedTool === "line") {
           points = getLinePoints(x0, y0, x1, y1);
-          actionName = "Garis Lurus";
+          actionName = $t('tools.tool_shape_line');
         } else if (selectedTool === "rectangle") {
           points = getRectPoints(x0, y0, x1, y1);
-          actionName = "Kotak";
+          actionName = $t('tools.tool_shape_rect');
         } else if (selectedTool === "ellipse") {
           points = getEllipsePoints(x0, y0, x1, y1);
-          actionName = "Elips";
+          actionName = $t('tools.tool_shape_ellipse');
         } else if (selectedTool === "selection") {
           // Jika ada floating selection, bake dulu sebelum seleksi baru
           if (dragSelectionCanvas) commitFloatingSelection("Geser Seleksi");
@@ -5789,11 +5789,11 @@
           const h = Math.abs(y1 - y0) + 1;
           activeSelection = { x: xMin, y: yMin, w, h };
           localGridDef = { x: xMin, y: yMin, w, h };
-          actionName = "Seleksi Kotak";
+          actionName = $t('tools.tool_select_rect');
           showToast("Seleksi aktif. Tekan ESC untuk membatalkan.");
           renderGrid(); // langsung render grid setelah seleksi dibuat
         } else if (selectedTool === "lassofill") {
-          actionName = "Isi Laso";
+          actionName = $t('tools.tool_select_lasso');
           if (lassoPath.length > 2) {
             const tempCanvas = document.createElement("canvas");
             tempCanvas.width = project.width;
@@ -5941,9 +5941,9 @@
           else if (selectedTool === "bucket") label = "Fill Ember";
           else if (selectedTool === "bucketeraser") label = "Hapus Ember";
           else if (selectedTool === "spray") label = "Spray Semprotan";
-          else if (selectedTool === "line") label = "Garis Lurus";
-          else if (selectedTool === "rectangle") label = "Kotak";
-          else if (selectedTool === "ellipse") label = "Elips";
+          else if (selectedTool === "line") label = $t('tools.tool_shape_line');
+          else if (selectedTool === "rectangle") label = $t('tools.tool_shape_rect');
+          else if (selectedTool === "ellipse") label = $t('tools.tool_shape_ellipse');
 
           saveHistoryState(label);
           strokeBackupImageData = null;
@@ -8924,7 +8924,7 @@
                   document.getElementById("image-import-input").click();
                   showFileMenu = false;
                 }}
-                title="Unggah / Impor Gambar ke Lapisan Aktif"
+                title="{$t('tools.action_import_image')}"
               >
                 <Plus size={16} /> Impor Gambar
               </button>
@@ -8934,7 +8934,7 @@
                   exportToPNG();
                   showFileMenu = false;
                 }}
-                title="Ekspor Frame Aktif sebagai PNG"
+                title="{$t('tools.action_export_png')}"
               >
                 <Image size={16} /> Ekspor PNG
               </button>
@@ -8944,7 +8944,7 @@
                   exportSpritesheet();
                   showFileMenu = false;
                 }}
-                title="Ekspor semua frame sebagai Sprite Sheet horizontal"
+                title="{$t('tools.action_export_sprite')}"
                 style="color: #a78bfa;"
               >
                 <Film size={16} /> Sprite Sheet
@@ -8978,7 +8978,7 @@
           class="btn-history-top"
           on:click={triggerUndo}
           disabled={historyIndex <= 0}
-          title="Undo (Ctrl+Z)"
+          title="{$t('tools.action_undo')} (Ctrl+Z)"
         >
           <UndoIcon size={14} /> <span class="hide-mobile">Undo</span>
         </button>
@@ -8987,7 +8987,7 @@
           class="btn-history-top"
           on:click={triggerRedo}
           disabled={historyIndex >= historyList.length - 1}
-          title="Redo (Ctrl+Y)"
+          title="{$t('tools.action_redo')} (Ctrl+Y)"
         >
           <RedoIcon size={14} /> <span class="hide-mobile">Redo</span>
         </button>
@@ -9439,28 +9439,28 @@
                     ? 'active'
                     : ''}"
                   on:click={() => (selectedTool = "pencil")}
-                  title="Pensil (B)"><Pencil size={14} /></button
+                  title="{$t('tools.tool_pencil')} (B)"><Pencil size={14} /></button
                 >
                 <button
                   class="focus-hud-tool {selectedTool === 'eraser'
                     ? 'active'
                     : ''}"
                   on:click={() => (selectedTool = "eraser")}
-                  title="Penghapus (E)"><Eraser size={14} /></button
+                  title="{$t('tools.tool_eraser')} (E)"><Eraser size={14} /></button
                 >
                 <button
                   class="focus-hud-tool {selectedTool === 'bucket' || selectedTool === 'bucketeraser'
                     ? 'active'
                     : ''}"
                   on:click={() => (selectedTool = "bucket")}
-                  title="Ember Cat (G)"><PaintBucket size={14} /></button
+                  title="{$t('tools.tool_bucket')} (G)"><PaintBucket size={14} /></button
                 >
                 <button
                   class="focus-hud-tool {selectedTool === 'picker'
                     ? 'active'
                     : ''}"
                   on:click={() => (selectedTool = "picker")}
-                  title="Pipet Warna (I)"><Pipette size={14} /></button
+                  title="{$t('tools.tool_pipette')} (I)"><Pipette size={14} /></button
                 >
               </div>
 
@@ -9473,7 +9473,7 @@
                   type="color"
                   bind:value={primaryColor}
                   class="focus-hud-color-input"
-                  title="Pilih Warna Kustom"
+                  title="{$t('tools.action_custom_color')}"
                 />
               </div>
 
@@ -9533,7 +9533,7 @@
                   <button
                     class="btn-icon-small"
                     on:click={addLayer}
-                    title="Tambah Lapisan"
+                    title="{$t('tools.action_add_layer')}"
                     style="color: white; padding: 2px;"
                   >
                     <Plus size={12} />
@@ -10594,14 +10594,14 @@
                   <button
                     class="btn-icon-small"
                     on:click={addGroupLayer}
-                    title="Tambah Folder/Grup"
+                    title="{$t('tools.action_add_folder')}"
                   >
                     <FolderPlus size={14} />
                   </button>
                   <button
                     class="btn-icon-small"
                     on:click={addLayer}
-                    title="Tambah Lapisan"
+                    title="{$t('tools.action_add_layer')}"
                   >
                     <Plus size={14} />
                   </button>
@@ -10748,7 +10748,7 @@
                           class="layer-name"
                           on:dblclick|stopPropagation={() =>
                             startLayerRename(layer.originalIndex, layer.name)}
-                          title="Klik ganda untuk rename"
+                          title="{$t('tools.action_rename')}"
                         >
                           {#if layer.isGroup}
                             <Folder
@@ -10798,7 +10798,7 @@
                           class="layer-copy-btn"
                           on:click|stopPropagation={() =>
                             releaseFromGroup(layer.originalIndex)}
-                          title="Keluarkan dari Folder Induk"
+                          title="{$t('tools.action_remove_folder')}"
                           style="color: var(--warning-color);"
                         >
                           <FolderMinus size={12} />
@@ -10809,7 +10809,7 @@
                         class="layer-copy-btn"
                         on:click|stopPropagation={() =>
                           copyLayer(layer.originalIndex)}
-                        title="Salin Lapisan"
+                        title="{$t('tools.action_duplicate_layer')}"
                       >
                         <Copy size={12} />
                       </button>
@@ -10818,7 +10818,7 @@
                           class="layer-delete-btn"
                           on:click|stopPropagation={() =>
                             deleteLayer(layer.originalIndex)}
-                          title="Hapus Lapisan"
+                          title="{$t('tools.action_delete_layer')}"
                         >
                           <Trash2 size={12} />
                         </button>
@@ -11164,14 +11164,14 @@
                     bind:value={primaryColor}
                     class="color-picker-input"
                     style="width: 20px; height: 20px; border-width: 1px;"
-                    title="Pilih Warna Kustom ({primaryColor})"
+                    title="{$t('tools.action_custom_color')} ({primaryColor})"
                   />
 
                   <!-- Action Buttons -->
                   <button
                     class="btn-icon-small"
                     on:click={addColorToPalette}
-                    title="Tambah Warna Aktif ke Palet"
+                    title="{$t('tools.action_add_color')}"
                   >
                     <Plus size={12} />
                   </button>
@@ -11214,7 +11214,7 @@
                       class="delete-swatch-btn"
                       on:click|stopPropagation={() =>
                         removeColorFromPalette(color)}
-                      title="Hapus Warna Dari Palet"
+                      title="{$t('tools.action_remove_color')}"
                     >
                       &times;
                     </button>
@@ -11546,10 +11546,10 @@
         <button class="mobile-color-swatch" on:click={() => {showMobilePanel = true; mobilePanelTab = 'colors';}}>
           <span class="mobile-color-preview" style="background: {primaryColor}; width: 28px; height: 28px; display: inline-block; border-radius: 50%; border: 2px solid white;"></span>
         </button>
-        <button class="mobile-tool-btn" on:click={triggerUndo} disabled={historyIndex <= 0} title="Undo">
+        <button class="mobile-tool-btn" on:click={triggerUndo} disabled={historyIndex <= 0} title="{$t('tools.action_undo')}">
           <UndoIcon size={24}/>
         </button>
-        <button class="mobile-tool-btn" on:click={triggerRedo} disabled={historyIndex >= historyList.length - 1} title="Redo">
+        <button class="mobile-tool-btn" on:click={triggerRedo} disabled={historyIndex >= historyList.length - 1} title="{$t('tools.action_redo')}">
           <RedoIcon size={24}/>
         </button>
         <button class="mobile-tool-btn" on:click={() => (showMobilePanel = !showMobilePanel)} title="Layer">
@@ -11790,7 +11790,7 @@
                           on:click|stopPropagation={() =>
                             releaseFromGroup(layer.originalIndex)}
                           style="background:none;border:none;color:var(--warning-color);cursor:pointer;padding:4px;"
-                          title="Keluarkan dari Folder Induk"
+                          title="{$t('tools.action_remove_folder')}"
                         >
                           <FolderMinus size={14} />
                         </button>
