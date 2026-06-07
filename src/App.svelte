@@ -9025,7 +9025,7 @@
 
     <div class="main-workspace-grid">
       <!-- Left Toolbar (Peralatan) -->
-      {#if !isMobile}
+      {#if !focusMode || !isMobile}
         <Toolbar
           bind:selectedTool
           bind:isMirrorX
