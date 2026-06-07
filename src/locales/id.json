@@ -56,5 +56,37 @@
   "footer": {
     "rights": "PixelRaj. Hak Cipta Dilindungi.",
     "contact": "Memiliki kendala atau masukan? Hubungi kami di:"
+  },
+  "mockup": {
+    "tt_layer_title": "Sistem Layer Canggih",
+    "tt_layer_desc": "Atur komposisi desain dengan sistem layer tak terbatas, mode blending, dan transparansi.",
+    "tt_anim_title": "Animasi Frame-by-Frame",
+    "tt_anim_desc": "Hidupkan karakter Anda dengan timeline editor lengkap beserta pratinjau instan & kontrol FPS.",
+    "tt_tools_title": "Alat Menggambar Lengkap",
+    "tt_tools_desc": "Berbagai macam kuas, penghapus, ember cat, dan alat seleksi untuk segala kebutuhan menggambar Anda.",
+    "tt_ctx_title": "Konfigurasi Editor Presisi",
+    "tt_ctx_desc": "Atur bentuk dan ukuran kuas, nyalakan grid, serta mode pixel perfect untuk akurasi tinggi di setiap goresan.",
+    "doc_mobile": "monster jamur",
+    "doc_desktop": "Sprite Aset Baru",
+    "share": "Bagikan",
+    "exit": "Keluar",
+    "brush_shape": "BENTUK KUAS:",
+    "shape_round": "Bulat",
+    "shape_square": "Kotak",
+    "brush_size": "UKURAN KUAS:",
+    "grid_off": "Grid: OFF",
+    "pixel_off": "Pixel Perfect: OFF",
+    "timeline_title": "Timeline Animasi Lapisan",
+    "timeline_frames": "(1 Bingkai Aktif)",
+    "minimize": "Perkecil Panel",
+    "play": "Mainkan",
+    "preview_open": "Pratinjau: Buka",
+    "layer_name": "Layer 1",
+    "hold": "Tahan",
+    "speed": "Kecepatan (FPS):",
+    "layers_title": "LAPISAN (LAYERS)",
+    "transparency": "Transparansi:",
+    "ref_title": "LAPISAN REFERENSI",
+    "ref_upload": "Unggah Gambar Referensi"
   }
 }

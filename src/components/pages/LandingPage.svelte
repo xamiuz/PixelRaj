@@ -102,23 +102,23 @@
   const features = [
     {
       id: "layer",
-      title: "Sistem Layer Canggih",
-      desc: "Atur komposisi desain dengan sistem layer tak terbatas, mode blending, dan transparansi.",
+      get title() { return $t('mockup.tt_layer_title'); },
+      get desc() { return $t('mockup.tt_layer_desc'); },
     },
     {
       id: "animation",
-      title: "Animasi Frame-by-Frame",
-      desc: "Hidupkan karakter Anda dengan timeline editor lengkap beserta pratinjau instan & kontrol FPS.",
+      get title() { return $t('mockup.tt_anim_title'); },
+      get desc() { return $t('mockup.tt_anim_desc'); },
     },
     {
       id: "tools",
-      title: "Alat Menggambar Lengkap",
-      desc: "Berbagai macam kuas, penghapus, ember cat, dan alat seleksi untuk segala kebutuhan menggambar Anda.",
+      get title() { return $t('mockup.tt_tools_title'); },
+      get desc() { return $t('mockup.tt_tools_desc'); },
     },
     {
       id: "context",
-      title: "Konfigurasi Editor Presisi",
-      desc: "Atur bentuk dan ukuran kuas, nyalakan grid, serta mode pixel perfect untuk akurasi tinggi di setiap goresan.",
+      get title() { return $t('mockup.tt_ctx_title'); },
+      get desc() { return $t('mockup.tt_ctx_desc'); },
     },
   ];
 </script>
@@ -186,14 +186,14 @@
               class="mockup-doc-title"
               style="background: transparent; padding: 0;"
             >
-              <FileIcon size={14} /> monster jamur
+              <FileIcon size={14} /> {$t('mockup.doc_mobile')}
             </div>
           </div>
           <div class="mockup-menu-right" style="gap: 8px;">
             <button class="mockup-icon-btn"><UndoIcon size={14} /></button>
             <button class="mockup-icon-btn"><RedoIcon size={14} /></button>
             <button class="mockup-btn-share" style="background: #10b981;"
-              ><Share2 size={12} /> Bagikan</button
+              ><Share2 size={12} /> {$t('mockup.share')}</button
             >
           </div>
         </header>
@@ -204,14 +204,14 @@
           style="padding: 8px 12px; justify-content: flex-start; gap: 16px;"
         >
           <div class="mockup-context-item">
-            <span class="mockup-label">BENTUK KUAS:</span>
+            <span class="mockup-label">{$t('mockup.brush_shape')}</span>
             <div class="mockup-segmented">
-              <button class="active">Bulat</button>
-              <button>Kotak</button>
+              <button class="active">{$t('mockup.shape_round')}</button>
+              <button>{$t('mockup.shape_square')}</button>
             </div>
           </div>
           <div class="mockup-context-item">
-            <span class="mockup-label">UKURAN KUAS:</span>
+            <span class="mockup-label">{$t('mockup.brush_size')}</span>
             <button class="mockup-icon-btn-small">-</button>
             <div class="mockup-slider" style="width: 40px;"></div>
           </div>
@@ -410,7 +410,7 @@
               <span>PixelRaj</span>
             </div>
             <div class="mockup-doc-title">
-              <FileIcon size={14} /> Sprite Aset Ba
+              <FileIcon size={14} /> {$t('mockup.doc_desktop')}
             </div>
           </div>
           <div class="mockup-menu-center">
@@ -419,9 +419,9 @@
           </div>
           <div class="mockup-menu-right">
             <button class="mockup-btn-share"
-              ><Share2 size={12} /> Bagikan</button
+              ><Share2 size={12} /> {$t('mockup.share')}</button
             >
-            <button class="mockup-btn-exit"><LogOut size={12} /> Keluar</button>
+            <button class="mockup-btn-exit"><LogOut size={12} /> {$t('mockup.exit')}</button>
           </div>
         </header>
 
@@ -432,15 +432,15 @@
           on:mouseleave={() => (activeFeature = null)}
         >
           <div class="mockup-context-item">
-            <span class="mockup-label">BENTUK KUAS:</span>
+            <span class="mockup-label">{$t('mockup.brush_shape')}</span>
             <div class="mockup-segmented">
-              <button class="active">Bulat</button>
-              <button>Kotak</button>
+              <button class="active">{$t('mockup.shape_round')}</button>
+              <button>{$t('mockup.shape_square')}</button>
             </div>
           </div>
           <div class="mockup-divider"></div>
           <div class="mockup-context-item">
-            <span class="mockup-label">UKURAN KUAS:</span>
+            <span class="mockup-label">{$t('mockup.brush_size')}</span>
             <button class="mockup-icon-btn-small">-</button>
             <div class="mockup-slider"></div>
             <div class="mockup-val">1</div>
@@ -448,10 +448,10 @@
           </div>
           <div class="mockup-context-group">
             <button class="mockup-btn-toggle">
-              <GridIcon size={14} /> Grid: OFF
+              <GridIcon size={14} /> {$t('mockup.grid_off')}
             </button>
             <button class="mockup-btn-toggle">
-              <Crosshair size={14} /> Pixel Perfect: OFF
+              <Crosshair size={14} /> {$t('mockup.pixel_off')}
             </button>
           </div>
         </div>
@@ -550,24 +550,24 @@
                 <div style="display:flex; align-items:center; gap:8px;">
                   <Film size={14} style="color:#a855f7;" />
                   <span style="font-size:0.75rem; font-weight:700;"
-                    >Timeline Animasi Lapisan</span
+                    >{$t('mockup.timeline_title')}</span
                   >
                   <span style="font-size:0.65rem; color:#64748b;"
-                    >(1 Bingkai Aktif)</span
+                    >{$t('mockup.timeline_frames')}</span
                   >
                   <button
                     style="background:#3b0764; color:#d8b4fe; border:none; padding:4px 8px; font-size:0.6rem; border-radius:4px; margin-left:8px; cursor:pointer;"
-                    >Perkecil Panel</button
+                    >{$t('mockup.minimize')}</button
                   >
                 </div>
                 <div style="display:flex; align-items:center; gap:8px;">
                   <button
                     style="background:transparent; border:1px solid #374151; color:#d1d5db; padding:4px 12px; border-radius:4px; font-size:0.7rem; display:flex; align-items:center; gap:6px;"
-                    ><Play size={10} /> Mainkan</button
+                    ><Play size={10} /> {$t('mockup.play')}</button
                   >
                   <button
                     style="background:transparent; border:1px solid #a855f7; color:#a855f7; padding:4px 12px; border-radius:4px; font-size:0.7rem;"
-                    >Pratinjau: Buka</button
+                    >{$t('mockup.preview_open')}</button
                   >
                 </div>
               </div>
@@ -584,14 +584,14 @@
                       style="display:flex; justify-content:space-between; font-size:0.6rem;"
                     >
                       <span style="color:#a855f7; font-weight:700;">#1</span>
-                      <span style="color:#6b7280;">Layer 1</span>
+                      <span style="color:#6b7280;">{$t('mockup.layer_name')}</span>
                     </div>
                     <div
                       style="flex:1; background:repeating-conic-gradient(#374151 0% 25%, #1f2937 0% 50%) 50% / 8px 8px; border:2px solid #6366f1; border-radius:4px; display:flex; justify-content:center; align-items:center;"
                     ></div>
                     <button
                       style="background:#1f2937; border:none; color:#9ca3af; font-size:0.55rem; padding:2px; border-radius:2px; cursor:pointer;"
-                      >Tahan</button
+                      >{$t('mockup.hold')}</button
                     >
                   </div>
                 </div>
@@ -599,7 +599,7 @@
                 <div
                   style="display:flex; align-items:center; gap:8px; font-size:0.65rem; color:#9ca3af;"
                 >
-                  Kecepatan (FPS):
+                  {$t('mockup.speed')}
                   <div
                     style="width:60px; height:4px; background:#374151; border-radius:2px; position:relative;"
                   >
@@ -639,7 +639,7 @@
                 style="display:flex; justify-content:space-between; align-items:center;"
               >
                 <div style="display:flex; align-items:center; gap:6px;">
-                  <Layers size={14} /> LAPISAN (LAYERS)
+                  <Layers size={14} /> {$t('mockup.layers_title')}
                 </div>
                 <div style="display:flex; gap:6px;">
                   <FileIcon size={12} />
@@ -659,7 +659,7 @@
                       <Lock size={12} />
                       <BoxSelect size={12} />
                       <span style="font-weight:600; font-size:0.8rem;"
-                        >Layer 1</span
+                        >{$t('mockup.layer_name')}</span
                       >
                     </div>
                     <div
@@ -673,7 +673,7 @@
                     style="display:flex; align-items:center; gap:8px; margin-top:12px;"
                   >
                     <span style="font-size:0.65rem; color:#94a3b8;"
-                      >Transparansi:</span
+                      >{$t('mockup.transparency')}</span
                     >
                     <div
                       class="mockup-slider"
@@ -691,13 +691,13 @@
                 class="mockup-panel-header"
                 style="display:flex; align-items:center; gap:6px;"
               >
-                <ImageIcon size={14} /> LAPISAN REFERENSI
+                <ImageIcon size={14} /> {$t('mockup.ref_title')}
               </div>
               <div style="padding:12px;">
                 <button
                   style="width:100%; background:transparent; border:1px dashed #475569; color:#94a3b8; border-radius:6px; padding:10px; font-size:0.75rem; display:flex; justify-content:center; align-items:center; gap:6px;"
                 >
-                  <Upload size={14} /> Unggah Gambar Referensi
+                  <Upload size={14} /> {$t('mockup.ref_upload')}
                 </button>
               </div>
             </div>

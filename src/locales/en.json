@@ -56,5 +56,37 @@
   "footer": {
     "rights": "PixelRaj. All Rights Reserved.",
     "contact": "Have issues or feedback? Contact us at:"
+  },
+  "mockup": {
+    "tt_layer_title": "Advanced Layer System",
+    "tt_layer_desc": "Manage design composition with unlimited layer system, blending modes, and transparency.",
+    "tt_anim_title": "Frame-by-Frame Animation",
+    "tt_anim_desc": "Bring your characters to life with a full timeline editor along with instant preview & FPS control.",
+    "tt_tools_title": "Complete Drawing Tools",
+    "tt_tools_desc": "Various brushes, erasers, paint buckets, and selection tools for all your drawing needs.",
+    "tt_ctx_title": "Precision Editor Configuration",
+    "tt_ctx_desc": "Set brush shape and size, turn on the grid, and pixel perfect mode for high accuracy in every stroke.",
+    "doc_mobile": "mushroom monster",
+    "doc_desktop": "New Asset Sprite",
+    "share": "Share",
+    "exit": "Exit",
+    "brush_shape": "BRUSH SHAPE:",
+    "shape_round": "Round",
+    "shape_square": "Square",
+    "brush_size": "BRUSH SIZE:",
+    "grid_off": "Grid: OFF",
+    "pixel_off": "Pixel Perfect: OFF",
+    "timeline_title": "Layer Animation Timeline",
+    "timeline_frames": "(1 Active Frame)",
+    "minimize": "Minimize Panel",
+    "play": "Play",
+    "preview_open": "Preview: Open",
+    "layer_name": "Layer 1",
+    "hold": "Hold",
+    "speed": "Speed (FPS):",
+    "layers_title": "LAYERS",
+    "transparency": "Transparency:",
+    "ref_title": "REFERENCE LAYER",
+    "ref_upload": "Upload Reference Image"
   }
 }
