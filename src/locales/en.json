@@ -118,6 +118,22 @@
     "create_canvas": "Create New Canvas",
     "create_canvas_desc": "Set custom size & password",
     "loading": "Loading...",
-    "delete_folder_confirm": "Delete this folder? Projects inside will be moved to 'All Projects'."
+    "delete_folder_confirm": "Delete this folder? Projects inside will be moved to 'All Projects'.",
+    "create_modal": {
+      "title": "Create New Canvas",
+      "subtitle": "Set resolution and parameters for your pixel art project",
+      "name_label": "Project / Asset Name",
+      "name_placeholder": "E.g: Player Idle, Enemy Boss...",
+      "res_label": "Canvas Resolution",
+      "bg_label": "Background",
+      "bg_trans": "Transparent",
+      "bg_white": "White",
+      "bg_black": "Black",
+      "import_label": "Or Import From Device",
+      "import_btn": "Import Project (.json/.sprite/.ase/.aseprite) / Image",
+      "import_help": "Resolution adjusted automatically. Click \"Create\" to start importing.",
+      "btn_create": "Create & Start Drawing",
+      "btn_cancel": "Cancel"
+    }
   }
 }

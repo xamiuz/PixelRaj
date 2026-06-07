@@ -118,6 +118,22 @@
     "create_canvas": "Buat Kanvas Baru",
     "create_canvas_desc": "Atur ukuran & password kustom",
     "loading": "Sedang Memuat...",
-    "delete_folder_confirm": "Hapus folder ini? Proyek di dalamnya akan pindah ke 'Semua Proyek'."
+    "delete_folder_confirm": "Hapus folder ini? Proyek di dalamnya akan pindah ke 'Semua Proyek'.",
+    "create_modal": {
+      "title": "Buat Kanvas Baru",
+      "subtitle": "Atur resolusi dan parameter proyek pixel art Anda",
+      "name_label": "Nama Proyek / Aset",
+      "name_placeholder": "Contoh: Player Idle, Enemy Boss...",
+      "res_label": "Resolusi Kanvas",
+      "bg_label": "Latar Belakang",
+      "bg_trans": "Transparan",
+      "bg_white": "Putih",
+      "bg_black": "Hitam",
+      "import_label": "Atau Impor dari Perangkat",
+      "import_btn": "Impor Proyek (.json/.sprite/.ase/.aseprite) / Gambar",
+      "import_help": "Resolusi otomatis disesuaikan. Klik \"Buat\" untuk memulai import.",
+      "btn_create": "Buat & Mulai Menggambar",
+      "btn_cancel": "Batal"
+    }
   }
 }

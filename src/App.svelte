@@ -8698,9 +8698,9 @@
           <div class="modal-hero-icon-wrap">
             <Palette size={28} color="white" />
           </div>
-          <h2 class="modal-title">Buat Kanvas Baru</h2>
+          <h2 class="modal-title">{$t('dashboard.create_modal.title')}</h2>
           <p class="modal-subtitle">
-            Atur resolusi dan parameter proyek pixel art Anda
+            {$t('dashboard.create_modal.subtitle')}
           </p>
         </div>
 
@@ -8708,14 +8708,14 @@
           <!-- Nama Proyek -->
           <div class="form-field">
             <label for="new-proj-name" class="field-label"
-              >Nama Proyek / Aset</label
+              >{$t('dashboard.create_modal.name_label')}</label
             >
             <input
               type="text"
               id="new-proj-name"
               class="field-input"
               bind:value={newProjectName}
-              placeholder="Contoh: Player Idle, Enemy Boss..."
+              placeholder={$t('dashboard.create_modal.name_placeholder')}
               required
             />
           </div>
@@ -8723,7 +8723,7 @@
           <!-- Resolusi -->
           <div class="form-field">
             <!-- svelte-ignore a11y-label-has-associated-control -->
-            <label class="field-label">Resolusi Kanvas</label>
+            <label class="field-label">{$t('dashboard.create_modal.res_label')}</label>
             <div class="resolution-inputs-row">
               <div class="resolution-input-wrap">
                 <span class="res-label">W</span>
@@ -8774,7 +8774,7 @@
           <!-- Background -->
           <!-- svelte-ignore a11y-label-has-associated-control -->
           <div class="form-field">
-            <label class="field-label">Latar Belakang</label>
+            <label class="field-label">{$t('dashboard.create_modal.bg_label')}</label>
             <div class="bg-options">
               <button
                 type="button"
@@ -8784,7 +8784,7 @@
                 on:click={() => (newProjectBg = "transparent")}
               >
                 <div class="bg-tile-preview bg-checker"></div>
-                <span>Transparan</span>
+                <span>{$t('dashboard.create_modal.bg_trans')}</span>
               </button>
               <button
                 type="button"
@@ -8794,7 +8794,7 @@
                 on:click={() => (newProjectBg = "white")}
               >
                 <div class="bg-tile-preview" style="background:#ffffff;"></div>
-                <span>Putih</span>
+                <span>{$t('dashboard.create_modal.bg_white')}</span>
               </button>
               <button
                 type="button"
@@ -8804,7 +8804,7 @@
                 on:click={() => (newProjectBg = "black")}
               >
                 <div class="bg-tile-preview" style="background:#111;"></div>
-                <span>Hitam</span>
+                <span>{$t('dashboard.create_modal.bg_black')}</span>
               </button>
             </div>
           </div>
@@ -8812,7 +8812,7 @@
           <!-- Import -->
           <div class="form-field">
             <!-- svelte-ignore a11y-label-has-associated-control -->
-            <label class="field-label">Atau Impor dari Perangkat</label>
+            <label class="field-label">{$t('dashboard.create_modal.import_label')}</label>
             <div style="display:flex; gap:8px; flex-direction:column;">
               <label
                 for="new-canvas-import-file"
@@ -8822,7 +8822,7 @@
                 <Upload size={16} style="margin-right:8px;" />
                 {importedFileName
                   ? `✓ ${importedFileName}`
-                  : "Impor Proyek (.json/.sprite/.ase/.aseprite) / Gambar"}
+                  : $t('dashboard.create_modal.import_btn')}
               </label>
               <input
                 id="new-canvas-import-file"
@@ -8835,8 +8835,7 @@
                 <p
                   style="font-size:11px; color:var(--text-muted); margin:0; text-align:center;"
                 >
-                  Resolusi otomatis disesuaikan. Klik "Buat" untuk memulai
-                  import.
+                  {$t('dashboard.create_modal.import_help')}
                 </p>
               {/if}
             </div>
@@ -8848,12 +8847,12 @@
               ><Sparkles
                 size={16}
                 style="margin-right:8px;vertical-align:middle;"
-              /> Buat &amp; Mulai Menggambar</button
+              /> {$t('dashboard.create_modal.btn_create')}</button
             >
             <button
               type="button"
               class="btn-cancel"
-              on:click={() => (showCreateProjectModal = false)}>Batal</button
+              on:click={() => (showCreateProjectModal = false)}>{$t('dashboard.create_modal.btn_cancel')}</button
             >
           </div>
         </form>
