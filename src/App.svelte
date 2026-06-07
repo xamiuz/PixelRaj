@@ -4331,6 +4331,26 @@
           w: activeSelection.w,
           h: activeSelection.h,
         };
+        
+        // Auto-expand jika menyentuh tepi (untuk mengambil piksel di luar kanvas)
+        const unclippedBBox = getUnclippedLayerBoundingBox(layer.id);
+        if (unclippedBBox) {
+          if (bbox.minX === 0 && unclippedBBox.minX < 0) {
+            bbox.minX = unclippedBBox.minX;
+          }
+          if (bbox.minY === 0 && unclippedBBox.minY < 0) {
+            bbox.minY = unclippedBBox.minY;
+          }
+          if (bbox.maxX === project.width - 1 && unclippedBBox.maxX > project.width - 1) {
+            bbox.maxX = unclippedBBox.maxX;
+          }
+          if (bbox.maxY === project.height - 1 && unclippedBBox.maxY > project.height - 1) {
+            bbox.maxY = unclippedBBox.maxY;
+          }
+          bbox.w = bbox.maxX - bbox.minX + 1;
+          bbox.h = bbox.maxY - bbox.minY + 1;
+        }
+        
         isTransformingSelection = true;
       }
 
