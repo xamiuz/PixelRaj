@@ -45,7 +45,7 @@
     Heart,
     DownloadCloud,
     Trophy,
-    Code
+    Code,
   } from "lucide-svelte";
 
   const dispatch = createEventDispatcher();
@@ -71,27 +71,30 @@
 
   // Action untuk animasi scroll reveal
   function reveal(node, { delay = 0 } = {}) {
-    node.classList.add('reveal-hidden');
+    node.classList.add("reveal-hidden");
     if (delay) node.style.transitionDelay = `${delay}ms`;
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          node.classList.add('reveal-visible');
-          observer.unobserve(node);
-        }
-      });
-    }, {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            node.classList.add("reveal-visible");
+            observer.unobserve(node);
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      },
+    );
 
     observer.observe(node);
 
     return {
       destroy() {
         observer.disconnect();
-      }
+      },
     };
   }
 
@@ -148,7 +151,6 @@
   <main class="hero-section">
     <!-- Hero Headline -->
     <div class="hero-content">
-
       <h1 class="headline">
         Bikin Pixel Art<br />
         <span class="text-gradient">Lebih Keren & Cepat</span>
@@ -170,27 +172,38 @@
     <div class="mockup-mobile">
       <div class="mobile-device-frame">
         <!-- Top Bar -->
-        <header class="mockup-top-menu" style="border-radius: 36px 36px 0 0; padding: 12px 16px; border-bottom: none;">
+        <header
+          class="mockup-top-menu"
+          style="border-radius: 36px 36px 0 0; padding: 12px 16px; border-bottom: none;"
+        >
           <div class="mockup-menu-left" style="gap: 12px;">
-            <button class="mockup-icon-btn"><ArrowLeft size={16}/></button>
-            <div class="mockup-doc-title" style="background: transparent; padding: 0;">
+            <button class="mockup-icon-btn"><ArrowLeft size={16} /></button>
+            <div
+              class="mockup-doc-title"
+              style="background: transparent; padding: 0;"
+            >
               <FileIcon size={14} /> monster jamur
             </div>
           </div>
           <div class="mockup-menu-right" style="gap: 8px;">
-            <button class="mockup-icon-btn"><UndoIcon size={14}/></button>
-            <button class="mockup-icon-btn"><RedoIcon size={14}/></button>
-            <button class="mockup-btn-share" style="background: #10b981;"><Share2 size={12}/> Bagikan</button>
+            <button class="mockup-icon-btn"><UndoIcon size={14} /></button>
+            <button class="mockup-icon-btn"><RedoIcon size={14} /></button>
+            <button class="mockup-btn-share" style="background: #10b981;"
+              ><Share2 size={12} /> Bagikan</button
+            >
           </div>
         </header>
 
         <!-- Tool Context Bar -->
-        <div class="mockup-context-bar" style="padding: 8px 12px; justify-content: flex-start; gap: 16px;">
+        <div
+          class="mockup-context-bar"
+          style="padding: 8px 12px; justify-content: flex-start; gap: 16px;"
+        >
           <div class="mockup-context-item">
             <span class="mockup-label">BENTUK KUAS:</span>
             <div class="mockup-segmented">
-               <button class="active">Bulat</button>
-               <button>Kotak</button>
+              <button class="active">Bulat</button>
+              <button>Kotak</button>
             </div>
           </div>
           <div class="mockup-context-item">
@@ -201,71 +214,179 @@
         </div>
 
         <!-- Body area with left toolbar and canvas -->
-        <div style="display: flex; flex: 1; overflow: hidden; position: relative;">
+        <div
+          style="display: flex; flex: 1; overflow: hidden; position: relative;"
+        >
           <!-- Left Toolbar -->
-          <div class="mockup-toolbar-vertical" style="width: 45px; z-index: 2; border-right: 1px solid rgba(255,255,255,0.05);">
-            <button class="mockup-tool-btn"><BoxSelect size={16}/></button>
-            <button class="mockup-tool-btn"><Move size={16}/></button>
-            <button class="mockup-tool-btn active"><Edit2 size={16}/></button>
-            <button class="mockup-tool-btn"><Eraser size={16}/></button>
-            <button class="mockup-tool-btn"><PaintBucket size={16}/></button>
-            <button class="mockup-tool-btn"><Wand2 size={16}/></button>
-            <button class="mockup-tool-btn"><UndoIcon size={16} style="transform: rotate(180deg);"/></button>
-            <button class="mockup-tool-btn"><Slash size={16}/></button>
-            <button class="mockup-tool-btn"><Square size={16}/></button>
+          <div
+            class="mockup-toolbar-vertical"
+            style="width: 45px; z-index: 2; border-right: 1px solid rgba(255,255,255,0.05);"
+          >
+            <button class="mockup-tool-btn"><BoxSelect size={16} /></button>
+            <button class="mockup-tool-btn"><Move size={16} /></button>
+            <button class="mockup-tool-btn active"><Edit2 size={16} /></button>
+            <button class="mockup-tool-btn"><Eraser size={16} /></button>
+            <button class="mockup-tool-btn"><PaintBucket size={16} /></button>
+            <button class="mockup-tool-btn"><Wand2 size={16} /></button>
+            <button class="mockup-tool-btn"
+              ><UndoIcon size={16} style="transform: rotate(180deg);" /></button
+            >
+            <button class="mockup-tool-btn"><Slash size={16} /></button>
+            <button class="mockup-tool-btn"><Square size={16} /></button>
             <div style="flex: 1;"></div>
-            <button class="mockup-tool-btn"><Maximize size={16}/></button>
+            <button class="mockup-tool-btn"><Maximize size={16} /></button>
           </div>
-          
+
           <!-- Canvas Area -->
-          <div class="mobile-canvas-area" style="flex: 1; padding: 0; background-position: center;">
-            <div class="mockup-canvas {activeFeature === 'animation' ? 'animating' : ''}" style="width: 160px; height: 160px; background: transparent; box-shadow: none;">
-               <!-- Mushroom Pixel Art approximation -->
-               <div class="pixel" style="top:20%; left:50%; width:10%; height:10%; background:#7dd3fc;"></div>
-               <div class="pixel" style="top:20%; left:60%; width:10%; height:10%; background:#38bdf8;"></div>
-               <div class="pixel" style="top:30%; left:40%; width:10%; height:10%; background:#38bdf8;"></div>
-               <div class="pixel" style="top:30%; left:50%; width:10%; height:10%; background:#0284c7;"></div>
-               <div class="pixel" style="top:30%; left:60%; width:10%; height:10%; background:#0284c7;"></div>
-               <div class="pixel" style="top:30%; left:70%; width:10%; height:10%; background:#38bdf8;"></div>
-               <div class="pixel" style="top:40%; left:30%; width:10%; height:10%; background:#7dd3fc;"></div>
-               <div class="pixel" style="top:40%; left:40%; width:10%; height:10%; background:#0284c7;"></div>
-               <div class="pixel" style="top:40%; left:50%; width:10%; height:10%; background:#0284c7;"></div>
-               <div class="pixel" style="top:40%; left:60%; width:10%; height:10%; background:#0284c7;"></div>
-               <div class="pixel" style="top:40%; left:70%; width:10%; height:10%; background:#0284c7;"></div>
-               <div class="pixel" style="top:50%; left:30%; width:10%; height:10%; background:#ffffff;"></div>
-               <div class="pixel" style="top:50%; left:40%; width:10%; height:10%; background:#ffffff;"></div>
-               <div class="pixel" style="top:50%; left:50%; width:10%; height:10%; background:#0284c7;"></div>
-               <div class="pixel" style="top:50%; left:60%; width:10%; height:10%; background:#0284c7;"></div>
-               <div class="pixel" style="top:50%; left:70%; width:10%; height:10%; background:#0ea5e9;"></div>
-               <div class="pixel" style="top:60%; left:40%; width:10%; height:10%; background:#ef4444;"></div>
-               <div class="pixel" style="top:60%; left:50%; width:10%; height:10%; background:#ef4444;"></div>
-               <div class="pixel" style="top:60%; left:70%; width:10%; height:10%; background:#047857;"></div>
-               <div class="pixel" style="top:70%; left:40%; width:10%; height:10%; background:#ef4444;"></div>
-               <div class="pixel" style="top:70%; left:50%; width:10%; height:10%; background:#ef4444;"></div>
-               <div class="pixel" style="top:70%; left:70%; width:10%; height:10%; background:#047857;"></div>
+          <div
+            class="mobile-canvas-area"
+            style="flex: 1; padding: 0; background-position: center;"
+          >
+            <div
+              class="mockup-canvas {activeFeature === 'animation'
+                ? 'animating'
+                : ''}"
+              style="width: 160px; height: 160px; background: transparent; box-shadow: none;"
+            >
+              <!-- Mushroom Pixel Art approximation -->
+              <div
+                class="pixel"
+                style="top:20%; left:50%; width:10%; height:10%; background:#7dd3fc;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:20%; left:60%; width:10%; height:10%; background:#38bdf8;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:30%; left:40%; width:10%; height:10%; background:#38bdf8;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:30%; left:50%; width:10%; height:10%; background:#0284c7;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:30%; left:60%; width:10%; height:10%; background:#0284c7;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:30%; left:70%; width:10%; height:10%; background:#38bdf8;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:40%; left:30%; width:10%; height:10%; background:#7dd3fc;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:40%; left:40%; width:10%; height:10%; background:#0284c7;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:40%; left:50%; width:10%; height:10%; background:#0284c7;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:40%; left:60%; width:10%; height:10%; background:#0284c7;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:40%; left:70%; width:10%; height:10%; background:#0284c7;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:50%; left:30%; width:10%; height:10%; background:#ffffff;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:50%; left:40%; width:10%; height:10%; background:#ffffff;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:50%; left:50%; width:10%; height:10%; background:#0284c7;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:50%; left:60%; width:10%; height:10%; background:#0284c7;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:50%; left:70%; width:10%; height:10%; background:#0ea5e9;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:60%; left:40%; width:10%; height:10%; background:#ef4444;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:60%; left:50%; width:10%; height:10%; background:#ef4444;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:60%; left:70%; width:10%; height:10%; background:#047857;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:70%; left:40%; width:10%; height:10%; background:#ef4444;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:70%; left:50%; width:10%; height:10%; background:#ef4444;"
+              ></div>
+              <div
+                class="pixel"
+                style="top:70%; left:70%; width:10%; height:10%; background:#047857;"
+              ></div>
             </div>
           </div>
         </div>
 
         <!-- Coordinate / Zoom Bar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 12px; background: #111827; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.7rem; color: #94a3b8; font-family: monospace;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; padding: 4px 12px; background: #111827; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.7rem; color: #94a3b8; font-family: monospace;"
+        >
           <div>X: 61 Y: 46</div>
-          <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 12px;">
-            <div style="width: 10px; height: 10px; border-radius: 50%; background: #fff;"></div>
-            <div style="width: 40px; height: 2px; background: rgba(255,255,255,0.2);"></div>
-            <span style="font-family: sans-serif; font-weight: 700; color: #fff;">1</span>
+          <div
+            style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 12px;"
+          >
+            <div
+              style="width: 10px; height: 10px; border-radius: 50%; background: #fff;"
+            ></div>
+            <div
+              style="width: 40px; height: 2px; background: rgba(255,255,255,0.2);"
+            ></div>
+            <span
+              style="font-family: sans-serif; font-weight: 700; color: #fff;"
+              >1</span
+            >
           </div>
         </div>
 
         <!-- Bottom Toolbar -->
-        <div class="mobile-bottom-bar" style="border-radius: 0 0 36px 36px; padding: 12px 20px 24px; justify-content: space-around;">
-          <button class="mobile-tool"><Eraser size={20} color="#94a3b8"/></button>
-          <div class="mobile-color-picker" style="background: transparent; border: 2px solid #cbd5e1; display:flex; align-items:center; justify-content:center;">
-             <div style="width:16px; height:16px; border-radius:50%; background:#0f172a; border: 1px solid #334155;"></div>
+        <div
+          class="mobile-bottom-bar"
+          style="border-radius: 0 0 36px 36px; padding: 12px 20px 24px; justify-content: space-around;"
+        >
+          <button class="mobile-tool"
+            ><Eraser size={20} color="#94a3b8" /></button
+          >
+          <div
+            class="mobile-color-picker"
+            style="background: transparent; border: 2px solid #cbd5e1; display:flex; align-items:center; justify-content:center;"
+          >
+            <div
+              style="width:16px; height:16px; border-radius:50%; background:#0f172a; border: 1px solid #334155;"
+            ></div>
           </div>
-          <button class="mobile-tool"><UndoIcon size={20} color="#334155"/></button>
-          <button class="mobile-tool"><RedoIcon size={20} color="#334155"/></button>
-          <button class="mobile-tool"><Layers size={20} color="#94a3b8"/></button>
+          <button class="mobile-tool"
+            ><UndoIcon size={20} color="#334155" /></button
+          >
+          <button class="mobile-tool"
+            ><RedoIcon size={20} color="#334155" /></button
+          >
+          <button class="mobile-tool"
+            ><Layers size={20} color="#94a3b8" /></button
+          >
         </div>
       </div>
     </div>
@@ -274,7 +395,11 @@
     <div class="mockup-perspective">
       <div class="mockup-window">
         <!-- Top Menu Bar -->
-        <header class="mockup-top-menu" on:mouseenter={() => activeFeature = 'context'} on:mouseleave={() => activeFeature = null}>
+        <header
+          class="mockup-top-menu"
+          on:mouseenter={() => (activeFeature = "context")}
+          on:mouseleave={() => (activeFeature = null)}
+        >
           <div class="mockup-menu-left">
             <div class="mockup-logo-text">
               <Palette size={16} color="#6366f1" />
@@ -285,22 +410,28 @@
             </div>
           </div>
           <div class="mockup-menu-center">
-            <button class="mockup-icon-btn"><UndoIcon size={14}/></button>
-            <button class="mockup-icon-btn"><RedoIcon size={14}/></button>
+            <button class="mockup-icon-btn"><UndoIcon size={14} /></button>
+            <button class="mockup-icon-btn"><RedoIcon size={14} /></button>
           </div>
           <div class="mockup-menu-right">
-            <button class="mockup-btn-share"><Share2 size={12}/> Bagikan</button>
-            <button class="mockup-btn-exit"><LogOut size={12}/> Keluar</button>
+            <button class="mockup-btn-share"
+              ><Share2 size={12} /> Bagikan</button
+            >
+            <button class="mockup-btn-exit"><LogOut size={12} /> Keluar</button>
           </div>
         </header>
 
         <!-- Tool Context Bar -->
-        <div class="mockup-context-bar" on:mouseenter={() => activeFeature = 'context'} on:mouseleave={() => activeFeature = null}>
+        <div
+          class="mockup-context-bar"
+          on:mouseenter={() => (activeFeature = "context")}
+          on:mouseleave={() => (activeFeature = null)}
+        >
           <div class="mockup-context-item">
             <span class="mockup-label">BENTUK KUAS:</span>
             <div class="mockup-segmented">
-               <button class="active">Bulat</button>
-               <button>Kotak</button>
+              <button class="active">Bulat</button>
+              <button>Kotak</button>
             </div>
           </div>
           <div class="mockup-divider"></div>
@@ -313,208 +444,359 @@
           </div>
           <div class="mockup-context-group">
             <button class="mockup-btn-toggle">
-               <GridIcon size={14}/> Grid: OFF
+              <GridIcon size={14} /> Grid: OFF
             </button>
             <button class="mockup-btn-toggle">
-               <Crosshair size={14}/> Pixel Perfect: OFF
+              <Crosshair size={14} /> Pixel Perfect: OFF
             </button>
           </div>
         </div>
 
         <div class="mockup-body">
           <!-- Left Toolbar -->
-          <div class="mockup-toolbar-vertical" on:mouseenter={() => activeFeature = 'tools'} on:mouseleave={() => activeFeature = null}>
-            <button class="mockup-tool-btn active"><Edit2 size={16}/></button>
-            <button class="mockup-tool-btn"><Eraser size={16}/></button>
-            <button class="mockup-tool-btn"><PaintBucket size={16}/></button>
-            <button class="mockup-tool-btn"><Slash size={16}/></button>
-            <button class="mockup-tool-btn"><Square size={16}/></button>
-            <button class="mockup-tool-btn"><Circle size={16}/></button>
-            <button class="mockup-tool-btn"><Wand2 size={16}/></button>
-            <button class="mockup-tool-btn"><BoxSelect size={16}/></button>
-            <button class="mockup-tool-btn"><Move size={16}/></button>
-            <button class="mockup-tool-btn"><Search size={16}/></button>
+          <div
+            class="mockup-toolbar-vertical"
+            on:mouseenter={() => (activeFeature = "tools")}
+            on:mouseleave={() => (activeFeature = null)}
+          >
+            <button class="mockup-tool-btn active"><Edit2 size={16} /></button>
+            <button class="mockup-tool-btn"><Eraser size={16} /></button>
+            <button class="mockup-tool-btn"><PaintBucket size={16} /></button>
+            <button class="mockup-tool-btn"><Slash size={16} /></button>
+            <button class="mockup-tool-btn"><Square size={16} /></button>
+            <button class="mockup-tool-btn"><Circle size={16} /></button>
+            <button class="mockup-tool-btn"><Wand2 size={16} /></button>
+            <button class="mockup-tool-btn"><BoxSelect size={16} /></button>
+            <button class="mockup-tool-btn"><Move size={16} /></button>
+            <button class="mockup-tool-btn"><Search size={16} /></button>
             <div class="mockup-color-picker" style="background: #00f0ff;"></div>
           </div>
 
           <!-- Canvas Area -->
-          <div class="mockup-canvas-wrapper" style="flex-direction: column; justify-content: space-between;" on:mousemove={(e) => {
-             if (e.target.closest('.mockup-animator-panel')) activeFeature = 'animation';
-             else activeFeature = null;
-          }} on:mouseleave={() => activeFeature = null}>
-            <div style="flex:1; display:flex; justify-content:center; align-items:center; width:100%; position:relative;">
-              <div class="mockup-canvas {activeFeature === 'animation' ? 'animating' : ''}">
-                <div class="pixel" style="top:20%; left:40%; background: #a855f7;"></div>
-                <div class="pixel" style="top:20%; left:50%; background: #a855f7;"></div>
-                <div class="pixel" style="top:30%; left:30%; background: #a855f7;"></div>
-                <div class="pixel" style="top:30%; left:60%; background: #a855f7;"></div>
-                <div class="pixel" style="top:40%; left:30%; background: #6366f1;"></div>
-                <div class="pixel" style="top:40%; left:60%; background: #6366f1;"></div>
-                <div class="pixel" style="top:50%; left:30%; background: #6366f1;"></div>
-                <div class="pixel" style="top:50%; left:60%; background: #6366f1;"></div>
-                <div class="pixel" style="top:60%; left:40%; background: #6366f1;"></div>
-                <div class="pixel" style="top:60%; left:50%; background: #6366f1;"></div>
+          <div
+            class="mockup-canvas-wrapper"
+            style="flex-direction: column; justify-content: space-between;"
+            on:mousemove={(e) => {
+              if (e.target.closest(".mockup-animator-panel"))
+                activeFeature = "animation";
+              else activeFeature = null;
+            }}
+            on:mouseleave={() => (activeFeature = null)}
+          >
+            <div
+              style="flex:1; display:flex; justify-content:center; align-items:center; width:100%; position:relative;"
+            >
+              <div
+                class="mockup-canvas {activeFeature === 'animation'
+                  ? 'animating'
+                  : ''}"
+              >
+                <div
+                  class="pixel"
+                  style="top:20%; left:40%; background: #a855f7;"
+                ></div>
+                <div
+                  class="pixel"
+                  style="top:20%; left:50%; background: #a855f7;"
+                ></div>
+                <div
+                  class="pixel"
+                  style="top:30%; left:30%; background: #a855f7;"
+                ></div>
+                <div
+                  class="pixel"
+                  style="top:30%; left:60%; background: #a855f7;"
+                ></div>
+                <div
+                  class="pixel"
+                  style="top:40%; left:30%; background: #6366f1;"
+                ></div>
+                <div
+                  class="pixel"
+                  style="top:40%; left:60%; background: #6366f1;"
+                ></div>
+                <div
+                  class="pixel"
+                  style="top:50%; left:30%; background: #6366f1;"
+                ></div>
+                <div
+                  class="pixel"
+                  style="top:50%; left:60%; background: #6366f1;"
+                ></div>
+                <div
+                  class="pixel"
+                  style="top:60%; left:40%; background: #6366f1;"
+                ></div>
+                <div
+                  class="pixel"
+                  style="top:60%; left:50%; background: #6366f1;"
+                ></div>
               </div>
             </div>
 
             <!-- TIMELINE ANIMATOR PANEL -->
-            <div class="mockup-animator-panel" style="width:100%; height:110px; background:#111827; border-top:1px solid #1f2937; display:flex; flex-direction:column; z-index:10;">
-               <!-- Header Timeline -->
-               <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px; border-bottom:1px solid #1f2937; background:#0f172a;">
-                  <div style="display:flex; align-items:center; gap:8px;">
-                     <Film size={14} style="color:#a855f7;"/>
-                     <span style="font-size:0.75rem; font-weight:700;">Timeline Animasi Lapisan</span>
-                     <span style="font-size:0.65rem; color:#64748b;">(1 Bingkai Aktif)</span>
-                     <button style="background:#3b0764; color:#d8b4fe; border:none; padding:4px 8px; font-size:0.6rem; border-radius:4px; margin-left:8px; cursor:pointer;">Perkecil Panel</button>
+            <div
+              class="mockup-animator-panel"
+              style="width:100%; height:110px; background:#111827; border-top:1px solid #1f2937; display:flex; flex-direction:column; z-index:10;"
+            >
+              <!-- Header Timeline -->
+              <div
+                style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px; border-bottom:1px solid #1f2937; background:#0f172a;"
+              >
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <Film size={14} style="color:#a855f7;" />
+                  <span style="font-size:0.75rem; font-weight:700;"
+                    >Timeline Animasi Lapisan</span
+                  >
+                  <span style="font-size:0.65rem; color:#64748b;"
+                    >(1 Bingkai Aktif)</span
+                  >
+                  <button
+                    style="background:#3b0764; color:#d8b4fe; border:none; padding:4px 8px; font-size:0.6rem; border-radius:4px; margin-left:8px; cursor:pointer;"
+                    >Perkecil Panel</button
+                  >
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button
+                    style="background:transparent; border:1px solid #374151; color:#d1d5db; padding:4px 12px; border-radius:4px; font-size:0.7rem; display:flex; align-items:center; gap:6px;"
+                    ><Play size={10} /> Mainkan</button
+                  >
+                  <button
+                    style="background:transparent; border:1px solid #a855f7; color:#a855f7; padding:4px 12px; border-radius:4px; font-size:0.7rem;"
+                    >Pratinjau: Buka</button
+                  >
+                </div>
+              </div>
+              <!-- Body Timeline -->
+              <div
+                style="flex:1; display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#111827;"
+              >
+                <div style="display:flex; gap:8px; height:100%;">
+                  <!-- Frame 1 -->
+                  <div
+                    style="display:flex; flex-direction:column; gap:4px; width:50px; height:100%;"
+                  >
+                    <div
+                      style="display:flex; justify-content:space-between; font-size:0.6rem;"
+                    >
+                      <span style="color:#a855f7; font-weight:700;">#1</span>
+                      <span style="color:#6b7280;">Layer 1</span>
+                    </div>
+                    <div
+                      style="flex:1; background:repeating-conic-gradient(#374151 0% 25%, #1f2937 0% 50%) 50% / 8px 8px; border:2px solid #6366f1; border-radius:4px; display:flex; justify-content:center; align-items:center;"
+                    ></div>
+                    <button
+                      style="background:#1f2937; border:none; color:#9ca3af; font-size:0.55rem; padding:2px; border-radius:2px; cursor:pointer;"
+                      >Tahan</button
+                    >
                   </div>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                     <button style="background:transparent; border:1px solid #374151; color:#d1d5db; padding:4px 12px; border-radius:4px; font-size:0.7rem; display:flex; align-items:center; gap:6px;"><Play size={10}/> Mainkan</button>
-                     <button style="background:transparent; border:1px solid #a855f7; color:#a855f7; padding:4px 12px; border-radius:4px; font-size:0.7rem;">Pratinjau: Buka</button>
+                </div>
+                <!-- FPS Slider -->
+                <div
+                  style="display:flex; align-items:center; gap:8px; font-size:0.65rem; color:#9ca3af;"
+                >
+                  Kecepatan (FPS):
+                  <div
+                    style="width:60px; height:4px; background:#374151; border-radius:2px; position:relative;"
+                  >
+                    <div
+                      style="position:absolute; left:0; top:0; height:100%; width:80%; background:#d1d5db; border-radius:2px;"
+                    ></div>
                   </div>
-               </div>
-               <!-- Body Timeline -->
-               <div style="flex:1; display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#111827;">
-                  <div style="display:flex; gap:8px; height:100%;">
-                     <!-- Frame 1 -->
-                     <div style="display:flex; flex-direction:column; gap:4px; width:50px; height:100%;">
-                        <div style="display:flex; justify-content:space-between; font-size:0.6rem;">
-                           <span style="color:#a855f7; font-weight:700;">#1</span> <span style="color:#6b7280;">Layer 1</span>
-                        </div>
-                        <div style="flex:1; background:repeating-conic-gradient(#374151 0% 25%, #1f2937 0% 50%) 50% / 8px 8px; border:2px solid #6366f1; border-radius:4px; display:flex; justify-content:center; align-items:center;">
-                        </div>
-                        <button style="background:#1f2937; border:none; color:#9ca3af; font-size:0.55rem; padding:2px; border-radius:2px; cursor:pointer;">Tahan</button>
-                     </div>
-                  </div>
-                  <!-- FPS Slider -->
-                  <div style="display:flex; align-items:center; gap:8px; font-size:0.65rem; color:#9ca3af;">
-                     Kecepatan (FPS):
-                     <div style="width:60px; height:4px; background:#374151; border-radius:2px; position:relative;">
-                        <div style="position:absolute; left:0; top:0; height:100%; width:80%; background:#d1d5db; border-radius:2px;"></div>
-                     </div>
-                     <span style="color:#a855f7; font-weight:700;">6 Hz</span>
-                  </div>
-               </div>
+                  <span style="color:#a855f7; font-weight:700;">6 Hz</span>
+                </div>
+              </div>
             </div>
 
             <!-- Collab Feature: Fake Cursors -->
             {#if activeFeature === "collab"}
               <div class="fake-cursor cursor-1">
                 <MousePointer size={14} color="#10b981" fill="#10b981" />
-                <span class="cursor-name" style="background:#10b981">Sarah</span>
+                <span class="cursor-name" style="background:#10b981">Sarah</span
+                >
               </div>
               <div class="fake-cursor cursor-2">
                 <MousePointer size={14} color="#f59e0b" fill="#f59e0b" />
-                <span class="cursor-name" style="background:#f59e0b">David</span>
+                <span class="cursor-name" style="background:#f59e0b">David</span
+                >
               </div>
             {/if}
           </div>
 
           <!-- Right Sidebar -->
-          <aside class="mockup-sidebar-wrapper" on:mouseenter={() => activeFeature = 'layer'} on:mouseleave={() => activeFeature = null}>
-             <div class="mockup-panel-section" style="flex:1;">
-                <div class="mockup-panel-header" style="display:flex; justify-content:space-between; align-items:center;">
-                   <div style="display:flex; align-items:center; gap:6px;">
-                      <Layers size={14}/> LAPISAN (LAYERS)
-                   </div>
-                   <div style="display:flex; gap:6px;">
-                      <FileIcon size={12}/> <span style="font-size:12px; font-weight:800;">+</span>
-                   </div>
+          <aside
+            class="mockup-sidebar-wrapper"
+            on:mouseenter={() => (activeFeature = "layer")}
+            on:mouseleave={() => (activeFeature = null)}
+          >
+            <div class="mockup-panel-section" style="flex:1;">
+              <div
+                class="mockup-panel-header"
+                style="display:flex; justify-content:space-between; align-items:center;"
+              >
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <Layers size={14} /> LAPISAN (LAYERS)
                 </div>
-                <div class="mockup-layers-list">
-                   <div class="mockup-layer-item active" style="display:flex; flex-direction:column; padding:12px;">
-                      <div style="display:flex; justify-content:space-between; align-items:center;">
-                         <div style="display:flex; align-items:center; gap:8px;">
-                            <Eye size={14}/> <Lock size={12}/> <BoxSelect size={12}/> <span style="font-weight:600; font-size:0.8rem;">Layer 1</span>
-                         </div>
-                         <div style="display:flex; flex-direction:column; gap:2px; color:#64748b;">
-                            <ArrowUp size={10}/> <ArrowDown size={10}/>
-                         </div>
-                      </div>
-                      <div style="display:flex; align-items:center; gap:8px; margin-top:12px;">
-                         <span style="font-size:0.65rem; color:#94a3b8;">Transparansi:</span>
-                         <div class="mockup-slider" style="flex:1; background:#0f172a;"></div>
-                      </div>
-                   </div>
+                <div style="display:flex; gap:6px;">
+                  <FileIcon size={12} />
+                  <span style="font-size:12px; font-weight:800;">+</span>
                 </div>
-             </div>
-             <div class="mockup-panel-section" style="border-top: 1px solid #334155;">
-                <div class="mockup-panel-header" style="display:flex; align-items:center; gap:6px;">
-                   <ImageIcon size={14}/> LAPISAN REFERENSI
+              </div>
+              <div class="mockup-layers-list">
+                <div
+                  class="mockup-layer-item active"
+                  style="display:flex; flex-direction:column; padding:12px;"
+                >
+                  <div
+                    style="display:flex; justify-content:space-between; align-items:center;"
+                  >
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <Eye size={14} />
+                      <Lock size={12} />
+                      <BoxSelect size={12} />
+                      <span style="font-weight:600; font-size:0.8rem;"
+                        >Layer 1</span
+                      >
+                    </div>
+                    <div
+                      style="display:flex; flex-direction:column; gap:2px; color:#64748b;"
+                    >
+                      <ArrowUp size={10} />
+                      <ArrowDown size={10} />
+                    </div>
+                  </div>
+                  <div
+                    style="display:flex; align-items:center; gap:8px; margin-top:12px;"
+                  >
+                    <span style="font-size:0.65rem; color:#94a3b8;"
+                      >Transparansi:</span
+                    >
+                    <div
+                      class="mockup-slider"
+                      style="flex:1; background:#0f172a;"
+                    ></div>
+                  </div>
                 </div>
-                <div style="padding:12px;">
-                   <button style="width:100%; background:transparent; border:1px dashed #475569; color:#94a3b8; border-radius:6px; padding:10px; font-size:0.75rem; display:flex; justify-content:center; align-items:center; gap:6px;">
-                      <Upload size={14}/> Unggah Gambar Referensi
-                   </button>
-                </div>
-             </div>
+              </div>
+            </div>
+            <div
+              class="mockup-panel-section"
+              style="border-top: 1px solid #334155;"
+            >
+              <div
+                class="mockup-panel-header"
+                style="display:flex; align-items:center; gap:6px;"
+              >
+                <ImageIcon size={14} /> LAPISAN REFERENSI
+              </div>
+              <div style="padding:12px;">
+                <button
+                  style="width:100%; background:transparent; border:1px dashed #475569; color:#94a3b8; border-radius:6px; padding:10px; font-size:0.75rem; display:flex; justify-content:center; align-items:center; gap:6px;"
+                >
+                  <Upload size={14} /> Unggah Gambar Referensi
+                </button>
+              </div>
+            </div>
           </aside>
         </div>
+      </div>
 
-    </div>
-
-    <div class="hover-tooltip" class:visible={activeFeature !== null} style="left: {mouseX}px; top: {mouseY - 20}px;">
-      <div class="tooltip-content" style="min-height: 64px; display: flex; flex-direction: column; justify-content: center;">
-        <h4>{activeFeature ? features.find(f => f.id === activeFeature)?.title : ''}</h4>
-        <p>{activeFeature ? features.find(f => f.id === activeFeature)?.desc : ''}</p>
+      <div
+        class="hover-tooltip"
+        class:visible={activeFeature !== null}
+        style="left: {mouseX}px; top: {mouseY - 20}px;"
+      >
+        <div
+          class="tooltip-content"
+          style="min-height: 64px; display: flex; flex-direction: column; justify-content: center;"
+        >
+          <h4>
+            {activeFeature
+              ? features.find((f) => f.id === activeFeature)?.title
+              : ""}
+          </h4>
+          <p>
+            {activeFeature
+              ? features.find((f) => f.id === activeFeature)?.desc
+              : ""}
+          </p>
+        </div>
       </div>
     </div>
   </main>
-
-
 
   <!-- FEATURES SECTION -->
   <section class="pro-features-section">
     <div class="pro-features-container">
       <div class="pro-header" use:reveal={{ delay: 0 }}>
-        <h2>Dirancang untuk Profesional, <span class="gradient-text">Mudah untuk Pemula</span></h2>
-        <p>PixelRaj membawa alat tingkat studio langsung ke browser Anda. Tanpa instalasi, tanpa setup ribet.</p>
+        <h2>
+          Dirancang untuk Profesional, <span class="gradient-text"
+            >Mudah untuk Pemula</span
+          >
+        </h2>
+        <p>
+          PixelRaj membawa alat tingkat studio langsung ke browser Anda. Tanpa
+          instalasi, tanpa setup ribet.
+        </p>
       </div>
 
       <div class="features-grid">
-      <!-- Card 1 -->
-      <div class="feature-card pulse-hover" use:reveal={{ delay: 100 }}>
-        <div class="card-icon-wrapper" style="color: #6366f1;">
-          <Zap size={28} />
+        <!-- Card 1 -->
+        <div class="feature-card pulse-hover" use:reveal={{ delay: 100 }}>
+          <div class="card-icon-wrapper" style="color: #6366f1;">
+            <Zap size={28} />
+          </div>
+          <div class="card-content">
+            <h3>Performa Tinggi</h3>
+            <p>
+              Ditenagai WebGL untuk proses rendering super cepat, bahkan pada
+              kanvas resolusi tinggi hingga 4K.
+            </p>
+          </div>
         </div>
-        <div class="card-content">
-          <h3>Performa Tinggi</h3>
-          <p>Ditenagai WebGL untuk proses rendering super cepat, bahkan pada kanvas resolusi tinggi hingga 4K.</p>
-        </div>
-      </div>
 
-      <!-- Card 2 -->
-      <div class="feature-card pulse-hover" use:reveal={{ delay: 200 }}>
-        <div class="card-icon-wrapper" style="color: #ec4899;">
-          <Layers size={28} />
+        <!-- Card 2 -->
+        <div class="feature-card pulse-hover" use:reveal={{ delay: 200 }}>
+          <div class="card-icon-wrapper" style="color: #ec4899;">
+            <Layers size={28} />
+          </div>
+          <div class="card-content">
+            <h3>Sistem Layer Tak Terbatas</h3>
+            <p>
+              Eksperimen sebebasnya dengan sistem manajemen layer kelas atas,
+              opacity, dan mode pencampuran warna.
+            </p>
+          </div>
         </div>
-        <div class="card-content">
-          <h3>Sistem Layer Tak Terbatas</h3>
-          <p>Eksperimen sebebasnya dengan sistem manajemen layer kelas atas, opacity, dan mode pencampuran warna.</p>
-        </div>
-      </div>
 
-      <!-- Card 3 -->
-      <div class="feature-card pulse-hover" use:reveal={{ delay: 300 }}>
-        <div class="card-icon-wrapper" style="color: #10b981;">
-          <Film size={28} />
+        <!-- Card 3 -->
+        <div class="feature-card pulse-hover" use:reveal={{ delay: 300 }}>
+          <div class="card-icon-wrapper" style="color: #10b981;">
+            <Film size={28} />
+          </div>
+          <div class="card-content">
+            <h3>Animasi & Sprite</h3>
+            <p>
+              Ciptakan aset game bergerak dengan timeline keyframe intuitif,
+              lengkap dengan onion skinning & live preview.
+            </p>
+          </div>
         </div>
-        <div class="card-content">
-          <h3>Animasi & Sprite</h3>
-          <p>Ciptakan aset game bergerak dengan timeline keyframe intuitif, lengkap dengan onion skinning & live preview.</p>
-        </div>
-      </div>
 
-      <!-- Card 4 -->
-      <div class="feature-card pulse-hover" use:reveal={{ delay: 400 }}>
-        <div class="card-icon-wrapper" style="color: #f59e0b;">
-          <Globe size={28} />
-        </div>
-        <div class="card-content">
-          <h3>Akses Dari Mana Saja</h3>
-          <p>Berbasis cloud sepenuhnya. Karya Anda selalu tersimpan otomatis dan bisa diakses dari perangkat apapun.</p>
+        <!-- Card 4 -->
+        <div class="feature-card pulse-hover" use:reveal={{ delay: 400 }}>
+          <div class="card-icon-wrapper" style="color: #f59e0b;">
+            <Globe size={28} />
+          </div>
+          <div class="card-content">
+            <h3>Akses Dari Mana Saja</h3>
+            <p>
+              Berbasis cloud sepenuhnya. Karya Anda selalu tersimpan otomatis
+              dan bisa diakses dari perangkat apapun.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   </section>
 
@@ -523,7 +805,7 @@
     <div class="use-case-container">
       <div class="use-case-content">
         <h2 use:reveal={{ delay: 0 }}>Satu Platform, Beragam Kebutuhan</h2>
-        
+
         <div class="use-case-list-new">
           <!-- Game Developer -->
           <div class="use-case-item-new" use:reveal={{ delay: 150 }}>
@@ -532,10 +814,13 @@
             </div>
             <div class="uc-text">
               <h4>Game Developer</h4>
-              <p>Rancang aset game retro, tilemap, hingga UI spritesheet dengan presisi piksel yang tinggi untuk engine favorit Anda.</p>
+              <p>
+                Rancang aset game retro, tilemap, hingga UI spritesheet dengan
+                presisi piksel yang tinggi untuk engine favorit Anda.
+              </p>
             </div>
           </div>
-          
+
           <!-- Pixel Artist -->
           <div class="use-case-item-new" use:reveal={{ delay: 300 }}>
             <div class="uc-icon">
@@ -543,10 +828,13 @@
             </div>
             <div class="uc-text">
               <h4>Pixel Artist</h4>
-              <p>Ekspresikan karya seni digital Anda didukung dengan kuas kustom, dithering otomatis, dan palet warna retro yang ikonik.</p>
+              <p>
+                Ekspresikan karya seni digital Anda didukung dengan kuas kustom,
+                dithering otomatis, dan palet warna retro yang ikonik.
+              </p>
             </div>
           </div>
-          
+
           <!-- Animator -->
           <div class="use-case-item-new" use:reveal={{ delay: 450 }}>
             <div class="uc-icon">
@@ -554,13 +842,23 @@
             </div>
             <div class="uc-text">
               <h4>Animator</h4>
-              <p>Buat karakter bergerak yang hidup berbekal timeline animasi yang sangat ringan dan mudah dimengerti.</p>
+              <p>
+                Buat karakter bergerak yang hidup berbekal timeline animasi yang
+                sangat ringan dan mudah dimengerti.
+              </p>
             </div>
           </div>
         </div>
-        
-        <button class="cta-button pulse-hover" use:reveal={{ delay: 600 }} on:click={getStarted}>
-          Mulai Berkarya Gratis <ArrowRight size={20} style="margin-left: 8px; vertical-align: middle;"/>
+
+        <button
+          class="cta-button pulse-hover"
+          use:reveal={{ delay: 600 }}
+          on:click={getStarted}
+        >
+          Mulai Berkarya Gratis <ArrowRight
+            size={20}
+            style="margin-left: 8px; vertical-align: middle;"
+          />
         </button>
       </div>
     </div>
@@ -570,46 +868,102 @@
   <section class="testimonials-section">
     <div class="testimonials-container">
       <div class="pro-header" use:reveal={{ delay: 0 }}>
-        <h2>Telah Menginspirasi <span class="gradient-text">Ribuan Kreator</span></h2>
-        <p>Lihat bagaimana PixelRaj membantu seniman dan developer mewujudkan ide gila mereka.</p>
+        <h2>
+          Telah Menginspirasi <span class="gradient-text">Ribuan Kreator</span>
+        </h2>
+        <p>
+          Lihat bagaimana PixelRaj membantu seniman dan developer mewujudkan ide
+          gila mereka.
+        </p>
       </div>
-      
+
       <div class="testi-grid">
         <div class="testi-card" use:reveal={{ delay: 150 }}>
           <div class="testi-stars">
-            <Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" />
+            <Star size={16} fill="#f59e0b" color="#f59e0b" /><Star
+              size={16}
+              fill="#f59e0b"
+              color="#f59e0b"
+            /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star
+              size={16}
+              fill="#f59e0b"
+              color="#f59e0b"
+            /><Star size={16} fill="#f59e0b" color="#f59e0b" />
           </div>
-          <p class="testi-quote">"Pengalaman menggambar real-time di PixelRaj sungguh luar biasa! Tidak ada jeda sama sekali saat saya menggoreskan kuas, sangat lancar untuk membuat aset game solo saya."</p>
+          <p class="testi-quote">
+            "Pengalaman menggambar real-time di PixelRaj sungguh luar biasa!
+            Tidak ada jeda sama sekali saat saya menggoreskan kuas, sangat
+            lancar untuk membuat aset game solo saya."
+          </p>
           <div class="testi-author">
-            <div class="author-avatar" style="background: linear-gradient(135deg, #a855f7, #ec4899);">PW</div>
+            <div
+              class="author-avatar"
+              style="background: linear-gradient(135deg, #a855f7, #ec4899);"
+            >
+              PW
+            </div>
             <div class="author-info">
               <strong>Pandu Wirayuda</strong>
               <span>Solo Game Developer</span>
             </div>
           </div>
         </div>
-        
+
         <div class="testi-card" use:reveal={{ delay: 300 }}>
           <div class="testi-stars">
-            <Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" />
+            <Star size={16} fill="#f59e0b" color="#f59e0b" /><Star
+              size={16}
+              fill="#f59e0b"
+              color="#f59e0b"
+            /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star
+              size={16}
+              fill="#f59e0b"
+              color="#f59e0b"
+            /><Star size={16} fill="#f59e0b" color="#f59e0b" />
           </div>
-          <p class="testi-quote">"Platform ini sangat luar biasa. Saya bisa membuat pixel art dan langsung menganimasikannya di sini. Aset karakter yang saya buat bisa langsung siap diekspor untuk kebutuhan game engine!"</p>
+          <p class="testi-quote">
+            "Platform ini sangat luar biasa. Saya bisa membuat pixel art dan
+            langsung menganimasikannya di sini. Aset karakter yang saya buat
+            bisa langsung siap diekspor untuk kebutuhan game engine!"
+          </p>
           <div class="testi-author">
-            <div class="author-avatar" style="background: linear-gradient(135deg, #3b82f6, #10b981);">RD</div>
+            <div
+              class="author-avatar"
+              style="background: linear-gradient(135deg, #3b82f6, #10b981);"
+            >
+              RD
+            </div>
             <div class="author-info">
               <strong>Ridho</strong>
               <span>Freelance Pixel Artist</span>
             </div>
           </div>
         </div>
-        
+
         <div class="testi-card" use:reveal={{ delay: 450 }}>
           <div class="testi-stars">
-            <Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star size={16} fill="#f59e0b" color="#f59e0b" />
+            <Star size={16} fill="#f59e0b" color="#f59e0b" /><Star
+              size={16}
+              fill="#f59e0b"
+              color="#f59e0b"
+            /><Star size={16} fill="#f59e0b" color="#f59e0b" /><Star
+              size={16}
+              fill="#f59e0b"
+              color="#f59e0b"
+            /><Star size={16} fill="#f59e0b" color="#f59e0b" />
           </div>
-          <p class="testi-quote">"Kinerja editornya sangat ringan dan yang terpenting adalah tanpa delay! Goresan demi goresan terasa sangat instan, persis seperti menggambar di software native yang mahal."</p>
+          <p class="testi-quote">
+            "Kinerja editornya sangat ringan dan yang terpenting adalah tanpa
+            delay! Goresan demi goresan terasa sangat instan, persis seperti
+            menggambar di software native yang mahal."
+          </p>
           <div class="testi-author">
-            <div class="author-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">MR</div>
+            <div
+              class="author-avatar"
+              style="background: linear-gradient(135deg, #f59e0b, #ef4444);"
+            >
+              MR
+            </div>
             <div class="author-info">
               <strong>Miraj</strong>
               <span>Pixel Artist</span>
@@ -623,11 +977,18 @@
   <!-- BOTTOM CTA SECTION -->
   <section class="bottom-cta-section" use:reveal={{ delay: 100 }}>
     <div class="bottom-cta-container pulse-hover">
-      <h2>Siap Mewujudkan <span style="color: #a855f7;">Ide Liar</span> Anda?</h2>
-      <p>Bergabunglah dengan ribuan kreator lainnya hari ini. 100% Gratis selamanya.</p>
+      <h2>
+        Siap Mewujudkan <span style="color: #a855f7;">Ide Liar</span> Anda?
+      </h2>
+      <p>
+        Bergabunglah dengan ribuan kreator lainnya hari ini.
+      </p>
       <div class="cta-buttons-row">
         <button class="primary-btn" on:click={getStarted}>
-          Mulai Menggambar Sekarang <ArrowRight size={18} style="margin-left:8px;" />
+          Mulai Menggambar Sekarang <ArrowRight
+            size={18}
+            style="margin-left:8px;"
+          />
         </button>
       </div>
       <div class="cta-floating-elements">
@@ -647,7 +1008,11 @@
       </div>
       <p>&copy; {new Date().getFullYear()} PixelRaj. Hak Cipta Dilindungi.</p>
       <p style="margin-top: 8px; font-size: 0.85rem; color: #94a3b8;">
-        Memiliki kendala atau masukan? Hubungi kami di: <a href="mailto:panduwirayuda12345@gmail.com" style="color: #a855f7; text-decoration: none; font-weight: 500;">panduwirayuda12345@gmail.com</a>
+        Memiliki kendala atau masukan? Hubungi kami di: <a
+          href="mailto:panduwirayuda12345@gmail.com"
+          style="color: #a855f7; text-decoration: none; font-weight: 500;"
+          >panduwirayuda12345@gmail.com</a
+        >
       </p>
     </div>
   </footer>
@@ -1114,7 +1479,7 @@
     position: relative;
   }
   .mockup-slider::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 10px;
     height: 10px;
@@ -1302,12 +1667,16 @@
     border-radius: 12px;
     padding: 16px 24px;
     backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.2);
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.5),
+      0 0 20px rgba(99, 102, 241, 0.2);
     z-index: 1000;
     width: 90%;
     max-width: 400px;
     text-align: center;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+    transition:
+      opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0.3s;
     pointer-events: none;
   }
   .hover-tooltip.visible {
@@ -1483,7 +1852,9 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 16px;
     padding: 30px;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition:
+      transform 0.3s,
+      box-shadow 0.3s;
   }
   .feature-card:hover {
     transform: translateY(-5px);
@@ -1556,7 +1927,10 @@
     padding: 40px 30px;
     border-radius: 24px;
     text-align: center;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, box-shadow 0.3s;
+    transition:
+      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      background 0.3s,
+      box-shadow 0.3s;
     backdrop-filter: blur(10px);
   }
   .use-case-item-new:hover {
@@ -1714,7 +2088,7 @@
     .navbar-pill {
       padding: 16px 20px;
     }
-    
+
     .mockup-mobile {
       display: flex;
       justify-content: center;
@@ -1724,7 +2098,7 @@
       padding: 0 20px;
       box-sizing: border-box;
     }
-    
+
     .mobile-device-frame {
       width: 100%;
       max-width: 380px;
@@ -1732,7 +2106,7 @@
       background: #0f172a;
       border-radius: 36px;
       border: 8px solid #1e293b;
-      box-shadow: 
+      box-shadow:
         0 40px 80px -20px rgba(0, 0, 0, 0.8),
         inset 0 0 0 2px rgba(255, 255, 255, 0.1);
       display: flex;
@@ -1742,12 +2116,12 @@
       opacity: 0;
       transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    
+
     .landing-page.loaded .mobile-device-frame {
       transform: translateY(0);
       opacity: 1;
     }
-    
+
     .mobile-top-bar {
       display: flex;
       justify-content: space-between;
@@ -1756,7 +2130,7 @@
       background: #111827;
       border-bottom: 1px solid #1f2937;
     }
-    
+
     .mobile-logo {
       display: flex;
       align-items: center;
@@ -1765,12 +2139,12 @@
       font-size: 14px;
       color: #fff;
     }
-    
+
     .mobile-actions {
       display: flex;
       gap: 12px;
     }
-    
+
     .mobile-actions button {
       background: none;
       border: none;
@@ -1779,7 +2153,7 @@
       align-items: center;
       justify-content: center;
     }
-    
+
     .mobile-canvas-area {
       flex: 1;
       display: flex;
@@ -1790,10 +2164,14 @@
         linear-gradient(45deg, transparent 75%, #0f172a 75%),
         linear-gradient(-45deg, transparent 75%, #0f172a 75%);
       background-size: 20px 20px;
-      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      background-position:
+        0 0,
+        0 10px,
+        10px -10px,
+        -10px 0px;
       padding: 20px;
     }
-    
+
     .mobile-canvas-area .mockup-canvas {
       width: 100%;
       height: 100%;
@@ -1809,7 +2187,7 @@
       border-top: 1px solid #1f2937;
       padding-bottom: 30px; /* iPhone notch area */
     }
-    
+
     .mobile-tool {
       background: none;
       border: none;
@@ -1820,12 +2198,12 @@
       align-items: center;
       justify-content: center;
     }
-    
+
     .mobile-tool.active {
       background: rgba(99, 102, 241, 0.2);
       color: #818cf8;
     }
-    
+
     .mobile-color-picker {
       width: 24px;
       height: 24px;
@@ -1838,7 +2216,9 @@
     .headline {
       font-size: 2.2rem;
     }
-    .use-case-content h2, .pro-header h2, .bottom-cta-container h2 {
+    .use-case-content h2,
+    .pro-header h2,
+    .bottom-cta-container h2 {
       font-size: 1.8rem;
     }
     .navbar-pill {
@@ -1856,7 +2236,9 @@
       width: 100%;
       box-sizing: border-box;
     }
-    .use-case-list-new, .features-grid, .testi-grid {
+    .use-case-list-new,
+    .features-grid,
+    .testi-grid {
       grid-template-columns: 1fr;
       padding: 0;
       gap: 20px;
@@ -1870,7 +2252,10 @@
     .testi-card {
       padding: 30px 20px;
     }
-    .use-case-section, .features-section, .testimonials-section, .bottom-cta-section {
+    .use-case-section,
+    .features-section,
+    .testimonials-section,
+    .bottom-cta-section {
       padding: 60px 15px;
     }
     .bottom-cta-container {
@@ -1880,7 +2265,8 @@
     .bottom-cta-container p {
       font-size: 0.95rem;
     }
-    .pro-footer, .landing-footer {
+    .pro-footer,
+    .landing-footer {
       padding: 40px 15px;
       margin-top: 50px;
     }
@@ -1890,7 +2276,9 @@
     .footer-logo {
       font-size: 1.25rem;
     }
-    .pro-footer p, .landing-footer p, .footer-text {
+    .pro-footer p,
+    .landing-footer p,
+    .footer-text {
       font-size: 0.8rem;
       line-height: 1.5;
       word-break: break-word;
@@ -1901,14 +2289,14 @@
   :global(.reveal-hidden) {
     opacity: 0;
     transform: translateY(40px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition:
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
   :global(.reveal-visible) {
     opacity: 1 !important;
     transform: translateY(0) !important;
   }
-
-
 
   .testimonials-section {
     padding: 100px 20px;
@@ -1931,9 +2319,11 @@
     border-radius: 20px;
     padding: 40px 30px;
     position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
-    transition: transform 0.3s, border-color 0.3s;
+    transition:
+      transform 0.3s,
+      border-color 0.3s;
   }
   .testi-card:hover {
     transform: translateY(-5px);
@@ -1987,19 +2377,25 @@
   .bottom-cta-container {
     max-width: 900px;
     width: 100%;
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(30, 41, 59, 0.8) 0%,
+      rgba(15, 23, 42, 0.9) 100%
+    );
     border: 1px solid rgba(168, 85, 247, 0.3);
     border-radius: 30px;
     padding: 80px 40px;
     text-align: center;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 40px rgba(168, 85, 247, 0.1);
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.4),
+      inset 0 0 40px rgba(168, 85, 247, 0.1);
   }
   .bottom-cta-container h2 {
     font-size: 3rem;
     color: white;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 800;
     margin-bottom: 20px;
     position: relative;
@@ -2020,7 +2416,10 @@
   }
   .cta-floating-elements {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     pointer-events: none;
     z-index: 1;
   }
@@ -2028,14 +2427,31 @@
     position: absolute;
     opacity: 0.5;
   }
-  .float-el.el-1 { top: 20%; left: 10%; animation: float 6s ease-in-out infinite; }
-  .float-el.el-2 { bottom: 20%; right: 15%; animation: float 5s ease-in-out infinite reverse; }
-  .float-el.el-3 { top: 30%; right: 10%; animation: float 7s ease-in-out infinite 1s; }
-  
+  .float-el.el-1 {
+    top: 20%;
+    left: 10%;
+    animation: float 6s ease-in-out infinite;
+  }
+  .float-el.el-2 {
+    bottom: 20%;
+    right: 15%;
+    animation: float 5s ease-in-out infinite reverse;
+  }
+  .float-el.el-3 {
+    top: 30%;
+    right: 10%;
+    animation: float 7s ease-in-out infinite 1s;
+  }
+
   @keyframes float {
-    0% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(10deg); }
-    100% { transform: translateY(0) rotate(0deg); }
+    0% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-20px) rotate(10deg);
+    }
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
   }
 </style>
-
