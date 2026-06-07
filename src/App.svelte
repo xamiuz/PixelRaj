@@ -2328,17 +2328,20 @@
 
   async function loadProjectDirectly(id) {
     isOpeningProject = true;
+    console.log("[PixelRaj] loadProjectDirectly start, id:", id);
 
-    // Failsafe 8 detik: paksa overlay hilang agar tidak macet di Android
+    // Failsafe 10 detik
     const failsafeTimer = setTimeout(() => {
       if (isOpeningProject) {
-        console.warn("loadProjectDirectly: 8s failsafe triggered");
+        console.warn("[PixelRaj] 10s failsafe triggered!");
         isOpeningProject = false;
+        joined = false;
         showToast("Gagal memuat proyek. Silakan coba lagi.", "error");
       }
-    }, 8000);
+    }, 10000);
 
     try {
+      console.log("[PixelRaj] Fetching from Supabase...");
       const fetchPromise = supabase
         .from("projects")
         .select("*")
@@ -2346,6 +2349,8 @@
         .maybeSingle();
       
       const { data, error } = await withTimeout(fetchPromise, 6000);
+      console.log("[PixelRaj] Supabase result:", data ? "found" : "null", "error:", error?.message);
+      
       if (error) throw error;
       if (data) {
         project = data.project_data;
@@ -2354,36 +2359,36 @@
         lastLayerUpdateSeq = 0;
         broadcastSeq = 0;
         setupRealtime(id);
-        joined = true;
         initHistory();
-        // Bungkus initCanvases dalam try/catch agar crash tidak
-        // menyebabkan overlay loading macet selamanya
+        isOfflineMode = false;
+        // Set joined TERAKHIR agar editor baru render setelah data siap
+        joined = true;
+        console.log("[PixelRaj] joined=true (from Supabase)");
         setTimeout(async () => {
           try {
             await initCanvases();
+            console.log("[PixelRaj] initCanvases done");
           } catch (canvasErr) {
-            console.error("initCanvases gagal:", canvasErr);
+            console.error("[PixelRaj] initCanvases gagal:", canvasErr);
           }
         }, 200);
-        isOfflineMode = false;
       } else {
+        console.log("[PixelRaj] No data from Supabase, trying local...");
         await loadProjectFromLocal(id);
       }
     } catch (err) {
-      console.error(
-        "Gagal memuat dari Supabase, mencoba penyimpanan lokal:",
-        err.message || err,
-      );
+      console.error("[PixelRaj] Supabase fetch error:", err.message || err);
       isOfflineMode = true;
       try {
         await loadProjectFromLocal(id);
       } catch (localErr) {
-        console.error("loadProjectFromLocal juga gagal:", localErr);
+        console.error("[PixelRaj] Local also failed:", localErr);
         showToast("Proyek tidak ditemukan.", "error");
       }
     } finally {
       clearTimeout(failsafeTimer);
       isOpeningProject = false;
+      console.log("[PixelRaj] loadProjectDirectly done. joined:", joined, "isOpeningProject:", isOpeningProject);
     }
   }
 
@@ -8591,7 +8596,7 @@
 <!-- ==========================================================================
      3. WORKSPACE EDITOR (SUDAH LOGIN & MEMILIH KANVAS)
      ========================================================================== -->
-{#if authenticated && joined}
+{#if (authenticated || joined) && joined}
   <div 
     class="app-container pro-layout" 
     class:focus-mode={focusMode}
