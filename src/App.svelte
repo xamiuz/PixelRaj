@@ -2045,7 +2045,7 @@
 
     // Mobile detection
     function checkMobile() {
-      isMobile = window.innerWidth <= 768;
+      isMobile = window.innerWidth <= 1024;
     }
     checkMobile();
     window.addEventListener("resize", checkMobile);
@@ -13760,7 +13760,7 @@
   }
   
   /* Di mobile kurangi padding agar canvas lebih besar karena ada sidebar */
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     .canvas-viewport {
       padding: 16px;
     }
@@ -15380,7 +15380,7 @@
     transform: scale(1.1);
     box-shadow: 0 0 0 2px var(--accent-primary);
   }
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     .sidebar-wrapper {
       display: none !important;
     }

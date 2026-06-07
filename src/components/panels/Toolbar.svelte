@@ -243,7 +243,7 @@
   height: 100%;
 }
 
-@media (max-height: 850px) and (min-width: 769px) {
+@media (max-height: 850px) and (min-width: 1025px) {
   .toolbar-vertical {
     gap: 0;
     padding: 0;
@@ -261,7 +261,7 @@
   }
 }
 
-@media (max-height: 650px) and (min-width: 769px) {
+@media (max-height: 650px) and (min-width: 1025px) {
   .tool-btn {
     width: 24px;
     height: 24px;
@@ -272,7 +272,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .toolbar-vertical {
     position: fixed;
     top: 50px;
