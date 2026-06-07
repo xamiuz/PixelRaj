@@ -209,5 +209,36 @@
   width: 8px;
   height: 100%;
 }
+
+@media (max-width: 768px) {
+  .toolbar-vertical {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    bottom: 80px;
+    height: auto;
+    width: 44px;
+    border-radius: 0 12px 12px 0;
+    overflow-y: auto;
+    overflow-x: visible;
+    padding: 12px 0;
+    background: rgba(30, 30, 36, 0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: none;
+    -webkit-overflow-scrolling: touch;
+    z-index: 500; /* Ensure it stays above canvas */
+  }
+  .toolbar-vertical::-webkit-scrollbar {
+    display: none;
+  }
+  .tool-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .tool-group {
+    gap: 2px;
+  }
+}
 </style>
 

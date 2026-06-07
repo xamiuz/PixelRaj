@@ -11195,185 +11195,28 @@
 
     {#if isMobile && !focusMode}
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="mobile-bottom-bar">
-        <!-- Tools row -->
-        <div class="mobile-tool-row">
-          <button
-            class="mobile-tool-btn {selectedTool === 'selection' ? 'active' : ''}"
-            on:click={() => (selectedTool = "selection")}
-            title="Seleksi"
-          >
-            <BoxSelect size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'transform' ? 'active' : ''}"
-            on:click={() => activateTransformTool()}
-            title="Transform"
-          >
-            <Move size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'pencil' ? 'active' : ''}"
-            on:click={() => (selectedTool = "pencil")}
-            title="Pensil"
-          >
-            <Pencil size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'spray' ? 'active' : ''}"
-            on:click={() => (selectedTool = "spray")}
-            title="Semprotan"
-          >
-            <SprayCan size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'eraser' ? 'active' : ''}"
-            on:click={() => (selectedTool = "eraser")}
-            title="Penghapus"
-          >
-            <Eraser size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'bucket' ? 'active' : ''}"
-            on:click={() => (selectedTool = "bucket")}
-            title="Ember Cat"
-          >
-            <PaintBucket size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'bucketeraser' ? 'active' : ''}"
-            on:click={() => (selectedTool = "bucketeraser")}
-            title="Hapus Warna (Ember)"
-          >
-            <div style="position:relative; width:20px; height:20px; display:flex; justify-content:center; align-items:center;">
-              <PaintBucket size={20} />
-              <div style="position:absolute; bottom:-4px; right:-4px; background:var(--bg-color); border-radius:50%;"><Eraser size={12} color="#ff4444" /></div>
-            </div>
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'magicpen' ? 'active' : ''}"
-            on:click={() => (selectedTool = "magicpen")}
-            title="Pena Ajaib"
-          >
-            <Wand2 size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'lassofill' ? 'active' : ''}"
-            on:click={() => (selectedTool = "lassofill")}
-            title="Isi Laso"
-          >
-            <LassoSelect size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'line' ? 'active' : ''}"
-            on:click={() => (selectedTool = "line")}
-            title="Garis"
-          >
-            <Slash size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'rectangle' ? 'active' : ''}"
-            on:click={() => (selectedTool = "rectangle")}
-            title="Kotak"
-          >
-            <Square size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'ellipse' ? 'active' : ''}"
-            on:click={() => (selectedTool = "ellipse")}
-            title="Elips"
-          >
-            <Circle size={20} />
-          </button>
-          <div class="mobile-tool-divider"></div>
-          <button
-            class="mobile-tool-btn {selectedTool === 'move' ? 'active' : ''}"
-            on:click={() => (selectedTool = "move")}
-            title="Geser (Pan)"
-          >
-            <Hand size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {selectedTool === 'picker' ? 'active' : ''}"
-            on:click={() => (selectedTool = "picker")}
-            title="Pipet Warna"
-          >
-            <Pipette size={20} />
-          </button>
-          <button
-            class="mobile-tool-btn {isMirrorX ? 'active' : ''}"
-            on:click={() => (isMirrorX = !isMirrorX)}
-            title="Mirror X"
-          >
-            <FlipHorizontal size={20} />
-          </button>
-
-          <div class="mobile-tool-divider"></div>
-
-          <!-- Color swatch -->
-          <button
-            class="mobile-color-swatch"
-            title="Warna Aktif"
-            style="border: none; background: transparent; padding: 0; outline: none;"
-            on:click={() => {
-              showMobilePanel = true;
-              mobilePanelTab = "colors";
-            }}
-          >
-            <span
-              class="mobile-color-preview"
-              style="background: {primaryColor}"
-            ></span>
-          </button>
-
-          <div class="mobile-tool-divider"></div>
-
-          <!-- Brush size quick buttons -->
-          <button
-            class="mobile-tool-btn"
-            on:click={() => (brushSize = Math.max(1, brushSize - 1))}
-            title="Kuas -"
-          >
-            <span style="font-size:16px;font-weight:bold;line-height:1">-</span>
-          </button>
-          <span class="mobile-brush-size">{brushSize}</span>
-          <button
-            class="mobile-tool-btn"
-            on:click={() => (brushSize = Math.min(50, brushSize + 1))}
-            title="Kuas +"
-          >
-            <span style="font-size:16px;font-weight:bold;line-height:1">+</span>
-          </button>
-
-          <div class="mobile-tool-divider"></div>
-
-          <!-- Focus mode toggle -->
-          <button
-            class="mobile-tool-btn {focusMode ? 'active' : ''}"
-            on:click={() => {
-              focusMode = !focusMode;
-              showToast(
-                focusMode ? "Mode Fokus Aktif" : "Mode Fokus Dinonaktifkan",
-              );
-            }}
-            title="Mode Fokus"
-          >
-            {#if focusMode}
-              <Maximize2 size={20} />
-            {:else}
-              <Minimize2 size={20} />
-            {/if}
-          </button>
-
-          <!-- Panel toggle -->
-          <button
-            class="mobile-tool-btn {showMobilePanel ? 'active' : ''}"
-            on:click={() => (showMobilePanel = !showMobilePanel)}
-            title="Panel"
-          >
-            <Layers size={20} />
-          </button>
+      <div class="mobile-sliders">
+        <div class="slider-container">
+          <input type="range" min="1" max="100" bind:value={brushSize} class="brush-slider" />
+          <span class="slider-value">{brushSize}</span>
         </div>
+      </div>
+      <div class="mobile-bottom-bar" style="justify-content: space-around;">
+        <button class="mobile-tool-btn" on:click={() => selectedTool = selectedTool === 'eraser' ? 'pencil' : 'eraser'} title="Ganti Kuas/Penghapus">
+          {#if selectedTool === 'eraser'}<Pencil size={24}/>{:else}<Eraser size={24}/>{/if}
+        </button>
+        <button class="mobile-color-swatch" on:click={() => {showMobilePanel = true; mobilePanelTab = 'colors';}}>
+          <span class="mobile-color-preview" style="background: {primaryColor}; width: 28px; height: 28px; display: inline-block; border-radius: 50%; border: 2px solid white;"></span>
+        </button>
+        <button class="mobile-tool-btn" on:click={undo} disabled={$historyIndex <= 0} title="Undo">
+          <UndoIcon size={24}/>
+        </button>
+        <button class="mobile-tool-btn" on:click={redo} disabled={$historyIndex >= $history.length - 1} title="Redo">
+          <RedoIcon size={24}/>
+        </button>
+        <button class="mobile-tool-btn" on:click={() => (showMobilePanel = !showMobilePanel)} title="Layer">
+          <Layers size={24}/>
+        </button>
       </div>
 
       <!-- Mobile Panel Drawer (Full Modal Bottom Sheet ala ibisPaint X) -->
@@ -15141,75 +14984,94 @@
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
     padding: 6px 8px;
     padding-bottom: calc(6px + env(safe-area-inset-bottom));
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
   }
-  .mobile-tool-row {
+  .mobile-sliders {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 490;
+    background: rgba(30, 30, 36, 0.85);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 200px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .slider-container {
     display: flex;
     align-items: center;
-    gap: 2px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+    gap: 8px;
   }
-  .mobile-tool-row::-webkit-scrollbar {
-    display: none;
+  .brush-slider {
+    flex: 1;
+    height: 4px;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    outline: none;
+  }
+  .brush-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+  }
+  .slider-value {
+    color: white;
+    font-size: 12px;
+    min-width: 24px;
+    text-align: right;
   }
   .mobile-tool-btn {
-    min-width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     background: transparent;
-    border: 1px solid transparent;
+    border: none;
     color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    flex-shrink: 0;
     transition: all 0.2s;
-    font-family: inherit;
   }
   .mobile-tool-btn:active {
     transform: scale(0.92);
   }
-  .mobile-tool-btn.active {
-    background: rgba(99, 102, 241, 0.2);
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-  }
-  .mobile-tool-divider {
-    width: 1px;
-    height: 24px;
-    background: var(--border-color);
-    flex-shrink: 0;
-    margin: 0 4px;
+  .mobile-tool-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
   .mobile-color-swatch {
     position: relative;
     cursor: pointer;
     flex-shrink: 0;
-  }
-  .mobile-color-input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .mobile-color-preview {
     display: block;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
-  .mobile-brush-size {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-primary);
-    min-width: 22px;
-    text-align: center;
-    flex-shrink: 0;
-  }
+
   .mobile-panel-backdrop {
     position: fixed;
     inset: 0;
@@ -15328,7 +15190,6 @@
     box-shadow: 0 0 0 2px var(--accent-primary);
   }
   @media (max-width: 768px) {
-    .toolbar-vertical,
     .sidebar-wrapper {
       display: none !important;
     }
