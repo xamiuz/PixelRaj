@@ -255,17 +255,12 @@
     border-right: 1px solid var(--border-color);
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
     border-radius: 0 12px 12px 0;
-    overflow-y: auto;
-    overflow-x: visible;
+    overflow: visible;
     padding: 12px 0;
     background: rgba(30, 30, 36, 0.9);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-left: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .toolbar-vertical::-webkit-scrollbar {
-    display: none;
   }
   .tool-btn {
     width: 34px;
