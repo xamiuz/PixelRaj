@@ -1838,6 +1838,9 @@
     .headline {
       font-size: 2.2rem;
     }
+    .use-case-content h2, .pro-header h2, .bottom-cta-container h2 {
+      font-size: 1.8rem;
+    }
     .navbar-pill {
       padding: 12px 16px;
     }
@@ -1852,6 +1855,37 @@
       justify-content: center;
       width: 100%;
       box-sizing: border-box;
+    }
+    .use-case-list-new, .features-grid, .testi-grid {
+      grid-template-columns: 1fr;
+      padding: 0;
+      gap: 20px;
+    }
+    .use-case-item-new {
+      padding: 30px 20px;
+    }
+    .feature-card {
+      padding: 24px;
+    }
+    .testi-card {
+      padding: 30px 20px;
+    }
+    .use-case-section, .features-section, .testimonials-section, .bottom-cta-section {
+      padding: 60px 15px;
+    }
+    .pro-footer, .landing-footer {
+      padding: 40px 15px;
+      margin-top: 50px;
+    }
+    .footer-content {
+      gap: 16px;
+    }
+    .footer-logo {
+      font-size: 1.25rem;
+    }
+    .pro-footer p, .landing-footer p, .footer-text {
+      font-size: 0.8rem;
+      line-height: 1.5;
     }
   }
 
