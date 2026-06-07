@@ -11112,6 +11112,7 @@
         padding: {isTimelineCollapsed ? '6px 16px' : '8px 16px'}; 
         overflow: hidden; 
         position: relative;
+        z-index: 200;
         flex-shrink: 0;
       "
       >
