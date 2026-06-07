@@ -4332,19 +4332,20 @@
           h: activeSelection.h,
         };
         
-        // Auto-expand jika menyentuh tepi (untuk mengambil piksel di luar kanvas)
+        // Auto-expand jika mendekati tepi (untuk mengambil piksel di luar kanvas yang tidak terlihat)
         const unclippedBBox = getUnclippedLayerBoundingBox(layer.id);
         if (unclippedBBox) {
-          if (bbox.minX === 0 && unclippedBBox.minX < 0) {
+          const EDGE_TOLERANCE = 5;
+          if (bbox.minX <= EDGE_TOLERANCE && unclippedBBox.minX < 0) {
             bbox.minX = unclippedBBox.minX;
           }
-          if (bbox.minY === 0 && unclippedBBox.minY < 0) {
+          if (bbox.minY <= EDGE_TOLERANCE && unclippedBBox.minY < 0) {
             bbox.minY = unclippedBBox.minY;
           }
-          if (bbox.maxX === project.width - 1 && unclippedBBox.maxX > project.width - 1) {
+          if (bbox.maxX >= project.width - 1 - EDGE_TOLERANCE && unclippedBBox.maxX > project.width - 1) {
             bbox.maxX = unclippedBBox.maxX;
           }
-          if (bbox.maxY === project.height - 1 && unclippedBBox.maxY > project.height - 1) {
+          if (bbox.maxY >= project.height - 1 - EDGE_TOLERANCE && unclippedBBox.maxY > project.height - 1) {
             bbox.maxY = unclippedBBox.maxY;
           }
           bbox.w = bbox.maxX - bbox.minX + 1;
