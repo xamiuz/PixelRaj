@@ -206,6 +206,7 @@
   let transformTooltip = { show: false, x: 0, y: 0, text: "" };
   let transformLayerId = null;
   let transformFrameIndex = null;
+  let isTransformingSelection = false; // true jika transform adalah area seleksi (bukan seluruh layer)
 
   // Form Proyek Baru
   let newProjectName = "Sprite Aset Baru";
@@ -4319,7 +4320,7 @@
       let bbox = transformOriginalData
         ? transformCurrentBBox
         : getUnclippedLayerBoundingBox(layer.id);
-      let isTransformingSelection = false;
+      isTransformingSelection = false;
 
       if (activeSelection) {
         // Jika ada seleksi, kita batasi transformasi HANYA pada kotak seleksi
@@ -6230,18 +6231,78 @@
     const layer = frame.layers.find((l) => l.id === transformLayerId);
     if (!layer) return;
 
-    const { ctx } = getLayerCanvas(layer.id, project.width, project.height);
-    ctx.clearRect(0, 0, project.width, project.height);
-    if (transformBackgroundData) {
-      ctx.drawImage(transformBackgroundData, 0, 0);
-    }
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(
-      transformOriginalData,
-      transformBBox.minX,
-      transformBBox.minY,
-    );
+    const { canvas: mainCanvas2, ctx } = getLayerCanvas(layer.id, project.width, project.height);
 
+    // === KASUS SELEKSI: perlu preserve off-canvas pixels ===
+    if (isTransformingSelection) {
+      // Ambil unclipped canvas lama (berisi data off-canvas)
+      const oldUCanvas = layerUnclippedCanvases.get(layer.id);
+      const oldUX = layer.unclippedX || 0;
+      const oldUY = layer.unclippedY || 0;
+
+      // Hitung bounding box gabungan: mencakup old unclipped + area transform baru
+      const combinedMinX = Math.min(0, oldUX, transformBBox.minX);
+      const combinedMinY = Math.min(0, oldUY, transformBBox.minY);
+      const combinedMaxX = Math.max(project.width, 
+        oldUCanvas ? oldUX + oldUCanvas.width : project.width,
+        transformBBox.minX + transformBBox.w);
+      const combinedMaxY = Math.max(project.height,
+        oldUCanvas ? oldUY + oldUCanvas.height : project.height,
+        transformBBox.minY + transformBBox.h);
+
+      // Buat canvas gabungan besar
+      const mergedCanvas = document.createElement("canvas");
+      mergedCanvas.width = combinedMaxX - combinedMinX;
+      mergedCanvas.height = combinedMaxY - combinedMinY;
+      const mCtx = mergedCanvas.getContext("2d");
+      mCtx.imageSmoothingEnabled = false;
+
+      // 1. Gambar unclipped canvas lama (data off-canvas tetap ada)
+      if (oldUCanvas) {
+        mCtx.drawImage(oldUCanvas, oldUX - combinedMinX, oldUY - combinedMinY);
+      }
+
+      // 2. Timpa area yang terlihat (in-canvas) dengan transformBackgroundData
+      //    (yang sudah menghapus area seleksi asli)
+      if (transformBackgroundData) {
+        mCtx.drawImage(transformBackgroundData, -combinedMinX, -combinedMinY);
+      }
+
+      // 3. Gambar hasil transform seleksi di posisi baru
+      mCtx.drawImage(
+        transformOriginalData,
+        transformBBox.minX - combinedMinX,
+        transformBBox.minY - combinedMinY,
+      );
+
+      // Update layerUnclippedCanvases dengan canvas gabungan
+      layerUnclippedCanvases.set(layer.id, mergedCanvas);
+      layer.unclippedX = combinedMinX;
+      layer.unclippedY = combinedMinY;
+      layer.unclippedData = mergedCanvas.toDataURL("image/png");
+
+      // Update main canvas (clipped to project bounds)
+      // Source offset di mergedCanvas = posisi project (0,0) di dalam merged space
+      ctx.clearRect(0, 0, project.width, project.height);
+      ctx.drawImage(mergedCanvas, -combinedMinX, -combinedMinY, project.width, project.height, 0, 0, project.width, project.height);
+      layer.data = mainCanvas2.toDataURL("image/png");
+
+    } else {
+      // === KASUS FULL LAYER (tanpa seleksi) ===
+      ctx.clearRect(0, 0, project.width, project.height);
+      if (transformBackgroundData) {
+        ctx.drawImage(transformBackgroundData, 0, 0);
+      }
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(
+        transformOriginalData,
+        transformBBox.minX,
+        transformBBox.minY,
+      );
+      commitLayerBase64(layer, false);
+    }
+
+    isTransformingSelection = false;
     transformOriginalData = null;
     transformSessionOriginalData = null;
     transformSessionOriginalBBox = null;
@@ -6258,10 +6319,11 @@
     transformLayerId = null;
     transformFrameIndex = null;
 
-    commitLayerBase64(layer, false);
+    project = project;
     broadcastAndSyncStructure();
     saveHistoryState("Selesai Transformasi");
   }
+
 
   let selectionClipboard = null;
 
