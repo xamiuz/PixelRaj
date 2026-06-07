@@ -88,5 +88,22 @@
     "transparency": "Transparansi:",
     "ref_title": "LAPISAN REFERENSI",
     "ref_upload": "Unggah Gambar Referensi"
+  },
+  "login": {
+    "signup_desc": "Daftar untuk membuat akun baru",
+    "login_desc": "Masuk untuk mengakses workspace eksklusif",
+    "email_label": "Alamat Email",
+    "email_placeholder": "Masukkan email Anda atau username",
+    "pass_label": "Password",
+    "pass_placeholder": "Masukkan password",
+    "forgot_pass": "Lupa password?",
+    "signup_btn": "Daftar Sekarang",
+    "login_btn": "Akses Workspace",
+    "or": "atau",
+    "google_btn": "Lanjutkan dengan Google",
+    "have_account": "Sudah punya akun?",
+    "login_here": "Masuk di sini",
+    "no_account": "Belum punya akun?",
+    "signup_here": "Daftar sekarang"
   }
 }

@@ -88,5 +88,22 @@
     "transparency": "Transparency:",
     "ref_title": "REFERENCE LAYER",
     "ref_upload": "Upload Reference Image"
+  },
+  "login": {
+    "signup_desc": "Sign up to create a new account",
+    "login_desc": "Log in to access your exclusive workspace",
+    "email_label": "Email Address",
+    "email_placeholder": "Enter your email or username",
+    "pass_label": "Password",
+    "pass_placeholder": "Enter password",
+    "forgot_pass": "Forgot password?",
+    "signup_btn": "Sign Up Now",
+    "login_btn": "Access Workspace",
+    "or": "or",
+    "google_btn": "Continue with Google",
+    "have_account": "Already have an account?",
+    "login_here": "Log in here",
+    "no_account": "Don't have an account?",
+    "signup_here": "Sign up now"
   }
 }
