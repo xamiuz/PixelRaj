@@ -142,7 +142,7 @@
         <span>PixelRaj</span>
       </div>
       <div class="nav-links">
-        <select bind:value={$locale} style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; padding: 6px 12px; margin-right: 12px; cursor: pointer; font-family: inherit; font-size: 0.9rem;">
+        <select bind:value={$locale} style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 0.9rem;">
           <option value="id" style="color: black;">ID</option>
           <option value="en" style="color: black;">EN</option>
         </select>
@@ -1163,6 +1163,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   .login-btn {
