@@ -243,7 +243,7 @@
   height: 100%;
 }
 
-@media (max-height: 700px) and (min-width: 769px) {
+@media (max-height: 850px) and (min-width: 769px) {
   .toolbar-vertical {
     gap: 0;
     padding: 0;
@@ -258,6 +258,17 @@
   .tool-btn :global(svg) {
     width: 16px;
     height: 16px;
+  }
+}
+
+@media (max-height: 650px) and (min-width: 769px) {
+  .tool-btn {
+    width: 24px;
+    height: 24px;
+  }
+  .tool-btn :global(svg) {
+    width: 14px;
+    height: 14px;
   }
 }
 
