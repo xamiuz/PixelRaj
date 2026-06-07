@@ -10580,32 +10580,7 @@
                         class="layer-order-controls"
                         style="display:flex; flex-direction:column; margin-left: auto; margin-right: 6px; align-items:center;"
                       >
-                        <div style="display:flex; margin-bottom: 2px;">
-                          <button
-                            on:click|stopPropagation={() =>
-                              moveLayer(layer.originalIndex, "out")}
-                            title="Keluarkan dari Grup"
-                            style="padding:0; background:none; border:none; color:var(--text-muted); cursor:pointer; line-height:0; opacity: 0.6; transition: opacity 0.2s;"
-                            on:mouseenter={(e) =>
-                              (e.currentTarget.style.opacity = "1")}
-                            on:mouseleave={(e) =>
-                              (e.currentTarget.style.opacity = "0.6")}
-                          >
-                            <ArrowLeft size={12} />
-                          </button>
-                          <button
-                            on:click|stopPropagation={() =>
-                              moveLayer(layer.originalIndex, "in")}
-                            title="Masukkan ke Grup (Jadikan Sub-layer)"
-                            style="padding:0; background:none; border:none; color:var(--text-muted); cursor:pointer; line-height:0; opacity: 0.6; transition: opacity 0.2s;"
-                            on:mouseenter={(e) =>
-                              (e.currentTarget.style.opacity = "1")}
-                            on:mouseleave={(e) =>
-                              (e.currentTarget.style.opacity = "0.6")}
-                          >
-                            <ArrowRight size={12} />
-                          </button>
-                        </div>
+
                         <div style="display:flex;">
                           <button
                             on:click|stopPropagation={() =>
