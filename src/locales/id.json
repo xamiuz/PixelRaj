@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "login": "Login >"
+  },
+  "hero": {
+    "title1": "Bikin Pixel Art",
+    "title2": "Lebih Keren & Cepat",
+    "subtitle": "Langsung dari browser Anda. Tanpa instalasi, tanpa setup ribet. Alat pixel art dan animasi profesional kini tersedia di ujung jari Anda.",
+    "cta": "Coba Editor Sekarang",
+    "proof": "Bergabung dengan +20,000 kreator lainnya."
+  },
+  "features": {
+    "title1": "Dirancang untuk Profesional,",
+    "title2": "Mudah untuk Pemula",
+    "subtitle": "PixelRaj membawa alat tingkat studio langsung ke browser Anda. Tanpa instalasi, tanpa setup ribet.",
+    "f1_title": "Performa Tinggi",
+    "f1_desc": "Ditenagai WebGL untuk proses rendering super cepat, bahkan pada kanvas resolusi tinggi hingga 4K.",
+    "f2_title": "Sistem Layer Tak Terbatas",
+    "f2_desc": "Eksperimen sebebasnya dengan sistem manajemen layer kelas atas, opacity, dan mode pencampuran warna.",
+    "f3_title": "Animasi & Sprite",
+    "f3_desc": "Ciptakan aset game bergerak dengan timeline keyframe intuitif, lengkap dengan onion skinning & live preview.",
+    "f4_title": "Akses Dari Mana Saja",
+    "f4_desc": "Berbasis cloud sepenuhnya. Karya Anda selalu tersimpan otomatis dan bisa diakses dari perangkat apapun."
+  },
+  "usecases": {
+    "title1": "Satu Platform, Beragam Kebutuhan",
+    "uc1_title": "Game Developer",
+    "uc1_desc": "Rancang aset game retro, tilemap, hingga UI spritesheet dengan presisi piksel yang tinggi untuk engine favorit Anda.",
+    "uc2_title": "Pixel Artist",
+    "uc2_desc": "Ekspresikan karya seni digital Anda didukung dengan kuas kustom, dithering otomatis, dan palet warna retro yang ikonik.",
+    "uc3_title": "Animator",
+    "uc3_desc": "Buat karakter bergerak yang hidup berbekal timeline animasi yang sangat ringan dan mudah dimengerti.",
+    "cta": "Mulai Berkarya Gratis"
+  },
+  "testimonials": {
+    "title1": "Telah Menginspirasi",
+    "title2": "Ribuan Kreator",
+    "subtitle": "Lihat bagaimana PixelRaj membantu seniman dan developer mewujudkan ide gila mereka.",
+    "t1_quote": "\"Pengalaman menggambar real-time di PixelRaj sungguh luar biasa! Tidak ada jeda sama sekali saat saya menggoreskan kuas, sangat lancar untuk membuat aset game solo saya.\"",
+    "t1_author": "Pandu Wirayuda",
+    "t1_role": "Solo Game Developer",
+    "t2_quote": "\"Platform ini sangat luar biasa. Saya bisa membuat pixel art dan langsung menganimasikannya di sini. Aset karakter yang saya buat bisa langsung siap diekspor untuk kebutuhan game engine!\"",
+    "t2_author": "Ridho",
+    "t2_role": "Freelance Pixel Artist",
+    "t3_quote": "\"Kinerja editornya sangat ringan dan yang terpenting adalah tanpa delay! Goresan demi goresan terasa sangat instan, persis seperti menggambar di software native yang mahal.\"",
+    "t3_author": "Miraj",
+    "t3_role": "Pixel Artist"
+  },
+  "cta_bottom": {
+    "title1": "Siap Mewujudkan",
+    "title2": "Ide Liar",
+    "title3": "Anda?",
+    "subtitle": "Bergabunglah dengan ribuan kreator lainnya hari ini.",
+    "btn": "Mulai Menggambar Sekarang"
+  },
+  "footer": {
+    "rights": "PixelRaj. Hak Cipta Dilindungi.",
+    "contact": "Memiliki kendala atau masukan? Hubungi kami di:"
+  }
+}

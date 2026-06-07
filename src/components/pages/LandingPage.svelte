@@ -47,6 +47,7 @@
     Trophy,
     Code,
   } from "lucide-svelte";
+  import { t, locale } from '../../lib/i18n.js';
 
   const dispatch = createEventDispatcher();
 
@@ -141,8 +142,12 @@
         <span>PixelRaj</span>
       </div>
       <div class="nav-links">
+        <select bind:value={$locale} style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; padding: 6px 12px; margin-right: 12px; cursor: pointer; font-family: inherit; font-size: 0.9rem;">
+          <option value="id" style="color: black;">ID</option>
+          <option value="en" style="color: black;">EN</option>
+        </select>
         <button class="login-btn" on:click={getStarted}>
-          Login <ChevronRight size={14} />
+          {$t('nav.login')}
         </button>
       </div>
     </div>
@@ -152,18 +157,17 @@
     <!-- Hero Headline -->
     <div class="hero-content">
       <h1 class="headline">
-        Bikin Pixel Art<br />
-        <span class="text-gradient">Lebih Keren & Cepat</span>
+        {$t('hero.title1')}<br />
+        <span class="text-gradient">{$t('hero.title2')}</span>
       </h1>
 
       <p class="subtitle">
-        Platform desain tingkat profesional langsung dari browser Anda. Ringan,
-        bertenaga super, dan siap untuk project game atau ilustrasi berikutnya.
+        {$t('hero.subtitle')}
       </p>
 
       <div class="cta-group">
         <button class="primary-btn" on:click={getStarted}>
-          Mulai Berkarya <ChevronRight size={16} />
+          {$t('hero.cta')} <ChevronRight size={16} />
         </button>
       </div>
     </div>
@@ -730,13 +734,12 @@
     <div class="pro-features-container">
       <div class="pro-header" use:reveal={{ delay: 0 }}>
         <h2>
-          Dirancang untuk Profesional, <span class="gradient-text"
-            >Mudah untuk Pemula</span
+          {$t('features.title1')} <span class="gradient-text"
+            >{$t('features.title2')}</span
           >
         </h2>
         <p>
-          PixelRaj membawa alat tingkat studio langsung ke browser Anda. Tanpa
-          instalasi, tanpa setup ribet.
+          {$t('features.subtitle')}
         </p>
       </div>
 
@@ -747,10 +750,9 @@
             <Zap size={28} />
           </div>
           <div class="card-content">
-            <h3>Performa Tinggi</h3>
+            <h3>{$t('features.f1_title')}</h3>
             <p>
-              Ditenagai WebGL untuk proses rendering super cepat, bahkan pada
-              kanvas resolusi tinggi hingga 4K.
+              {$t('features.f1_desc')}
             </p>
           </div>
         </div>
@@ -761,10 +763,9 @@
             <Layers size={28} />
           </div>
           <div class="card-content">
-            <h3>Sistem Layer Tak Terbatas</h3>
+            <h3>{$t('features.f2_title')}</h3>
             <p>
-              Eksperimen sebebasnya dengan sistem manajemen layer kelas atas,
-              opacity, dan mode pencampuran warna.
+              {$t('features.f2_desc')}
             </p>
           </div>
         </div>
@@ -775,10 +776,9 @@
             <Film size={28} />
           </div>
           <div class="card-content">
-            <h3>Animasi & Sprite</h3>
+            <h3>{$t('features.f3_title')}</h3>
             <p>
-              Ciptakan aset game bergerak dengan timeline keyframe intuitif,
-              lengkap dengan onion skinning & live preview.
+              {$t('features.f3_desc')}
             </p>
           </div>
         </div>
@@ -789,10 +789,9 @@
             <Globe size={28} />
           </div>
           <div class="card-content">
-            <h3>Akses Dari Mana Saja</h3>
+            <h3>{$t('features.f4_title')}</h3>
             <p>
-              Berbasis cloud sepenuhnya. Karya Anda selalu tersimpan otomatis
-              dan bisa diakses dari perangkat apapun.
+              {$t('features.f4_desc')}
             </p>
           </div>
         </div>
@@ -804,7 +803,7 @@
   <section class="use-case-section">
     <div class="use-case-container">
       <div class="use-case-content">
-        <h2 use:reveal={{ delay: 0 }}>Satu Platform, Beragam Kebutuhan</h2>
+        <h2 use:reveal={{ delay: 0 }}>{$t('usecases.title1')}</h2>
 
         <div class="use-case-list-new">
           <!-- Game Developer -->
@@ -813,10 +812,9 @@
               <Cpu />
             </div>
             <div class="uc-text">
-              <h4>Game Developer</h4>
+              <h4>{$t('usecases.uc1_title')}</h4>
               <p>
-                Rancang aset game retro, tilemap, hingga UI spritesheet dengan
-                presisi piksel yang tinggi untuk engine favorit Anda.
+                {$t('usecases.uc1_desc')}
               </p>
             </div>
           </div>
@@ -827,10 +825,9 @@
               <Palette />
             </div>
             <div class="uc-text">
-              <h4>Pixel Artist</h4>
+              <h4>{$t('usecases.uc2_title')}</h4>
               <p>
-                Ekspresikan karya seni digital Anda didukung dengan kuas kustom,
-                dithering otomatis, dan palet warna retro yang ikonik.
+                {$t('usecases.uc2_desc')}
               </p>
             </div>
           </div>
@@ -841,10 +838,9 @@
               <Film />
             </div>
             <div class="uc-text">
-              <h4>Animator</h4>
+              <h4>{$t('usecases.uc3_title')}</h4>
               <p>
-                Buat karakter bergerak yang hidup berbekal timeline animasi yang
-                sangat ringan dan mudah dimengerti.
+                {$t('usecases.uc3_desc')}
               </p>
             </div>
           </div>
@@ -855,7 +851,7 @@
           use:reveal={{ delay: 600 }}
           on:click={getStarted}
         >
-          Mulai Berkarya Gratis <ArrowRight
+          {$t('usecases.cta')} <ArrowRight
             size={20}
             style="margin-left: 8px; vertical-align: middle;"
           />
@@ -869,11 +865,10 @@
     <div class="testimonials-container">
       <div class="pro-header" use:reveal={{ delay: 0 }}>
         <h2>
-          Telah Menginspirasi <span class="gradient-text">Ribuan Kreator</span>
+          {$t('testimonials.title1')} <span class="gradient-text">{$t('testimonials.title2')}</span>
         </h2>
         <p>
-          Lihat bagaimana PixelRaj membantu seniman dan developer mewujudkan ide
-          gila mereka.
+          {$t('testimonials.subtitle')}
         </p>
       </div>
 
@@ -891,9 +886,7 @@
             /><Star size={16} fill="#f59e0b" color="#f59e0b" />
           </div>
           <p class="testi-quote">
-            "Pengalaman menggambar real-time di PixelRaj sungguh luar biasa!
-            Tidak ada jeda sama sekali saat saya menggoreskan kuas, sangat
-            lancar untuk membuat aset game solo saya."
+            {$t('testimonials.t1_quote')}
           </p>
           <div class="testi-author">
             <div
@@ -903,8 +896,8 @@
               PW
             </div>
             <div class="author-info">
-              <strong>Pandu Wirayuda</strong>
-              <span>Solo Game Developer</span>
+              <strong>{$t('testimonials.t1_author')}</strong>
+              <span>{$t('testimonials.t1_role')}</span>
             </div>
           </div>
         </div>
@@ -922,9 +915,7 @@
             /><Star size={16} fill="#f59e0b" color="#f59e0b" />
           </div>
           <p class="testi-quote">
-            "Platform ini sangat luar biasa. Saya bisa membuat pixel art dan
-            langsung menganimasikannya di sini. Aset karakter yang saya buat
-            bisa langsung siap diekspor untuk kebutuhan game engine!"
+            {$t('testimonials.t2_quote')}
           </p>
           <div class="testi-author">
             <div
@@ -934,8 +925,8 @@
               RD
             </div>
             <div class="author-info">
-              <strong>Ridho</strong>
-              <span>Freelance Pixel Artist</span>
+              <strong>{$t('testimonials.t2_author')}</strong>
+              <span>{$t('testimonials.t2_role')}</span>
             </div>
           </div>
         </div>
@@ -953,9 +944,7 @@
             /><Star size={16} fill="#f59e0b" color="#f59e0b" />
           </div>
           <p class="testi-quote">
-            "Kinerja editornya sangat ringan dan yang terpenting adalah tanpa
-            delay! Goresan demi goresan terasa sangat instan, persis seperti
-            menggambar di software native yang mahal."
+            {$t('testimonials.t3_quote')}
           </p>
           <div class="testi-author">
             <div
@@ -965,8 +954,8 @@
               MR
             </div>
             <div class="author-info">
-              <strong>Miraj</strong>
-              <span>Pixel Artist</span>
+              <strong>{$t('testimonials.t3_author')}</strong>
+              <span>{$t('testimonials.t3_role')}</span>
             </div>
           </div>
         </div>
@@ -978,14 +967,14 @@
   <section class="bottom-cta-section" use:reveal={{ delay: 100 }}>
     <div class="bottom-cta-container pulse-hover">
       <h2>
-        Siap Mewujudkan <span style="color: #a855f7;">Ide Liar</span> Anda?
+        {$t('cta_bottom.title1')} <span style="color: #a855f7;">{$t('cta_bottom.title2')}</span> {$t('cta_bottom.title3')}
       </h2>
       <p>
-        Bergabunglah dengan ribuan kreator lainnya hari ini.
+        {$t('cta_bottom.subtitle')}
       </p>
       <div class="cta-buttons-row">
         <button class="primary-btn" on:click={getStarted}>
-          Mulai Menggambar Sekarang <ArrowRight
+          {$t('cta_bottom.btn')} <ArrowRight
             size={18}
             style="margin-left:8px;"
           />
@@ -1006,9 +995,9 @@
         <Palette size={20} color="#6366f1" />
         <span>PixelRaj</span>
       </div>
-      <p>&copy; {new Date().getFullYear()} PixelRaj. Hak Cipta Dilindungi.</p>
+      <p>&copy; {new Date().getFullYear()} {$t('footer.rights')}</p>
       <p style="margin-top: 8px; font-size: 0.85rem; color: #94a3b8;">
-        Memiliki kendala atau masukan? Hubungi kami di: <a
+        {$t('footer.contact')} <a
           href="mailto:panduwirayuda12345@gmail.com"
           style="color: #a855f7; text-decoration: none; font-weight: 500;"
           >panduwirayuda12345@gmail.com</a
