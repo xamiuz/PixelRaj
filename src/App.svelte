@@ -8992,15 +8992,14 @@
         >
           <RedoIcon size={14} /> <span class="hide-mobile">Redo</span>
         </button>
+        <div class="divider-v-small"></div>
+        <select bind:value={$locale} style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px; padding: 4px 8px; cursor: pointer; font-family: inherit; font-size: 13px;">
+          <option value="id" style="background: var(--bg-panel); color: white;">ID</option>
+          <option value="en" style="background: var(--bg-panel); color: white;">EN</option>
+        </select>
       </div>
 
       <div class="menu-actions">
-        <div style="margin-right: 8px; display: flex; align-items: center;">
-          <select bind:value={$locale} style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 13px;">
-            <option value="id" style="background: var(--bg-panel); color: white;">ID</option>
-            <option value="en" style="background: var(--bg-panel); color: white;">EN</option>
-          </select>
-        </div>
         <div class="active-users">
           <Users size={14} />
           {activeUsersCount} Kolaborator
