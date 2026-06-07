@@ -243,6 +243,24 @@
   height: 100%;
 }
 
+@media (max-height: 700px) and (min-width: 769px) {
+  .toolbar-vertical {
+    gap: 0;
+    padding: 0;
+  }
+  .tool-group {
+    gap: 0;
+  }
+  .tool-btn {
+    width: 28px;
+    height: 28px;
+  }
+  .tool-btn :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .toolbar-vertical {
     position: fixed;
