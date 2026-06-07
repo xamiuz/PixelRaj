@@ -9106,7 +9106,7 @@
 
     <div class="main-workspace-grid">
       <!-- Left Toolbar (Peralatan) -->
-      {#if !isMobile && !focusMode}
+      {#if !focusMode}
         <Toolbar
           bind:selectedTool
           bind:isMirrorX
@@ -13687,6 +13687,13 @@
     align-items: center;
     padding: 50px;
     touch-action: none;
+  }
+  
+  /* Di mobile kurangi padding agar canvas lebih besar karena ada sidebar */
+  @media (max-width: 768px) {
+    .canvas-viewport {
+      padding: 16px;
+    }
   }
 
   .canvas-viewport[data-selected-tool="move"] {
