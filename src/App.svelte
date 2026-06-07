@@ -3424,6 +3424,16 @@
 
     const getAlpha = (x, y) => {
       if (x < 0 || x >= project.width || y < 0 || y >= project.height) return 0;
+      if (activeSelection) {
+        const isOutside =
+          x < activeSelection.x ||
+          x >= activeSelection.x + activeSelection.w ||
+          y < activeSelection.y ||
+          y >= activeSelection.y + activeSelection.h;
+        if (isSelectionReversed ? !isOutside : isOutside) {
+          return 0; // Treat pixels outside selection as transparent so they don't generate outlines
+        }
+      }
       return data[(y * project.width + x) * 4 + 3];
     };
 
@@ -3443,7 +3453,8 @@
           }
         }
 
-        if (getAlpha(x, y) === 0) {
+        // Treat pixels with alpha < 128 as transparent
+        if (getAlpha(x, y) < 128) {
           let hasOpaqueNeighbor = false;
           for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
@@ -3458,7 +3469,8 @@
                 inShape = Math.sqrt(dx*dx + dy*dy) <= radius + 0.5;
               }
               
-              if (inShape && getAlpha(x + dx, y + dy) > 0) {
+              // Only consider a neighbor opaque if its alpha >= 128
+              if (inShape && getAlpha(x + dx, y + dy) >= 128) {
                 hasOpaqueNeighbor = true;
                 break;
               }
