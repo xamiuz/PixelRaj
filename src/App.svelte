@@ -2212,7 +2212,7 @@
       );
 
       // Sinkronisasi otomatis proyek lokal yang belum ada di remote
-      if (unsyncedLocal.length > 0) {
+      if (unsyncedLocal.length > 0 && currentUserId) {
         Promise.all(
           unsyncedLocal.map((item) =>
             supabase.from("projects").upsert({
@@ -2961,22 +2961,26 @@
               showToast("Proyek dengan ID ini sudah ada di cloud.", "warning");
             } else {
               // New project for cloud
-              try {
-                await supabase.from("projects").insert({
-                  id: cleanId,
-                  user_id: currentUserId,
-                  project_data: newProject,
-                });
-                showToast(
-                  "Proyek berhasil diimpor & disimpan ke cloud!",
-                  "success",
-                );
-              } catch (insErr) {
-                console.error("Gagal insert ke Supabase:", insErr);
-                showToast(
-                  "Gagal menyimpan ke cloud, disimpan lokal.",
-                  "warning",
-                );
+              if (currentUserId) {
+                try {
+                  await supabase.from("projects").insert({
+                    id: cleanId,
+                    user_id: currentUserId,
+                    project_data: newProject,
+                  });
+                  showToast(
+                    "Proyek berhasil diimpor & disimpan ke cloud!",
+                    "success",
+                  );
+                } catch (insErr) {
+                  console.error("Gagal insert ke Supabase:", insErr);
+                  showToast(
+                    "Gagal menyimpan ke cloud, disimpan lokal.",
+                    "warning",
+                  );
+                }
+              } else {
+                showToast("Proyek diimpor secara lokal (Mode Offline).", "success");
               }
             }
             isOfflineMode = false;
@@ -3032,14 +3036,22 @@
     // Selalu simpan ke local cache terlebih dahulu agar data aman secara lokal
     await saveToLocalCache(cleanId, newProject);
 
-    try {
-      const { error } = await supabase.from("projects").insert({
-        id: cleanId,
-        user_id: currentUserId,
-        project_data: newProject,
-      });
-      if (error) throw error;
-
+    if (currentUserId) {
+      try {
+        const { error } = await supabase.from("projects").insert({
+          id: cleanId,
+          user_id: currentUserId,
+          project_data: newProject,
+        });
+        if (error) throw error;
+      } catch (err) {
+        console.error("Gagal menyimpan proyek ke Supabase:", err);
+        isOfflineMode = true;
+      }
+    } else {
+      isOfflineMode = true;
+    }
+      
       showCreateProjectModal = false;
       projectId = cleanId;
       projectOwnerId = currentUserId;
@@ -3053,32 +3065,8 @@
       joined = true;
       initHistory();
       setTimeout(initCanvases, 100);
-      isOfflineMode = false;
-      showToast("Proyek baru berhasil dibuat!");
-    } catch (err) {
-      console.error(
-        "Gagal menyimpan proyek ke Supabase, menggunakan lokal:",
-        err.message || err,
-      );
-      isOfflineMode = true;
+      showToast(isOfflineMode ? "Proyek baru (Offline Mode) berhasil dibuat!" : "Proyek baru berhasil dibuat!");
 
-      showCreateProjectModal = false;
-      projectId = cleanId;
-      projectOwnerId = currentUserId;
-      lastLayerUpdateSeq = 0;
-      broadcastSeq = 0;
-      project = newProject;
-
-      const newUrl = `${window.location.origin}${window.location.pathname}?project=${projectId}`;
-      window.history.pushState({ path: newUrl }, "", newUrl);
-      joined = true;
-      initHistory();
-      setTimeout(initCanvases, 100);
-      showToast(
-        "Proyek baru disimpan di penyimpanan lokal (Mode Offline)",
-        "warning",
-      );
-    }
   }
 
   async function saveToLocalCache(id, projectData) {
@@ -3240,21 +3228,26 @@
 
     // Simpan ke cache lokal dahulu
     await saveToLocalCache(newId, srcData);
-    try {
-      const { error } = await supabase.from("projects").insert({
-        id: newId,
-        user_id: currentUserId,
-        project_data: srcData,
-      });
-      if (error) throw error;
-      showToast(`Proyek "${newName}" berhasil disalin!`);
-    } catch (err) {
-      console.error(
-        "Gagal duplikat ke Supabase, tersimpan lokal:",
-        err.message || err,
-      );
+    if (currentUserId) {
+      try {
+        const { error } = await supabase.from("projects").insert({
+          id: newId,
+          user_id: currentUserId,
+          project_data: srcData,
+        });
+        if (error) throw error;
+        showToast(`Proyek "${newName}" berhasil disalin!`);
+      } catch (err) {
+        console.error(
+          "Gagal duplikat ke Supabase, tersimpan lokal:",
+          err.message || err,
+        );
+        isOfflineMode = true;
+        showToast(`Proyek "${newName}" disalin (Mode Offline).`, "warning");
+      }
+    } else {
       isOfflineMode = true;
-      showToast(`Proyek "${newName}" disalin (Mode Offline).`, "warning");
+      showToast(`Proyek "${newName}" disalin secara lokal.`, "success");
     }
     fetchProjects();
   }
