@@ -3404,6 +3404,17 @@
     const outlinePixels = [];
     for (let y = 0; y < project.height; y++) {
       for (let x = 0; x < project.width; x++) {
+        if (activeSelection) {
+          const isOutside =
+            x < activeSelection.x ||
+            x >= activeSelection.x + activeSelection.w ||
+            y < activeSelection.y ||
+            y >= activeSelection.y + activeSelection.h;
+          if (isSelectionReversed ? !isOutside : isOutside) {
+            continue;
+          }
+        }
+
         if (getAlpha(x, y) === 0) {
           if (
             getAlpha(x - 1, y) > 0 ||
