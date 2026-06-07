@@ -52,9 +52,29 @@
       showShapeMenu = false;
     }
   }
+
+  let isTouch = false;
+  function markTouch() {
+    isTouch = true;
+    setTimeout(() => { isTouch = false; }, 500);
+  }
+
+  function handleMenuEnter(menu) {
+    if (isTouch) return;
+    if (menu === 'pencil') showPencilMenu = true;
+    if (menu === 'bucket') showBucketMenu = true;
+    if (menu === 'shape') showShapeMenu = true;
+  }
+
+  function handleMenuLeave(menu) {
+    if (isTouch) return;
+    if (menu === 'pencil') showPencilMenu = false;
+    if (menu === 'bucket') showBucketMenu = false;
+    if (menu === 'shape') showShapeMenu = false;
+  }
 </script>
 
-<svelte:window on:click={handleOutsideClick} />
+<svelte:window on:click={handleOutsideClick} on:touchstart={markTouch} />
 
 <aside class="toolbar-vertical">
   <div class="tool-group">
@@ -62,7 +82,7 @@
     <button class="tool-btn" class:active={selectedTool === 'transform'} on:click={activateTransformTool} title="Transform (T)"><Move size={20} /></button>
   </div>
   <div class="tool-group">
-    <div class="pencil-container" style="position: relative;" on:mouseenter={() => showPencilMenu = true} on:mouseleave={() => showPencilMenu = false}>
+    <div class="pencil-container" style="position: relative;" on:mouseenter={() => handleMenuEnter('pencil')} on:mouseleave={() => handleMenuLeave('pencil')}>
       <button class="tool-btn" class:active={selectedTool === 'pencil' || selectedTool === 'spray'} on:click={handlePencilClick} title="Alat Gambar (B / Shift+B)">
         {#if selectedTool === 'spray'}
           <SprayCan size={20} />
@@ -84,7 +104,7 @@
     </div>
     
     <button class="tool-btn" class:active={selectedTool === 'eraser'} on:click={() => selectedTool = 'eraser'} title="Penghapus (E)"><Eraser size={20} /></button>
-    <div class="bucket-container" style="position: relative;" on:mouseenter={() => showBucketMenu = true} on:mouseleave={() => showBucketMenu = false}>
+    <div class="bucket-container" style="position: relative;" on:mouseenter={() => handleMenuEnter('bucket')} on:mouseleave={() => handleMenuLeave('bucket')}>
       <button class="tool-btn" class:active={selectedTool === 'bucket' || selectedTool === 'bucketeraser'} on:click={handleBucketClick} title="Ember Cat / Penghapus (G / Shift+G)">
         {#if selectedTool === 'bucketeraser'}
           <div style="position:relative;">
@@ -114,7 +134,7 @@
     <button class="tool-btn" class:active={selectedTool === 'lassofill'} on:click={() => selectedTool = 'lassofill'} title="Isi Laso (L)"><LassoSelect size={20} /></button>
   </div>
   <div class="tool-group">
-    <div class="shape-container" style="position: relative;" on:mouseenter={() => showShapeMenu = true} on:mouseleave={() => showShapeMenu = false}>
+    <div class="shape-container" style="position: relative;" on:mouseenter={() => handleMenuEnter('shape')} on:mouseleave={() => handleMenuLeave('shape')}>
       <button class="tool-btn" class:active={selectedTool === 'line' || selectedTool === 'rectangle' || selectedTool === 'ellipse'} on:click={handleShapeClick} title="Alat Bentuk (Shift / U / O)">
         {#if selectedTool === 'ellipse'}
           <Circle size={20} />
