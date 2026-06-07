@@ -3384,6 +3384,55 @@
     }
   }
 
+  function autoOutlineLayer() {
+    if (activeLayerIndex === null) return;
+    const layer = project.frames[activeFrameIndex].layers[activeLayerIndex];
+    if (!layer || layer.locked || !layer.visible) {
+      showToast("Lapisan terkunci atau tidak terlihat!", "error");
+      return;
+    }
+
+    const { ctx } = getLayerCanvas(layer.id, project.width, project.height);
+    const imgData = ctx.getImageData(0, 0, project.width, project.height);
+    const data = imgData.data;
+
+    const getAlpha = (x, y) => {
+      if (x < 0 || x >= project.width || y < 0 || y >= project.height) return 0;
+      return data[(y * project.width + x) * 4 + 3];
+    };
+
+    const outlinePixels = [];
+    for (let y = 0; y < project.height; y++) {
+      for (let x = 0; x < project.width; x++) {
+        if (getAlpha(x, y) === 0) {
+          if (
+            getAlpha(x - 1, y) > 0 ||
+            getAlpha(x + 1, y) > 0 ||
+            getAlpha(x, y - 1) > 0 ||
+            getAlpha(x, y + 1) > 0
+          ) {
+            outlinePixels.push({ x, y });
+          }
+        }
+      }
+    }
+
+    if (outlinePixels.length > 0) {
+      let updatedAny = false;
+      for (const p of outlinePixels) {
+        setPixelColor(layer.id, p.x, p.y, primaryColor);
+        updatedAny = true;
+      }
+
+      if (updatedAny) {
+        saveHistoryState("Tambah Outline Otomatis");
+        scheduleRenderAllLayers();
+        syncDatabase();
+      }
+    }
+  }
+
+
   function commitLayerBase64(layer, keepUnclipped = false) {
     if (!layer || !layer.id) return;
     const { canvas } = getLayerCanvas(layer.id, project.width, project.height);
@@ -9111,6 +9160,7 @@
           bind:selectedTool
           bind:isMirrorX
           on:transformTool={activateTransformTool}
+          on:autoOutline={autoOutlineLayer}
           on:toggleFocusMode={() => {
             focusMode = !focusMode;
             showToast(

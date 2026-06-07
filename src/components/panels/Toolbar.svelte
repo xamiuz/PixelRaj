@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import {
     BoxSelect, Move, Search, Pencil, Eraser, PaintBucket,
-    Pipette, Wand2, Slash, Square, Circle, Sparkles, Type, RotateCw, SprayCan, Expand, FlipHorizontal, LassoSelect
+    Pipette, Wand2, Slash, Square, Circle, Sparkles, Type, RotateCw, SprayCan, Expand, FlipHorizontal, LassoSelect, Box
   } from 'lucide-svelte';
 
   const dispatch = createEventDispatcher();
@@ -162,6 +162,7 @@
   </div>
   <div class="tool-group">
     <button class="tool-btn" class:active={isMirrorX} on:click={() => isMirrorX = !isMirrorX} title="Sumbu Cermin (Mirror X)"><FlipHorizontal size={20} /></button>
+    <button class="tool-btn" on:click={() => dispatch('autoOutline')} title="Tambah Outline Otomatis"><Box size={20} /></button>
   </div>
   <div class="tool-group" style="margin-top: auto;">
     <button
