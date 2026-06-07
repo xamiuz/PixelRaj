@@ -8901,7 +8901,7 @@
             style="margin-left: 8px;"
             on:click={() => (showFileMenu = !showFileMenu)}
           >
-            <FileIcon size={16} /> <span class="hide-mobile">File</span>
+            <FileIcon size={16} /> <span class="hide-mobile">{$t("mockup.file")}</span>
           </button>
 
           {#if showFileMenu}
@@ -8916,7 +8916,7 @@
                 title="Simpan Proyek (Ctrl+S)"
               >
                 <SaveIcon size={16} />
-                {isSaving ? "Menyimpan..." : "Simpan"}
+                {isSaving ? $t("mockup.saving") : $t("mockup.save")}
               </button>
               <button
                 class="dropdown-item"
@@ -9017,7 +9017,7 @@
               y2="17.49"
             ></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg
           >
-          Bagikan
+          {$t("mockup.share")}
         </button>
         <!-- Removed File Dropdown from here -->
 
@@ -9033,7 +9033,7 @@
           style="display: none;"
         />
         <button class="btn-icon text-danger" on:click={backToDashboard}
-          ><LogOut size={16} /> Keluar</button
+          ><LogOut size={16} /> {$t("mockup.exit")}</button
         >
       </div>
     </header>
@@ -9048,14 +9048,14 @@
             on:click={() => (brushType = "circle")}
             title="Kuas Bulat"
           >
-            Bulat
+            {$t("mockup.shape_round")}
           </button>
           <button
             class="segment-btn {brushType === 'square' ? 'active' : ''}"
             on:click={() => (brushType = "square")}
             title="Kuas Kotak"
           >
-            Kotak
+            {$t("mockup.shape_square")}
           </button>
         </div>
       </div>
@@ -11308,7 +11308,7 @@
               <Film size={14} style="color: #a855f7;" /> {$t("mockup.timeline_title")}
             </h4>
             <span style="font-size: 11px; color: var(--text-muted);"
-              >({animationLayers.length} Bingkai Aktif)</span
+              >({animationLayers.length} {$t("mockup.frame_active")})</span
             >
             <span
               style="font-size: 10px; color: #c084fc; background: rgba(168,85,247,0.15); padding: 2px 8px; border-radius: 4px; font-weight: 600;"
@@ -11518,7 +11518,7 @@
                   >
                     <Pin size={8} style="transform: rotate(45deg);" />
                     <span
-                      >{layer.keepStaticInAnimation ? "Statis" : "Tahan"}</span
+                      >{layer.keepStaticInAnimation ? "Statis" : $t("mockup.hold")}</span
                     >
                   </button>
                 </div>
@@ -11964,7 +11964,7 @@
                   showMobilePanel = false;
                 }}
               >
-                <SaveIcon size={16} /> Simpan Proyek
+                <SaveIcon size={16} /> {$t("mockup.save")}
               </button>
               <div class="history-list" style="max-height:160px;">
                 {#each historyList as hist, idx}
@@ -12097,10 +12097,10 @@
                 >
                   <div style="display:flex; align-items:center; gap:6px;">
                     <span style="font-weight:600;font-size:13px;"
-                      >Timeline Animasi</span
+                      >{$t("mockup.timeline_title")}</span
                     >
                     <span style="font-size:10px; color:var(--text-muted);"
-                      >({animationLayers.length} Aktif)</span
+                      >({animationLayers.length} {$t("mockup.frame_active")})</span
                     >
                   </div>
                   <div style="display:flex; gap:6px;">
@@ -12245,7 +12245,7 @@
                               : 'var(--text-muted)'}; border-radius: 4px; padding: 2px 0; font-size: 9px; cursor: pointer;"
                           >
                             {layer.keepStaticInAnimation
-                              ? "Ditahan"
+                              ? $t("mockup.hold")
                               : "Animasi"}
                           </button>
                           <button
@@ -12279,7 +12279,7 @@
   <div class="project-loading-overlay" on:click|self={cancelProjectLoading}>
     <div class="project-loading-card">
       <div class="spinner"></div>
-      <h3>Membuka Proyek...</h3>
+      <h3>{$t("mockup.open_project")}</h3>
       <p>Sedang menyiapkan kanvas pixel art Anda</p>
       <button
         class="loading-cancel-btn"
@@ -12345,7 +12345,7 @@
       <div class="floating-preview-title">
         <Film size={12} style="color: #a855f7;" />
         <span
-          >Pratinjau Animasi {isAnimPreviewMinimized ? "(Menciut)" : ""}</span
+          >{$t("mockup.anim_preview")} {isAnimPreviewMinimized ? "(Menciut)" : ""}</span
         >
       </div>
       <div
@@ -12457,7 +12457,7 @@
             <div
               style="display: flex; align-items: center; justify-content: space-between; font-size: 9px; color: var(--text-muted);"
             >
-              <span>Kecepatan:</span>
+              <span>{$t("mockup.speed_lbl")}</span>
               <span style="font-weight: 700; color: #a855f7;"
                 >{previewFPS} FPS</span
               >
@@ -12478,14 +12478,14 @@
             <div
               style="display: flex; align-items: center; justify-content: space-between; font-size: 8.5px; color: var(--text-muted);"
             >
-              <span>Latar Belakang:</span>
+              <span>{$t("mockup.bg_lbl")}</span>
               <span
                 style="font-weight: 700; color: #c084fc; text-transform: capitalize;"
               >
                 {animPreviewBg === "dark-checker"
-                  ? "Kotak Gelap"
+                  ? $t("mockup.bg_dark")
                   : animPreviewBg === "light-checker"
-                    ? "Kotak Terang"
+                    ? $t("mockup.bg_light")
                     : animPreviewBg === "black"
                       ? "Hitam Solid"
                       : animPreviewBg === "white"
@@ -12499,7 +12499,7 @@
               <!-- Bulatan Dark Checker -->
               <button
                 on:click={() => setAnimPreviewBg("dark-checker")}
-                title="Kotak-kotak Gelap"
+                title="{$t('mockup.bg_dark')}"
                 style="
                   width: 15px;
                   height: 15px;
@@ -12521,7 +12521,7 @@
               <!-- Bulatan Light Checker -->
               <button
                 on:click={() => setAnimPreviewBg("light-checker")}
-                title="Kotak-kotak Terang"
+                title="{$t('mockup.bg_light')}"
                 style="
                   width: 15px;
                   height: 15px;

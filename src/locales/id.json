@@ -95,7 +95,18 @@
     "canvas_opacity": "OPACITY KANVAS:",
     "collaborator": "Kolaborator",
     "preview_close": "Pratinjau: Tutup",
-    "project_loaded": "Proyek berhasil dimuat!"
+    "project_loaded": "Proyek berhasil dimuat!",
+    "file": "File",
+    "save": "Simpan",
+    "download": "Unduh",
+    "saving": "Menyimpan...",
+    "open_project": "Membuka Proyek...",
+    "anim_preview": "Pratinjau Animasi",
+    "speed_lbl": "Kecepatan:",
+    "bg_lbl": "Latar Belakang:",
+    "bg_dark": "Kotak Gelap",
+    "bg_light": "Kotak Terang",
+    "frame_active": "Bingkai Aktif"
   },
   "login": {
     "signup_desc": "Daftar untuk membuat akun baru",

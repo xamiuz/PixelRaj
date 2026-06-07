@@ -95,7 +95,18 @@
     "canvas_opacity": "CANVAS OPACITY:",
     "collaborator": "Collaborator",
     "preview_close": "Preview: Close",
-    "project_loaded": "Project successfully loaded!"
+    "project_loaded": "Project successfully loaded!",
+    "file": "File",
+    "save": "Save",
+    "download": "Download",
+    "saving": "Saving...",
+    "open_project": "Opening Project...",
+    "anim_preview": "Animation Preview",
+    "speed_lbl": "Speed:",
+    "bg_lbl": "Background:",
+    "bg_dark": "Dark Checker",
+    "bg_light": "Light Checker",
+    "frame_active": "Active Frame"
   },
   "login": {
     "signup_desc": "Sign up to create a new account",
