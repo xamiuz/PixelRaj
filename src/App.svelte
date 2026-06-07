@@ -58,6 +58,9 @@
     Folder,
     FolderPlus,
     FolderMinus,
+    LassoSelect,
+    SprayCan,
+    Hand,
     MoreVertical,
     ChevronDown,
     ChevronRight,
@@ -11196,11 +11199,32 @@
         <!-- Tools row -->
         <div class="mobile-tool-row">
           <button
+            class="mobile-tool-btn {selectedTool === 'selection' ? 'active' : ''}"
+            on:click={() => (selectedTool = "selection")}
+            title="Seleksi"
+          >
+            <BoxSelect size={20} />
+          </button>
+          <button
+            class="mobile-tool-btn {selectedTool === 'transform' ? 'active' : ''}"
+            on:click={() => activateTransformTool()}
+            title="Transform"
+          >
+            <Move size={20} />
+          </button>
+          <button
             class="mobile-tool-btn {selectedTool === 'pencil' ? 'active' : ''}"
             on:click={() => (selectedTool = "pencil")}
             title="Pensil"
           >
             <Pencil size={20} />
+          </button>
+          <button
+            class="mobile-tool-btn {selectedTool === 'spray' ? 'active' : ''}"
+            on:click={() => (selectedTool = "spray")}
+            title="Semprotan"
+          >
+            <SprayCan size={20} />
           </button>
           <button
             class="mobile-tool-btn {selectedTool === 'eraser' ? 'active' : ''}"
@@ -11210,25 +11234,35 @@
             <Eraser size={20} />
           </button>
           <button
-            class="mobile-tool-btn {selectedTool === 'bucket' || selectedTool === 'bucketeraser' ? 'active' : ''}"
+            class="mobile-tool-btn {selectedTool === 'bucket' ? 'active' : ''}"
             on:click={() => (selectedTool = "bucket")}
-            title="Cat"
+            title="Ember Cat"
           >
             <PaintBucket size={20} />
           </button>
           <button
-            class="mobile-tool-btn {selectedTool === 'picker' ? 'active' : ''}"
-            on:click={() => (selectedTool = "picker")}
-            title="Pipet"
+            class="mobile-tool-btn {selectedTool === 'bucketeraser' ? 'active' : ''}"
+            on:click={() => (selectedTool = "bucketeraser")}
+            title="Hapus Warna (Ember)"
           >
-            <Pipette size={20} />
+            <div style="position:relative; width:20px; height:20px; display:flex; justify-content:center; align-items:center;">
+              <PaintBucket size={20} />
+              <div style="position:absolute; bottom:-4px; right:-4px; background:var(--bg-color); border-radius:50%;"><Eraser size={12} color="#ff4444" /></div>
+            </div>
           </button>
           <button
-            class="mobile-tool-btn {selectedTool === 'move' ? 'active' : ''}"
-            on:click={() => (selectedTool = "move")}
-            title="Geser"
+            class="mobile-tool-btn {selectedTool === 'magicpen' ? 'active' : ''}"
+            on:click={() => (selectedTool = "magicpen")}
+            title="Pena Ajaib"
           >
-            <Move size={20} />
+            <Wand2 size={20} />
+          </button>
+          <button
+            class="mobile-tool-btn {selectedTool === 'lassofill' ? 'active' : ''}"
+            on:click={() => (selectedTool = "lassofill")}
+            title="Isi Laso"
+          >
+            <LassoSelect size={20} />
           </button>
           <button
             class="mobile-tool-btn {selectedTool === 'line' ? 'active' : ''}"
@@ -11238,9 +11272,7 @@
             <Slash size={20} />
           </button>
           <button
-            class="mobile-tool-btn {selectedTool === 'rectangle'
-              ? 'active'
-              : ''}"
+            class="mobile-tool-btn {selectedTool === 'rectangle' ? 'active' : ''}"
             on:click={() => (selectedTool = "rectangle")}
             title="Kotak"
           >
@@ -11253,21 +11285,20 @@
           >
             <Circle size={20} />
           </button>
+          <div class="mobile-tool-divider"></div>
           <button
-            class="mobile-tool-btn {selectedTool === 'spray' ? 'active' : ''}"
-            on:click={() => (selectedTool = "spray")}
-            title="Semprotan"
+            class="mobile-tool-btn {selectedTool === 'move' ? 'active' : ''}"
+            on:click={() => (selectedTool = "move")}
+            title="Geser (Pan)"
           >
-            <Sparkles size={20} />
+            <Hand size={20} />
           </button>
           <button
-            class="mobile-tool-btn {selectedTool === 'magicpen'
-              ? 'active'
-              : ''}"
-            on:click={() => (selectedTool = "magicpen")}
-            title="Pena Ajaib"
+            class="mobile-tool-btn {selectedTool === 'picker' ? 'active' : ''}"
+            on:click={() => (selectedTool = "picker")}
+            title="Pipet Warna"
           >
-            <Wand2 size={20} />
+            <Pipette size={20} />
           </button>
           <button
             class="mobile-tool-btn {isMirrorX ? 'active' : ''}"
