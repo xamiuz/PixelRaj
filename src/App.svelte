@@ -4443,7 +4443,11 @@
             floatingSelectionFrameIndex = null;
           } else {
             // Salin HANYA area seleksi ke OriginalData (yang sekarang ukurannya pas bbox)
-            oCtx.drawImage(canvas, -bbox.minX, -bbox.minY);
+            // Menggunakan unclipped canvas agar piksel di luar batas kanvas tidak terpotong
+            const uCanvas = layerUnclippedCanvases.get(layer.id) || canvas;
+            const uX = layer.unclippedX || 0;
+            const uY = layer.unclippedY || 0;
+            oCtx.drawImage(uCanvas, uX - bbox.minX, uY - bbox.minY);
 
             // Hapus area seleksi dari layer asli (untuk background)
             bCtx.drawImage(canvas, 0, 0);
