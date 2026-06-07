@@ -1627,7 +1627,7 @@
     };
     return `#${f(0)}${f(8)}${f(4)}`;
   }
-  let primaryColor = "#00f0ff";
+  let primaryColor = "#000000";
   let zoom = 100;
   let pixelGridCanvas; // canvas untuk grid auto-pixel
   let showGrid = false;
