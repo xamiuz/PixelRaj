@@ -3507,20 +3507,47 @@
     layer.data = canvas.toDataURL("image/png");
 
     if (!keepUnclipped) {
-      if (!layerUnclippedCanvases.has(layer.id)) {
-        const uCanvas = document.createElement("canvas");
-        layerUnclippedCanvases.set(layer.id, uCanvas);
-      }
-      const uCanvas = layerUnclippedCanvases.get(layer.id);
-      uCanvas.width = project.width;
-      uCanvas.height = project.height;
-      const uCtx = uCanvas.getContext("2d");
-      uCtx.clearRect(0, 0, project.width, project.height);
-      uCtx.drawImage(canvas, 0, 0);
+      const uCanvasOld = layerUnclippedCanvases.get(layer.id);
+      
+      if (uCanvasOld && (layer.unclippedX < 0 || layer.unclippedY < 0 || layer.unclippedX + uCanvasOld.width > project.width || layer.unclippedY + uCanvasOld.height > project.height)) {
+         const oldX = layer.unclippedX || 0;
+         const oldY = layer.unclippedY || 0;
+         
+         const minX = Math.min(oldX, 0);
+         const minY = Math.min(oldY, 0);
+         const maxX = Math.max(oldX + uCanvasOld.width, project.width);
+         const maxY = Math.max(oldY + uCanvasOld.height, project.height);
 
-      layer.unclippedData = layer.data;
-      layer.unclippedX = 0;
-      layer.unclippedY = 0;
+         const newUCanvas = document.createElement("canvas");
+         newUCanvas.width = Math.max(1, maxX - minX);
+         newUCanvas.height = Math.max(1, maxY - minY);
+         const newUCtx = newUCanvas.getContext("2d");
+         newUCtx.imageSmoothingEnabled = false;
+
+         newUCtx.drawImage(uCanvasOld, oldX - minX, oldY - minY);
+         newUCtx.clearRect(0 - minX, 0 - minY, project.width, project.height);
+         newUCtx.drawImage(canvas, 0 - minX, 0 - minY);
+
+         layerUnclippedCanvases.set(layer.id, newUCanvas);
+         layer.unclippedX = minX;
+         layer.unclippedY = minY;
+         layer.unclippedData = newUCanvas.toDataURL("image/png");
+      } else {
+        if (!layerUnclippedCanvases.has(layer.id)) {
+          const uCanvas = document.createElement("canvas");
+          layerUnclippedCanvases.set(layer.id, uCanvas);
+        }
+        const uCanvas = layerUnclippedCanvases.get(layer.id);
+        uCanvas.width = project.width;
+        uCanvas.height = project.height;
+        const uCtx = uCanvas.getContext("2d");
+        uCtx.clearRect(0, 0, project.width, project.height);
+        uCtx.drawImage(canvas, 0, 0);
+
+        layer.unclippedData = layer.data;
+        layer.unclippedX = 0;
+        layer.unclippedY = 0;
+      }
     }
 
     project = project; // Trigger Svelte reactivity
@@ -5599,23 +5626,56 @@
           rotateCurrentAngle = 0;
         }
 
-        const { ctx } = getLayerCanvas(layer.id, project.width, project.height);
-        ctx.clearRect(0, 0, project.width, project.height);
+        const { canvas: clippedCanvas } = getLayerCanvas(layer.id, project.width, project.height);
+        const uCanvasOld = layerUnclippedCanvases.get(layer.id) || clippedCanvas;
+        const oldX = layer.unclippedX || 0;
+        const oldY = layer.unclippedY || 0;
 
-        if (transformBackgroundData) {
-          ctx.drawImage(transformBackgroundData, 0, 0);
+        let minX = oldX;
+        let minY = oldY;
+        let maxX = oldX + uCanvasOld.width;
+        let maxY = oldY + uCanvasOld.height;
+
+        if (transformOriginalData && transformBBox) {
+          minX = Math.min(minX, transformBBox.minX);
+          minY = Math.min(minY, transformBBox.minY);
+          maxX = Math.max(maxX, transformBBox.minX + transformBBox.w);
+          maxY = Math.max(maxY, transformBBox.minY + transformBBox.h);
         }
 
-        ctx.imageSmoothingEnabled = false;
+        const newUCanvas = document.createElement("canvas");
+        newUCanvas.width = Math.max(1, maxX - minX);
+        newUCanvas.height = Math.max(1, maxY - minY);
+        const newUCtx = newUCanvas.getContext("2d");
+        newUCtx.imageSmoothingEnabled = false;
+
+        if (activeSelection) {
+          newUCtx.drawImage(uCanvasOld, oldX - minX, oldY - minY);
+          if (transformSessionOriginalBBox) {
+            const sb = transformSessionOriginalBBox;
+            newUCtx.clearRect(sb.minX - minX, sb.minY - minY, sb.w, sb.h);
+          }
+        }
+
         if (transformOriginalData && transformBBox) {
-          ctx.drawImage(
+          newUCtx.drawImage(
             transformOriginalData,
-            transformBBox.minX,
-            transformBBox.minY,
+            transformBBox.minX - minX,
+            transformBBox.minY - minY
           );
         }
 
-        commitLayerBase64(layer, false);
+        layerUnclippedCanvases.set(layer.id, newUCanvas);
+        layer.unclippedX = minX;
+        layer.unclippedY = minY;
+        layer.unclippedData = newUCanvas.toDataURL("image/png");
+
+        const { ctx } = getLayerCanvas(layer.id, project.width, project.height);
+        ctx.clearRect(0, 0, project.width, project.height);
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(newUCanvas, minX, minY);
+
+        commitLayerBase64(layer, true);
         broadcastAndSyncStructure();
         if (ctxCursor) {
           ctxCursor.clearRect(0, 0, project.width, project.height);
