@@ -14979,6 +14979,7 @@
     left: 0;
     right: 0;
     z-index: 500;
+    pointer-events: auto;
     background: var(--bg-panel);
     border-top: 1px solid var(--border-color);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
@@ -14994,6 +14995,7 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 490;
+    pointer-events: auto;
     background: rgba(30, 30, 36, 0.85);
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255,255,255,0.1);

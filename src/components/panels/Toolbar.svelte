@@ -218,6 +218,10 @@
     bottom: 80px;
     height: auto;
     width: 44px;
+    z-index: 500;
+    pointer-events: auto;
+    border-right: 1px solid var(--border-color);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
     border-radius: 0 12px 12px 0;
     overflow-y: auto;
     overflow-x: visible;
@@ -227,7 +231,6 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-left: none;
     -webkit-overflow-scrolling: touch;
-    z-index: 500; /* Ensure it stays above canvas */
   }
   .toolbar-vertical::-webkit-scrollbar {
     display: none;
