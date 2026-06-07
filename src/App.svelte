@@ -102,7 +102,7 @@
   async function getLocalProjects() {
     try {
       const cacheKey = `pixellab_local_projects_${currentUserId || "guest"}`;
-      let data = await idbGet(cacheKey);
+      let data = await withTimeout(idbGet(cacheKey), 5000);
       if (!data) {
         data = [];
       }
@@ -2305,14 +2305,25 @@
     }
   }
 
+  function withTimeout(promise, ms = 10000) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout")), ms)
+      )
+    ]);
+  }
+
   async function loadProjectDirectly(id) {
     isOpeningProject = true;
     try {
-      const { data, error } = await supabase
+      const fetchPromise = supabase
         .from("projects")
         .select("*")
         .eq("id", id)
         .maybeSingle();
+      
+      const { data, error } = await withTimeout(fetchPromise, 15000);
       if (error) throw error;
       if (data) {
         project = data.project_data;
@@ -2371,11 +2382,13 @@
     if (isOpeningProject) return;
     isOpeningProject = true;
     try {
-      const { data, error } = await supabase
+      const fetchPromise = supabase
         .from("projects")
         .select("*")
         .eq("id", proj.id)
         .maybeSingle();
+      
+      const { data, error } = await withTimeout(fetchPromise, 15000);
       if (error) throw error;
 
       if (data) {
