@@ -105,5 +105,19 @@
     "login_here": "Masuk di sini",
     "no_account": "Belum punya akun?",
     "signup_here": "Daftar sekarang"
+  },
+  "dashboard": {
+    "all_projects": "Semua Proyek",
+    "create_folder": "Buat Folder",
+    "member": "Member",
+    "light_mode": "Mode Terang",
+    "dark_mode": "Mode Gelap",
+    "logout": "Keluar",
+    "recents": "Recents / File Proyek",
+    "search": "Cari Proyek...",
+    "create_canvas": "Buat Kanvas Baru",
+    "create_canvas_desc": "Atur ukuran & password kustom",
+    "loading": "Sedang Memuat...",
+    "delete_folder_confirm": "Hapus folder ini? Proyek di dalamnya akan pindah ke 'Semua Proyek'."
   }
 }

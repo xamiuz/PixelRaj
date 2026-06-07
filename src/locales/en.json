@@ -105,5 +105,19 @@
     "login_here": "Log in here",
     "no_account": "Don't have an account?",
     "signup_here": "Sign up now"
+  },
+  "dashboard": {
+    "all_projects": "All Projects",
+    "create_folder": "Create Folder",
+    "member": "Member",
+    "light_mode": "Light Mode",
+    "dark_mode": "Dark Mode",
+    "logout": "Log Out",
+    "recents": "Recents / Project Files",
+    "search": "Search Projects...",
+    "create_canvas": "Create New Canvas",
+    "create_canvas_desc": "Set custom size & password",
+    "loading": "Loading...",
+    "delete_folder_confirm": "Delete this folder? Projects inside will be moved to 'All Projects'."
   }
 }

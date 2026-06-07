@@ -83,6 +83,7 @@
   import OutlineModal from "./components/modals/OutlineModal.svelte";
   import LandingPage from "./components/pages/LandingPage.svelte";
   import { theme } from "./store.js";
+  import { t } from "./lib/i18n.js";
 
   function toggleTheme() {
     $theme = $theme === "dark" ? "light" : "dark";
@@ -2797,7 +2798,7 @@
     if (folderId === "root") return;
     if (
       confirm(
-        "Hapus folder ini? Proyek di dalamnya akan pindah ke 'Semua Proyek'.",
+        $t('dashboard.delete_folder_confirm'),
       )
     ) {
       // Pindahkan semua proyek ke root
@@ -8443,7 +8444,7 @@
               {:else}
                 <Folder size={16} style="margin-right:8px;" />
               {/if}
-              {folder.name}
+              {#if folder.id === "root"}{$t('dashboard.all_projects')}{:else}{folder.name}{/if}
             </button>
             {#if folder.id !== "root"}
               <button
@@ -8469,7 +8470,7 @@
             style="width: 100%; font-size: 13px; justify-content: center;"
             on:click={() => (showCreateFolderModal = true)}
           >
-            <FolderPlus size={14} style="margin-right:6px;" /> Buat Folder
+            <FolderPlus size={14} style="margin-right:6px;" /> {$t('dashboard.create_folder')}
           </button>
         </div>
       </nav>
@@ -8485,7 +8486,7 @@
               title={currentUserEmail || "Pengguna"}
               >{currentUserEmail || "Pengguna"}</span
             >
-            <span class="admin-role">Member</span>
+            <span class="admin-role">{$t('dashboard.member')}</span>
           </div>
         </div>
         {#if currentUserEmail === "admin@pixellab.com"}
@@ -8503,13 +8504,13 @@
           on:click={toggleTheme}
         >
           {#if $theme === "dark"}
-            <Sun size={14} style="margin-right: 8px;" /> Mode Terang
+            <Sun size={14} style="margin-right: 8px;" /> {$t('dashboard.light_mode')}
           {:else}
-            <Moon size={14} style="margin-right: 8px;" /> Mode Gelap
+            <Moon size={14} style="margin-right: 8px;" /> {$t('dashboard.dark_mode')}
           {/if}
         </button>
         <button class="btn-logout-sidebar" on:click={handleLogoutAdmin}>
-          Keluar
+          {$t('dashboard.logout')}
         </button>
       </div>
     </aside>
@@ -8525,7 +8526,7 @@
           >
             <Menu size={20} />
           </button>
-          <span class="dashboard-title hide-mobile">Recents / File Proyek</span>
+          <span class="dashboard-title hide-mobile">{$t('dashboard.recents')}</span>
           <div class="search-input-wrapper">
             <Search
               size={16}
@@ -8536,7 +8537,7 @@
               type="text"
               bind:value={searchQuery}
               class="search-input"
-              placeholder="Cari Proyek..."
+              placeholder={$t('dashboard.search')}
             />
           </div>
           {#if isOfflineMode}
@@ -8549,7 +8550,7 @@
           class="btn-primary dashboard-create-btn"
           on:click={() => (showCreateProjectModal = true)}
         >
-          <Plus size={16} /> Buat Kanvas Baru
+          <Plus size={16} /> {$t('dashboard.create_canvas')}
         </button>
       </header>
 
@@ -8564,8 +8565,8 @@
             <div class="create-icon-wrapper">
               <Plus size={32} />
             </div>
-            <span class="create-label">Buat Kanvas Baru</span>
-            <span class="create-sublabel">Atur ukuran & password kustom</span>
+            <span class="create-label">{$t('dashboard.create_canvas')}</span>
+            <span class="create-sublabel">{$t('dashboard.create_canvas_desc')}</span>
           </div>
 
           <!-- Indikator Loading -->
@@ -8580,7 +8581,7 @@
               ></div>
               <span
                 style="margin-top: 12px; font-size: 12px; color: var(--text-muted);"
-                >Sedang Memuat...</span
+                >{$t('dashboard.loading')}</span
               >
             </div>
           {/if}
