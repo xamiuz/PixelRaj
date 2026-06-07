@@ -584,6 +584,9 @@
         <span>PixelRaj</span>
       </div>
       <p>&copy; {new Date().getFullYear()} PixelRaj. Hak Cipta Dilindungi.</p>
+      <p style="margin-top: 8px; font-size: 0.85rem; color: #94a3b8;">
+        Memiliki kendala atau masukan? Hubungi kami di: <a href="mailto:panduwirayuda12345@gmail.com" style="color: #a855f7; text-decoration: none; font-weight: 500;">panduwirayuda12345@gmail.com</a>
+      </p>
     </div>
   </footer>
 </div>
