@@ -8529,8 +8529,8 @@
           <span class="dashboard-title hide-mobile">{$t('dashboard.recents')}</span>
           <div style="margin-left: 12px; display: flex; align-items: center;">
             <select bind:value={$locale} style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 13px;">
-              <option value="id" style="background: var(--bg-panel); color: white;">🇮🇩 ID</option>
-              <option value="en" style="background: var(--bg-panel); color: white;">🇬🇧 EN</option>
+              <option value="id" style="background: var(--bg-panel); color: white;">ID</option>
+              <option value="en" style="background: var(--bg-panel); color: white;">EN</option>
             </select>
           </div>
           <div class="search-input-wrapper">
