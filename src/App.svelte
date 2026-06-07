@@ -2020,14 +2020,10 @@
     const roomParam = urlParams.get("project");
     if (roomParam) {
       projectId = roomParam;
-      // Tunggu auth selesai sebelum load proyek agar Supabase RLS
-      // tidak menolak request (kritis di Android yang lambat)
-      supabase.auth.getSession().then(() => {
-        loadProjectDirectly(roomParam);
-      }).catch(() => {
-        // Jika getSession gagal, tetap coba load (mungkin proyek publik)
-        loadProjectDirectly(roomParam);
-      });
+      // Langsung load tanpa menunggu getSession()
+      // Supabase JS secara otomatis memakai token dari localStorage
+      // Menunggu getSession bisa hang di Android jika jaringan lambat
+      loadProjectDirectly(roomParam);
     }
 
     const savedPalette = localStorage.getItem("pixellab_palette");
@@ -2321,16 +2317,26 @@
     ]);
   }
 
+  // Fungsi untuk membatalkan loading paksa (dipanggil dari tombol di overlay)
+  function cancelProjectLoading() {
+    isOpeningProject = false;
+    // Hapus project param dari URL agar tidak loop
+    const url = new URL(window.location.href);
+    url.searchParams.delete("project");
+    window.history.replaceState({}, "", url.toString());
+  }
+
   async function loadProjectDirectly(id) {
     isOpeningProject = true;
 
-    // Failsafe: paksa overlay hilang setelah 20 detik agar tidak macet selamanya
+    // Failsafe 8 detik: paksa overlay hilang agar tidak macet di Android
     const failsafeTimer = setTimeout(() => {
       if (isOpeningProject) {
-        console.warn("loadProjectDirectly: failsafe timeout triggered");
+        console.warn("loadProjectDirectly: 8s failsafe triggered");
         isOpeningProject = false;
+        showToast("Gagal memuat proyek. Silakan coba lagi.", "error");
       }
-    }, 20000);
+    }, 8000);
 
     try {
       const fetchPromise = supabase
@@ -2339,7 +2345,7 @@
         .eq("id", id)
         .maybeSingle();
       
-      const { data, error } = await withTimeout(fetchPromise, 12000);
+      const { data, error } = await withTimeout(fetchPromise, 6000);
       if (error) throw error;
       if (data) {
         project = data.project_data;
@@ -2350,22 +2356,22 @@
         setupRealtime(id);
         joined = true;
         initHistory();
-        // Bungkus initCanvases dalam try/catch agar crash tidak menyebabkan
-        // overlay loading "Membuka Proyek..." tetap tampil selamanya
+        // Bungkus initCanvases dalam try/catch agar crash tidak
+        // menyebabkan overlay loading macet selamanya
         setTimeout(async () => {
           try {
             await initCanvases();
           } catch (canvasErr) {
             console.error("initCanvases gagal:", canvasErr);
           }
-        }, 150);
+        }, 200);
         isOfflineMode = false;
       } else {
         await loadProjectFromLocal(id);
       }
     } catch (err) {
       console.error(
-        "Gagal memuat proyek secara langsung dari Supabase, mencoba penyimpanan lokal:",
+        "Gagal memuat dari Supabase, mencoba penyimpanan lokal:",
         err.message || err,
       );
       isOfflineMode = true;
@@ -2373,6 +2379,7 @@
         await loadProjectFromLocal(id);
       } catch (localErr) {
         console.error("loadProjectFromLocal juga gagal:", localErr);
+        showToast("Proyek tidak ditemukan.", "error");
       }
     } finally {
       clearTimeout(failsafeTimer);
@@ -2381,9 +2388,9 @@
   }
 
   async function loadProjectFromLocal(id) {
-    const localData = await getLocalProjects();
-    if (localData && localData.length > 0) {
-      try {
+    try {
+      const localData = await getLocalProjects();
+      if (localData && localData.length > 0) {
         const found = localData.find((item) => item.id === id);
         if (found) {
           project = found.project_data;
@@ -2392,16 +2399,23 @@
           setupRealtime(id);
           joined = true;
           initHistory();
-          setTimeout(initCanvases, 100);
-          showToast("Proyek lokal berhasil dimuat (Mode Kolaborasi Aktif)");
+          // Bungkus initCanvases agar tidak crash tanpa tertangkap
+          setTimeout(async () => {
+            try {
+              await initCanvases();
+            } catch (canvasErr) {
+              console.error("initCanvases (local) gagal:", canvasErr);
+            }
+          }, 200);
+          showToast("Proyek lokal berhasil dimuat");
           return true;
         }
-      } catch (e) {
-        console.error(e);
       }
+    } catch (e) {
+      console.error("loadProjectFromLocal error:", e);
     }
     showToast(
-      "Proyek tidak ditemukan di database maupun penyimpanan lokal.",
+      "Proyek tidak ditemukan di penyimpanan lokal.",
       "error",
     );
     return false;
@@ -11994,11 +12008,29 @@
 {/if}
 
 {#if isOpeningProject}
-  <div class="project-loading-overlay">
+  <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+  <div class="project-loading-overlay" on:click|self={cancelProjectLoading}>
     <div class="project-loading-card">
       <div class="spinner"></div>
       <h3>Membuka Proyek...</h3>
-      <p>Sedang menyiapkan kanvas pixel art kolaboratif Anda</p>
+      <p>Sedang menyiapkan kanvas pixel art Anda</p>
+      <button
+        class="loading-cancel-btn"
+        on:click={cancelProjectLoading}
+        style="
+          margin-top: 16px;
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.15);
+          color: rgba(255,255,255,0.6);
+          padding: 8px 20px;
+          border-radius: 8px;
+          font-size: 0.8rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        "
+      >
+        Batalkan
+      </button>
     </div>
   </div>
 {/if}
