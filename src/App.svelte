@@ -1768,7 +1768,7 @@
   let originalImportH = 0;
   let importSmooth = true;
 
-  // --- STATE LAPISAN REFERENSI ---
+  // --- STATE {$t("mockup.ref_title")} ---
   let referenceImage = null;
   let referenceVisible = true;
   let referenceOpacity = 0.5;
@@ -2497,7 +2497,7 @@
           }
         }, 150);
         isOfflineMode = false;
-        showToast("Proyek berhasil dimuat!");
+        showToast($t("mockup.project_loaded"));
       } else {
         const success = await loadProjectFromLocal(proj.id);
         if (success) {
@@ -8996,7 +8996,7 @@
       <div class="menu-actions">
         <div class="active-users">
           <Users size={14} />
-          {activeUsersCount} Kolaborator
+          {activeUsersCount} {$t("mockup.collaborator")}
         </div>
         <button class="btn-share" on:click={() => (showShareModal = true)}>
           <svg
@@ -9041,7 +9041,7 @@
     <!-- Tool Context Bar -->
     <div class="tool-context-bar">
       <div class="context-item">
-        <span class="context-label">Bentuk Kuas:</span>
+        <span class="context-label">{$t("mockup.brush_shape")}</span>
         <div class="btn-group-segmented">
           <button
             class="segment-btn {brushType === 'circle' ? 'active' : ''}"
@@ -9061,7 +9061,7 @@
       </div>
 
       <div class="context-item">
-        <span class="context-label">Ukuran Kuas:</span>
+        <span class="context-label">{$t("mockup.brush_size")}</span>
         <div class="size-control-group" title="Ubah dengan Ctrl + Scroll Mouse">
           <button
             class="btn-small-adj"
@@ -9098,7 +9098,7 @@
           on:click={() => (showGrid = !showGrid)}
           title="Aktifkan/Matikan Grid"
         >
-          <GridIcon size={14} /> Grid: {showGrid ? "ON" : "OFF"}
+          <GridIcon size={14} /> {showGrid ? $t("mockup.grid_on") : $t("mockup.grid_off")}
         </button>
       </div>
 
@@ -9110,7 +9110,7 @@
           on:click={() => (isPixelPerfect = !isPixelPerfect)}
           title="Aktifkan/Matikan Pixel Perfect"
         >
-          <Crosshair size={14} /> Pixel Perfect: {isPixelPerfect ? "ON" : "OFF"}
+          <Crosshair size={14} /> {isPixelPerfect ? $t("mockup.pixel_on") : $t("mockup.pixel_off")}
         </button>
       </div>
 
@@ -9123,15 +9123,15 @@
           title="Ubah Warna Latar Kanvas"
         >
           {#if canvasBgTheme === 'light'}
-            <Sun size={14} /> Kanvas: Terang
+            <Sun size={14} /> {$t("mockup.canvas_light")}
           {:else}
-            <Moon size={14} /> Kanvas: Gelap
+            <Moon size={14} /> {$t("mockup.canvas_dark")}
           {/if}
         </button>
       </div>
 
       <div class="context-item" style="display: flex; align-items: center; gap: 6px;">
-        <span class="context-label">Opacity Kanvas:</span>
+        <span class="context-label">{$t("mockup.canvas_opacity")}</span>
         <input 
           type="range" 
           min="0" max="1" step="0.05" 
@@ -9188,7 +9188,7 @@
 
           <!-- Transparansi Grid -->
           <div style="display: flex; align-items: center; gap: 6px;">
-            <span class="context-label">Transparansi:</span>
+            <span class="context-label">{$t("mockup.transparency")}</span
             <input
               type="range"
               min="0.05"
@@ -10828,7 +10828,7 @@
                     {#if activeLayerIndex === layer.originalIndex}
                       <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
                       <div class="layer-opacity-row" on:click|stopPropagation>
-                        <span class="opacity-label">Transparansi:</span>
+                        <span class="opacity-label">{$t("mockup.transparency")}</span
                         <input
                           type="range"
                           min="0"
@@ -10918,7 +10918,7 @@
                 "
                   >
                     <Upload size={14} />
-                    <span>Unggah Gambar Referensi</span>
+                    <span>{$t("mockup.ref_upload")}</span>
                   </label>
                   <input
                     type="file"
@@ -11305,7 +11305,7 @@
             <h4
               style="margin: 0; font-size: 13px; font-weight: 700; color: #f1f5f9; display: flex; align-items: center; gap: 6px;"
             >
-              <Film size={14} style="color: #a855f7;" /> Timeline Animasi Lapisan
+              <Film size={14} style="color: #a855f7;" /> {$t("mockup.timeline_title")}
             </h4>
             <span style="font-size: 11px; color: var(--text-muted);"
               >({animationLayers.length} Bingkai Aktif)</span
@@ -11315,7 +11315,7 @@
             >
               {isTimelineCollapsed
                 ? "Klik / Seret ke Atas untuk Membuka"
-                : "Perkecil Panel"}
+                : $t("mockup.minimize")}
             </span>
           </div>
 
@@ -11342,7 +11342,7 @@
                   {#if isPlayingPreview}
                     <Pause size={14} /> <span>Pause</span>
                   {:else}
-                    <Play size={14} /> <span>Mainkan</span>
+                    <Play size={14} /> <span>{$t("mockup.play")}</span>
                   {/if}
                 </button>
 
@@ -11359,7 +11359,7 @@
                     ? '#c084fc'
                     : '#cbd5e1'}; padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer;"
                 >
-                  Pratinjau: {showAnimPreviewWindow ? "Buka" : "Tutup"}
+                  {showAnimPreviewWindow ? $t("mockup.preview_open") : $t("mockup.preview_close")}
                 </button>
               </div>
 
@@ -11373,7 +11373,7 @@
               >
                 <span
                   style="font-size: 11px; color: var(--text-muted); white-space: nowrap;"
-                  >Kecepatan (FPS):</span
+                  >{$t("mockup.speed")}</span
                 >
                 <input
                   type="range"
@@ -11809,7 +11809,7 @@
                         style="display:flex; align-items:center; gap:8px; padding-left:28px; padding-right:12px; font-size:11px; color:var(--text-muted);"
                         on:click|stopPropagation
                       >
-                        <span>Transparansi:</span>
+                        <span>{$t("mockup.transparency")}</span>
                         <input
                           type="range"
                           min="0"
@@ -12431,7 +12431,7 @@
               {#if isPlayingPreview}
                 <Pause size={10} /> <span>Pause</span>
               {:else}
-                <Play size={10} /> <span>Mainkan</span>
+                <Play size={10} /> <span>{$t("mockup.play")}</span>
               {/if}
             </button>
 

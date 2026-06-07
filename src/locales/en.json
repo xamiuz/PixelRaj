@@ -87,7 +87,15 @@
     "layers_title": "LAYERS",
     "transparency": "Transparency:",
     "ref_title": "REFERENCE LAYER",
-    "ref_upload": "Upload Reference Image"
+    "ref_upload": "Upload Reference Image",
+    "grid_on": "Grid: ON",
+    "pixel_on": "Pixel Perfect: ON",
+    "canvas_dark": "Canvas: Dark",
+    "canvas_light": "Canvas: Light",
+    "canvas_opacity": "CANVAS OPACITY:",
+    "collaborator": "Collaborator",
+    "preview_close": "Preview: Close",
+    "project_loaded": "Project successfully loaded!"
   },
   "login": {
     "signup_desc": "Sign up to create a new account",
