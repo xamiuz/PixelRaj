@@ -83,7 +83,7 @@
   import OutlineModal from "./components/modals/OutlineModal.svelte";
   import LandingPage from "./components/pages/LandingPage.svelte";
   import { theme } from "./store.js";
-  import { t } from "./lib/i18n.js";
+  import { t, locale } from "./lib/i18n.js";
 
   function toggleTheme() {
     $theme = $theme === "dark" ? "light" : "dark";
@@ -8498,6 +8498,12 @@
             Pulihkan Data
           </button>
         {/if}
+        <div style="margin-bottom: 8px; padding: 0;">
+          <select bind:value={$locale} style="width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-color); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 13px;">
+            <option value="id" style="background: var(--bg-panel); color: white;">🇮🇩 Bahasa Indonesia</option>
+            <option value="en" style="background: var(--bg-panel); color: white;">🇬🇧 English</option>
+          </select>
+        </div>
         <button
           class="btn-logout-sidebar"
           style="margin-bottom: 8px; justify-content: flex-start;"
@@ -11470,11 +11476,15 @@
                       class="mini-checkerboard"
                       style="position: absolute; inset: 0; background-image: linear-gradient(45deg, var(--canvas-checker-1) 25%, transparent 25%), linear-gradient(-45deg, var(--canvas-checker-1) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--canvas-checker-1) 75%), linear-gradient(-45deg, transparent 75%, var(--canvas-checker-1) 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px; opacity: 1;"
                     ></div>
-                    <img
-                      src={layer.data}
-                      alt="Layer Preview"
-                      style="width: 100%; height: 100%; z-index: 2; image-rendering: pixelated; object-fit: contain; position: relative;"
-                    />
+                    {#if layer.isGroup}
+                      <Folder size={24} style="color: var(--accent-color); z-index: 2; position: relative;" />
+                    {:else}
+                      <img
+                        src={layer.data}
+                        alt="Layer Preview"
+                        style="width: 100%; height: 100%; z-index: 2; image-rendering: pixelated; object-fit: contain; position: relative;"
+                      />
+                    {/if}
                   </div>
 
                   <!-- Tombol Pin Statis Premium -->
@@ -12204,11 +12214,15 @@
                           <div
                             style="position:absolute; inset:0; background-image: linear-gradient(45deg, var(--canvas-checker-1) 25%, transparent 25%), linear-gradient(-45deg, var(--canvas-checker-1) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--canvas-checker-1) 75%), linear-gradient(-45deg, transparent 75%, var(--canvas-checker-1) 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px;"
                           ></div>
-                          <img
-                            src={layer.data}
-                            alt="Layer Preview"
-                            style="width: 100%; height: 100%; z-index: 2; image-rendering: pixelated; object-fit: contain; position: relative;"
-                          />
+                          {#if layer.isGroup}
+                            <Folder size={20} style="color: var(--accent-color); z-index: 2; position: relative;" />
+                          {:else}
+                            <img
+                              src={layer.data}
+                              alt="Layer Preview"
+                              style="width: 100%; height: 100%; z-index: 2; image-rendering: pixelated; object-fit: contain; position: relative;"
+                            />
+                          {/if}
                         </div>
                         <div
                           style="display:flex; width:100%; gap:2px; margin-top:2px;"
