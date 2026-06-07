@@ -12,7 +12,7 @@
   "features": {
     "title1": "Dirancang untuk Profesional,",
     "title2": "Mudah untuk Pemula",
-    "subtitle": "PixelRaj membawa alat tingkat studio langsung ke browser Anda. Tanpa instalasi, tanpa setup ribet.",
+    "subtitle": "Pirex membawa alat tingkat studio langsung ke browser Anda. Tanpa instalasi, tanpa setup ribet.",
     "f1_title": "Performa Tinggi",
     "f1_desc": "Ditenagai WebGL untuk proses rendering super cepat, bahkan pada kanvas resolusi tinggi hingga 4K.",
     "f2_title": "Sistem Layer Tak Terbatas",
@@ -35,8 +35,8 @@
   "testimonials": {
     "title1": "Telah Menginspirasi",
     "title2": "Ribuan Kreator",
-    "subtitle": "Lihat bagaimana PixelRaj membantu seniman dan developer mewujudkan ide gila mereka.",
-    "t1_quote": "\"Pengalaman menggambar real-time di PixelRaj sungguh luar biasa! Tidak ada jeda sama sekali saat saya menggoreskan kuas, sangat lancar untuk membuat aset game solo saya.\"",
+    "subtitle": "Lihat bagaimana Pirex membantu seniman dan developer mewujudkan ide gila mereka.",
+    "t1_quote": "\"Pengalaman menggambar real-time di Pirex sungguh luar biasa! Tidak ada jeda sama sekali saat saya menggoreskan kuas, sangat lancar untuk membuat aset game solo saya.\"",
     "t1_author": "Pandu Wirayuda",
     "t1_role": "Solo Game Developer",
     "t2_quote": "\"Platform ini sangat luar biasa. Saya bisa membuat pixel art dan langsung menganimasikannya di sini. Aset karakter yang saya buat bisa langsung siap diekspor untuk kebutuhan game engine!\"",
@@ -54,7 +54,7 @@
     "btn": "Mulai Menggambar Sekarang"
   },
   "footer": {
-    "rights": "PixelRaj. Hak Cipta Dilindungi.",
+    "rights": "Pirex. Hak Cipta Dilindungi.",
     "contact": "Memiliki kendala atau masukan? Hubungi kami di:"
   },
   "mockup": {

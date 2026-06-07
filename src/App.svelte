@@ -2358,12 +2358,12 @@
 
   async function loadProjectDirectly(id) {
     isOpeningProject = true;
-    console.log("[PixelRaj] loadProjectDirectly start, id:", id);
+    console.log("[Pirex] loadProjectDirectly start, id:", id);
 
     // Failsafe 10 detik
     const failsafeTimer = setTimeout(() => {
       if (isOpeningProject) {
-        console.warn("[PixelRaj] 10s failsafe triggered!");
+        console.warn("[Pirex] 10s failsafe triggered!");
         isOpeningProject = false;
         joined = false;
         showToast("Gagal memuat proyek. Silakan coba lagi.", "error");
@@ -2371,7 +2371,7 @@
     }, 10000);
 
     try {
-      console.log("[PixelRaj] Fetching from Supabase...");
+      console.log("[Pirex] Fetching from Supabase...");
       const fetchPromise = supabase
         .from("projects")
         .select("*")
@@ -2379,7 +2379,7 @@
         .maybeSingle();
       
       const { data, error } = await withTimeout(fetchPromise, 6000);
-      console.log("[PixelRaj] Supabase result:", data ? "found" : "null", "error:", error?.message);
+      console.log("[Pirex] Supabase result:", data ? "found" : "null", "error:", error?.message);
       
       if (error) throw error;
       if (data) {
@@ -2393,32 +2393,32 @@
         isOfflineMode = false;
         // Set joined TERAKHIR agar editor baru render setelah data siap
         joined = true;
-        console.log("[PixelRaj] joined=true (from Supabase)");
+        console.log("[Pirex] joined=true (from Supabase)");
         setTimeout(async () => {
           try {
             await initCanvases();
-            console.log("[PixelRaj] initCanvases done");
+            console.log("[Pirex] initCanvases done");
           } catch (canvasErr) {
-            console.error("[PixelRaj] initCanvases gagal:", canvasErr);
+            console.error("[Pirex] initCanvases gagal:", canvasErr);
           }
         }, 200);
       } else {
-        console.log("[PixelRaj] No data from Supabase, trying local...");
+        console.log("[Pirex] No data from Supabase, trying local...");
         await loadProjectFromLocal(id);
       }
     } catch (err) {
-      console.error("[PixelRaj] Supabase fetch error:", err.message || err);
+      console.error("[Pirex] Supabase fetch error:", err.message || err);
       isOfflineMode = true;
       try {
         await loadProjectFromLocal(id);
       } catch (localErr) {
-        console.error("[PixelRaj] Local also failed:", localErr);
+        console.error("[Pirex] Local also failed:", localErr);
         showToast("Proyek tidak ditemukan.", "error");
       }
     } finally {
       clearTimeout(failsafeTimer);
       isOpeningProject = false;
-      console.log("[PixelRaj] loadProjectDirectly done. joined:", joined, "isOpeningProject:", isOpeningProject);
+      console.log("[Pirex] loadProjectDirectly done. joined:", joined, "isOpeningProject:", isOpeningProject);
     }
   }
 
@@ -8402,7 +8402,7 @@
         : ''}"
     >
       <div class="sidebar-brand">
-        <h2>PixelRaj</h2>
+        <h2>Pirex</h2>
         <button
           class="btn-icon mobile-only"
           style="margin-left: auto;"
@@ -8884,7 +8884,7 @@
         >
           <ArrowLeft size={16} />
         </button>
-        <h2 class="logo-text-xs hide-mobile">PixelRaj</h2>
+        <h2 class="logo-text-xs hide-mobile">Pirex</h2>
 
         <!-- File Dropdown -->
         <div

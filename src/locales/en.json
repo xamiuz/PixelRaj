@@ -12,7 +12,7 @@
   "features": {
     "title1": "Designed for Professionals,",
     "title2": "Easy for Beginners",
-    "subtitle": "PixelRaj brings studio-grade tools directly to your browser. No installation, no complex setup.",
+    "subtitle": "Pirex brings studio-grade tools directly to your browser. No installation, no complex setup.",
     "f1_title": "High Performance",
     "f1_desc": "Powered by WebGL for blazing-fast rendering, even on high-resolution canvases up to 4K.",
     "f2_title": "Unlimited Layer System",
@@ -35,8 +35,8 @@
   "testimonials": {
     "title1": "Has Inspired",
     "title2": "Thousands of Creators",
-    "subtitle": "See how PixelRaj helps artists and developers bring their crazy ideas to life.",
-    "t1_quote": "\"The real-time drawing experience on PixelRaj is truly incredible! There's no lag at all when I stroke the brush, very smooth for making my solo game assets.\"",
+    "subtitle": "See how Pirex helps artists and developers bring their crazy ideas to life.",
+    "t1_quote": "\"The real-time drawing experience on Pirex is truly incredible! There's no lag at all when I stroke the brush, very smooth for making my solo game assets.\"",
     "t1_author": "Pandu Wirayuda",
     "t1_role": "Solo Game Developer",
     "t2_quote": "\"This platform is amazing. I can create pixel art and animate it right here. The character assets I made are ready to be exported for my game engine needs!\"",
@@ -54,7 +54,7 @@
     "btn": "Start Drawing Now"
   },
   "footer": {
-    "rights": "PixelRaj. All Rights Reserved.",
+    "rights": "Pirex. All Rights Reserved.",
     "contact": "Have issues or feedback? Contact us at:"
   },
   "mockup": {

@@ -38,7 +38,7 @@
       <div class="icon-wrapper">
         <Sparkles size={28} class="hero-icon" />
       </div>
-      <h2>PixelRaj</h2>
+      <h2>Pirex</h2>
 
       <p>{isSignUp ? $t('login.signup_desc') : $t('login.login_desc')}</p>
     </div>

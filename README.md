@@ -1,6 +1,6 @@
-# PixelRaj - Premium Pixel Art Editor 🎨
+# Pirex - Premium Pixel Art Editor 🎨
 
-PixelRaj adalah platform editor *pixel art* kolaboratif berbasis web yang didesain secara modern dan interaktif. Dibangun dengan ekosistem **Svelte + Vite** untuk performa instan (tanpa *lag* saat memproses grid piksel dalam jumlah besar) serta ditenagai oleh **Supabase** untuk sinkronisasi menggambar *real-time* dengan seniman lain di seluruh dunia.
+Pirex adalah platform editor *pixel art* kolaboratif berbasis web yang didesain secara modern dan interaktif. Dibangun dengan ekosistem **Svelte + Vite** untuk performa instan (tanpa *lag* saat memproses grid piksel dalam jumlah besar) serta ditenagai oleh **Supabase** untuk sinkronisasi menggambar *real-time* dengan seniman lain di seluruh dunia.
 
 ## ✨ Fitur Unggulan
 
@@ -10,7 +10,7 @@ PixelRaj adalah platform editor *pixel art* kolaboratif berbasis web yang didesa
   * ✏️ **Pencil & Eraser:** Alat gambar dasar dengan akurasi vektor 1:1 tanpa *blur/anti-aliasing*.
   * 🪣 **Paint Bucket (Fill):** Mewarnai area tertutup dengan algoritma *flood-fill* instan.
   * 📏 **Shape Tools:** Menggambar Garis, Persegi, dan Lingkaran secara presisi.
-* **Sistem Manajemen Proyek:** Simpan ke *cloud* atau ekspor ke berkas biner `.bin` khusus PixelRaj. Terdapat fitur *password-protection* (Proteksi Kata Sandi) untuk proyek premium.
+* **Sistem Manajemen Proyek:** Simpan ke *cloud* atau ekspor ke berkas biner `.bin` khusus Pirex. Terdapat fitur *password-protection* (Proteksi Kata Sandi) untuk proyek premium.
 * **Fitur Animasi (Animator Panel):** Buat animasi *frame-by-frame* dan langsung saksikan *preview*-nya (mendukung pengaturan FPS & Onion Skinning).
 * **Responsif Sepenuhnya:** Tampilan Kanvas dan *tools* yang disesuaikan (*mobile-friendly*) untuk layar sentuh Android/iOS.
 

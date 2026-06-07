@@ -139,7 +139,7 @@
     <div class="navbar-pill">
       <div class="logo">
         <div class="logo-icon"><Palette size={20} color="#fff" /></div>
-        <span>PixelRaj</span>
+        <span>Pirex</span>
       </div>
       <div class="nav-links">
         <select bind:value={$locale} style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 0.9rem;">
@@ -407,7 +407,7 @@
           <div class="mockup-menu-left">
             <div class="mockup-logo-text">
               <Palette size={16} color="#6366f1" />
-              <span>PixelRaj</span>
+              <span>Pirex</span>
             </div>
             <div class="mockup-doc-title">
               <FileIcon size={14} /> {$t('mockup.doc_desktop')}
@@ -993,7 +993,7 @@
     <div class="footer-content">
       <div class="footer-logo">
         <Palette size={20} color="#6366f1" />
-        <span>PixelRaj</span>
+        <span>Pirex</span>
       </div>
       <p>&copy; {new Date().getFullYear()} {$t('footer.rights')}</p>
       <p style="margin-top: 8px; font-size: 0.85rem; color: #94a3b8;">
