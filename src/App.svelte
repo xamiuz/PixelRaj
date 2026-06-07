@@ -11208,10 +11208,10 @@
         <button class="mobile-color-swatch" on:click={() => {showMobilePanel = true; mobilePanelTab = 'colors';}}>
           <span class="mobile-color-preview" style="background: {primaryColor}; width: 28px; height: 28px; display: inline-block; border-radius: 50%; border: 2px solid white;"></span>
         </button>
-        <button class="mobile-tool-btn" on:click={undo} disabled={$historyIndex <= 0} title="Undo">
+        <button class="mobile-tool-btn" on:click={undo} disabled={historyIndex <= 0} title="Undo">
           <UndoIcon size={24}/>
         </button>
-        <button class="mobile-tool-btn" on:click={redo} disabled={$historyIndex >= $history.length - 1} title="Redo">
+        <button class="mobile-tool-btn" on:click={redo} disabled={historyIndex >= historyList.length - 1} title="Redo">
           <RedoIcon size={24}/>
         </button>
         <button class="mobile-tool-btn" on:click={() => (showMobilePanel = !showMobilePanel)} title="Layer">
