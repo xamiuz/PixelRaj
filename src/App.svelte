@@ -2208,20 +2208,46 @@
       // Pertahankan proyek lokal yang belum tersinkronisasi ke remote (tidak ada di remoteData)
       const remoteIds = new Set(remoteData.map((item) => item.id));
       const unsyncedLocal = localData.filter(
-        (item) => item && item.id && !remoteIds.has(item.id),
+        (item) => item && item.id && !remoteIds.has(item.id) && (!item.owner_id || item.owner_id === currentUserId),
       );
 
       // Sinkronisasi otomatis proyek lokal yang belum ada di remote
       if (unsyncedLocal.length > 0 && currentUserId) {
-        Promise.all(
-          unsyncedLocal.map((item) =>
-            supabase.from("projects").upsert({
-              id: item.id,
-              user_id: currentUserId,
-              project_data: item.project_data || item,
-            }),
-          ),
-        ).catch((e) => console.error("Auto-sync error:", e));
+        await Promise.all(
+          unsyncedLocal.map(async (item) => {
+            try {
+              // Cek dulu apakah proyek ini sudah ada di cloud dan siapa pemilik aslinya
+              const { data: existingProj } = await supabase
+                .from("projects")
+                .select("id, user_id")
+                .eq("id", item.id)
+                .maybeSingle();
+
+              // Jika proyek sudah ada dan milik orang lain (kolaborasi masa lalu), JANGAN upsert!
+              if (existingProj && existingProj.user_id !== currentUserId) {
+                item.owner_id = existingProj.user_id; // Tandai di lokal bahwa ini milik orang lain
+                return;
+              }
+
+              // Jika belum ada (proyek Guest) atau memang milik kita, baru lakukan upsert
+              const { error } = await supabase.from("projects").upsert({
+                id: item.id,
+                user_id: currentUserId,
+                project_data: item.project_data || item,
+              });
+
+              if (error) {
+                console.error("Auto-sync error for", item.id, error);
+              } else {
+                item.owner_id = currentUserId;
+              }
+            } catch (err) {
+              console.error("Gagal sinkronisasi item:", item.id, err);
+            }
+          })
+        );
+        // Simpan pembaruan status owner_id ke cache agar tidak dicek ulang di masa depan
+        await saveLocalProjects(localData);
       }
 
       // Gabungkan remote data dengan data lokal yang belum tersinkronisasi
