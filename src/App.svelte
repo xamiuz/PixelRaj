@@ -8498,12 +8498,6 @@
             Pulihkan Data
           </button>
         {/if}
-        <div style="margin-bottom: 8px; padding: 0;">
-          <select bind:value={$locale} style="width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-color); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 13px;">
-            <option value="id" style="background: var(--bg-panel); color: white;">🇮🇩 Bahasa Indonesia</option>
-            <option value="en" style="background: var(--bg-panel); color: white;">🇬🇧 English</option>
-          </select>
-        </div>
         <button
           class="btn-logout-sidebar"
           style="margin-bottom: 8px; justify-content: flex-start;"
@@ -8533,6 +8527,12 @@
             <Menu size={20} />
           </button>
           <span class="dashboard-title hide-mobile">{$t('dashboard.recents')}</span>
+          <div style="margin-left: 12px; display: flex; align-items: center;">
+            <select bind:value={$locale} style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 13px;">
+              <option value="id" style="background: var(--bg-panel); color: white;">🇮🇩 ID</option>
+              <option value="en" style="background: var(--bg-panel); color: white;">🇬🇧 EN</option>
+            </select>
+          </div>
           <div class="search-input-wrapper">
             <Search
               size={16}
