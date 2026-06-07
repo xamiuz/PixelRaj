@@ -9188,7 +9188,7 @@
 
           <!-- Transparansi Grid -->
           <div style="display: flex; align-items: center; gap: 6px;">
-            <span class="context-label">{$t("mockup.transparency")}</span
+            <span class="context-label">{$t("mockup.transparency")}</span>
             <input
               type="range"
               min="0.05"
@@ -10828,7 +10828,7 @@
                     {#if activeLayerIndex === layer.originalIndex}
                       <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
                       <div class="layer-opacity-row" on:click|stopPropagation>
-                        <span class="opacity-label">{$t("mockup.transparency")}</span
+                        <span class="opacity-label">{$t("mockup.transparency")}</span>
                         <input
                           type="range"
                           min="0"
@@ -11373,7 +11373,7 @@
               >
                 <span
                   style="font-size: 11px; color: var(--text-muted); white-space: nowrap;"
-                  >{$t("mockup.speed")}</span
+                  >{$t("mockup.speed")}</span>
                 >
                 <input
                   type="range"
