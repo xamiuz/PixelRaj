@@ -31,6 +31,7 @@
     Lock,
     Upload,
     Image as ImageIcon,
+    ArrowLeft,
     ArrowUp,
     ArrowDown,
     Film,
@@ -169,41 +170,102 @@
     <div class="mockup-mobile">
       <div class="mobile-device-frame">
         <!-- Top Bar -->
-        <div class="mobile-top-bar">
-          <div class="mobile-logo"><Palette size={16} color="#6366f1" /> <span>PixelRaj</span></div>
-          <div class="mobile-actions">
-            <button><UndoIcon size={16}/></button>
-            <button><RedoIcon size={16}/></button>
-            <button><LogOut size={16}/></button>
+        <header class="mockup-top-menu" style="border-radius: 36px 36px 0 0; padding: 12px 16px; border-bottom: none;">
+          <div class="mockup-menu-left" style="gap: 12px;">
+            <button class="mockup-icon-btn"><ArrowLeft size={16}/></button>
+            <div class="mockup-doc-title" style="background: transparent; padding: 0;">
+              <FileIcon size={14} /> monster jamur
+            </div>
+          </div>
+          <div class="mockup-menu-right" style="gap: 8px;">
+            <button class="mockup-icon-btn"><UndoIcon size={14}/></button>
+            <button class="mockup-icon-btn"><RedoIcon size={14}/></button>
+            <button class="mockup-btn-share" style="background: #10b981;"><Share2 size={12}/> Bagikan</button>
+          </div>
+        </header>
+
+        <!-- Tool Context Bar -->
+        <div class="mockup-context-bar" style="padding: 8px 12px; justify-content: flex-start; gap: 16px;">
+          <div class="mockup-context-item">
+            <span class="mockup-label">BENTUK KUAS:</span>
+            <div class="mockup-segmented">
+               <button class="active">Bulat</button>
+               <button>Kotak</button>
+            </div>
+          </div>
+          <div class="mockup-context-item">
+            <span class="mockup-label">UKURAN KUAS:</span>
+            <button class="mockup-icon-btn-small">-</button>
+            <div class="mockup-slider" style="width: 40px;"></div>
           </div>
         </div>
-        
-        <!-- Canvas -->
-        <div class="mobile-canvas-area">
-          <div class="mockup-canvas">
-            <div class="pixel" style="top:20%; left:40%; background: #a855f7;"></div>
-            <div class="pixel" style="top:20%; left:50%; background: #a855f7;"></div>
-            <div class="pixel" style="top:30%; left:30%; background: #a855f7;"></div>
-            <div class="pixel" style="top:30%; left:60%; background: #a855f7;"></div>
-            <div class="pixel" style="top:40%; left:30%; background: #6366f1;"></div>
-            <div class="pixel" style="top:40%; left:60%; background: #6366f1;"></div>
-            <div class="pixel" style="top:50%; left:30%; background: #6366f1;"></div>
-            <div class="pixel" style="top:50%; left:60%; background: #6366f1;"></div>
-            <div class="pixel" style="top:60%; left:40%; background: #6366f1;"></div>
-            <div class="pixel" style="top:60%; left:50%; background: #6366f1;"></div>
-            <div class="pixel" style="top:70%; left:40%; background: #a855f7;"></div>
-            <div class="pixel" style="top:70%; left:50%; background: #a855f7;"></div>
+
+        <!-- Body area with left toolbar and canvas -->
+        <div style="display: flex; flex: 1; overflow: hidden; position: relative;">
+          <!-- Left Toolbar -->
+          <div class="mockup-toolbar-vertical" style="width: 45px; z-index: 2; border-right: 1px solid rgba(255,255,255,0.05);">
+            <button class="mockup-tool-btn"><BoxSelect size={16}/></button>
+            <button class="mockup-tool-btn"><Move size={16}/></button>
+            <button class="mockup-tool-btn active"><Edit2 size={16}/></button>
+            <button class="mockup-tool-btn"><Eraser size={16}/></button>
+            <button class="mockup-tool-btn"><PaintBucket size={16}/></button>
+            <button class="mockup-tool-btn"><Wand2 size={16}/></button>
+            <button class="mockup-tool-btn"><UndoIcon size={16} style="transform: rotate(180deg);"/></button>
+            <button class="mockup-tool-btn"><Slash size={16}/></button>
+            <button class="mockup-tool-btn"><Square size={16}/></button>
+            <div style="flex: 1;"></div>
+            <button class="mockup-tool-btn"><Maximize size={16}/></button>
+          </div>
+          
+          <!-- Canvas Area -->
+          <div class="mobile-canvas-area" style="flex: 1; padding: 0; background-position: center;">
+            <div class="mockup-canvas {activeFeature === 'animation' ? 'animating' : ''}" style="width: 160px; height: 160px; background: transparent; box-shadow: none;">
+               <!-- Mushroom Pixel Art approximation -->
+               <div class="pixel" style="top:20%; left:50%; width:10%; height:10%; background:#7dd3fc;"></div>
+               <div class="pixel" style="top:20%; left:60%; width:10%; height:10%; background:#38bdf8;"></div>
+               <div class="pixel" style="top:30%; left:40%; width:10%; height:10%; background:#38bdf8;"></div>
+               <div class="pixel" style="top:30%; left:50%; width:10%; height:10%; background:#0284c7;"></div>
+               <div class="pixel" style="top:30%; left:60%; width:10%; height:10%; background:#0284c7;"></div>
+               <div class="pixel" style="top:30%; left:70%; width:10%; height:10%; background:#38bdf8;"></div>
+               <div class="pixel" style="top:40%; left:30%; width:10%; height:10%; background:#7dd3fc;"></div>
+               <div class="pixel" style="top:40%; left:40%; width:10%; height:10%; background:#0284c7;"></div>
+               <div class="pixel" style="top:40%; left:50%; width:10%; height:10%; background:#0284c7;"></div>
+               <div class="pixel" style="top:40%; left:60%; width:10%; height:10%; background:#0284c7;"></div>
+               <div class="pixel" style="top:40%; left:70%; width:10%; height:10%; background:#0284c7;"></div>
+               <div class="pixel" style="top:50%; left:30%; width:10%; height:10%; background:#ffffff;"></div>
+               <div class="pixel" style="top:50%; left:40%; width:10%; height:10%; background:#ffffff;"></div>
+               <div class="pixel" style="top:50%; left:50%; width:10%; height:10%; background:#0284c7;"></div>
+               <div class="pixel" style="top:50%; left:60%; width:10%; height:10%; background:#0284c7;"></div>
+               <div class="pixel" style="top:50%; left:70%; width:10%; height:10%; background:#0ea5e9;"></div>
+               <div class="pixel" style="top:60%; left:40%; width:10%; height:10%; background:#ef4444;"></div>
+               <div class="pixel" style="top:60%; left:50%; width:10%; height:10%; background:#ef4444;"></div>
+               <div class="pixel" style="top:60%; left:70%; width:10%; height:10%; background:#047857;"></div>
+               <div class="pixel" style="top:70%; left:40%; width:10%; height:10%; background:#ef4444;"></div>
+               <div class="pixel" style="top:70%; left:50%; width:10%; height:10%; background:#ef4444;"></div>
+               <div class="pixel" style="top:70%; left:70%; width:10%; height:10%; background:#047857;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coordinate / Zoom Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 12px; background: #111827; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.7rem; color: #94a3b8; font-family: monospace;">
+          <div>X: 61 Y: 46</div>
+          <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 12px;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background: #fff;"></div>
+            <div style="width: 40px; height: 2px; background: rgba(255,255,255,0.2);"></div>
+            <span style="font-family: sans-serif; font-weight: 700; color: #fff;">1</span>
           </div>
         </div>
 
         <!-- Bottom Toolbar -->
-        <div class="mobile-bottom-bar">
-          <button class="mobile-tool active"><Edit2 size={20}/></button>
-          <button class="mobile-tool"><Eraser size={20}/></button>
-          <button class="mobile-tool"><PaintBucket size={20}/></button>
-          <button class="mobile-tool"><Square size={20}/></button>
-          <button class="mobile-tool"><Circle size={20}/></button>
-          <div class="mobile-color-picker" style="background: #00f0ff;"></div>
+        <div class="mobile-bottom-bar" style="border-radius: 0 0 36px 36px; padding: 12px 20px 24px; justify-content: space-around;">
+          <button class="mobile-tool"><Eraser size={20} color="#94a3b8"/></button>
+          <div class="mobile-color-picker" style="background: transparent; border: 2px solid #cbd5e1; display:flex; align-items:center; justify-content:center;">
+             <div style="width:16px; height:16px; border-radius:50%; background:#0f172a; border: 1px solid #334155;"></div>
+          </div>
+          <button class="mobile-tool"><UndoIcon size={20} color="#334155"/></button>
+          <button class="mobile-tool"><RedoIcon size={20} color="#334155"/></button>
+          <button class="mobile-tool"><Layers size={20} color="#94a3b8"/></button>
         </div>
       </div>
     </div>
