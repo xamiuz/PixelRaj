@@ -4090,8 +4090,8 @@
       lastPenTime = Date.now();
       activePointers.clear(); // Pen membatalkan semua touch sebelumnya (termasuk palm)
     } else if (e.pointerType === "touch") {
-      // Abaikan kepalan/telapak tangan atau touch setelah pen digunakan
-      if (e.width > 25 || e.height > 25 || Date.now() - lastPenTime < 1500) {
+      // Abaikan touch setelah pen digunakan (palm rejection)
+      if (Date.now() - lastPenTime < 1500) {
         return; // Jangan diproses sama sekali
       }
     }
@@ -4451,7 +4451,8 @@
     if (e.pointerType === "pen") {
       lastPenTime = Date.now();
     } else if (e.pointerType === "touch") {
-      if (e.width > 25 || e.height > 25 || Date.now() - lastPenTime < 1500) {
+      // Abaikan touch setelah pen digunakan (palm rejection)
+      if (Date.now() - lastPenTime < 1500) {
         return; // Tolak gerakan dari palm
       }
     }
