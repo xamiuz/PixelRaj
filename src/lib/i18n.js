@@ -7,7 +7,14 @@ const translations = {
   en
 };
 
-export const locale = writable('id'); // Default language is Indonesian
+const savedLocale = typeof localStorage !== 'undefined' ? localStorage.getItem('pixellab_locale') || 'id' : 'id';
+export const locale = writable(savedLocale);
+
+locale.subscribe(val => {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('pixellab_locale', val);
+  }
+});
 
 export const t = derived(locale, ($locale) => (key) => {
   let result = translations[$locale];
