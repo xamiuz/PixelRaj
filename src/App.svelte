@@ -13507,7 +13507,8 @@
   .app-container.focus-mode .top-menu-bar,
   .app-container.focus-mode .tool-context-bar,
   .app-container.focus-mode .toolbar-vertical,
-  .app-container.focus-mode .sidebar-wrapper {
+  .app-container.focus-mode .sidebar-wrapper,
+  .app-container.focus-mode .timeline-panel {
     display: none !important;
   }
 
