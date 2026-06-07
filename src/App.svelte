@@ -80,6 +80,7 @@
   import PremiumLoginModal from "./components/modals/PremiumLoginModal.svelte";
   import ResetPasswordModal from "./components/modals/ResetPasswordModal.svelte";
   import ShareProjectModal from "./components/modals/ShareProjectModal.svelte";
+  import OutlineModal from "./components/modals/OutlineModal.svelte";
   import LandingPage from "./components/pages/LandingPage.svelte";
   import { theme } from "./store.js";
 
@@ -181,6 +182,7 @@
   let isOpeningProject = false;
   let showCreateProjectModal = false;
   let showShareModal = false;
+  let showOutlineModal = false;
   let showFileMenu = false;
 
   // --- STATE ALAT TRANSFORMASI LANGSUNG (MOVE, SCALE, ROTATE) ---
@@ -3384,7 +3386,12 @@
     }
   }
 
-  function autoOutlineLayer() {
+  function handleOutlineApply(event) {
+    const { size, color, shape } = event.detail;
+    autoOutlineLayer(size, color, shape);
+  }
+
+  function autoOutlineLayer(size = 1, color = primaryColor, shape = "circle") {
     if (activeLayerIndex === null) return;
     const layer = project.frames[activeFrameIndex].layers[activeLayerIndex];
     if (!layer || layer.locked || !layer.visible) {
@@ -3402,6 +3409,8 @@
     };
 
     const outlinePixels = [];
+    const radius = size;
+
     for (let y = 0; y < project.height; y++) {
       for (let x = 0; x < project.width; x++) {
         if (activeSelection) {
@@ -3416,12 +3425,29 @@
         }
 
         if (getAlpha(x, y) === 0) {
-          if (
-            getAlpha(x - 1, y) > 0 ||
-            getAlpha(x + 1, y) > 0 ||
-            getAlpha(x, y - 1) > 0 ||
-            getAlpha(x, y + 1) > 0
-          ) {
+          let hasOpaqueNeighbor = false;
+          for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+              if (dx === 0 && dy === 0) continue;
+              
+              let inShape = false;
+              if (shape === "square") {
+                inShape = true;
+              } else if (shape === "diamond") {
+                inShape = Math.abs(dx) + Math.abs(dy) <= radius;
+              } else {
+                inShape = Math.sqrt(dx*dx + dy*dy) <= radius + 0.5;
+              }
+              
+              if (inShape && getAlpha(x + dx, y + dy) > 0) {
+                hasOpaqueNeighbor = true;
+                break;
+              }
+            }
+            if (hasOpaqueNeighbor) break;
+          }
+
+          if (hasOpaqueNeighbor) {
             outlinePixels.push({ x, y });
           }
         }
@@ -3431,7 +3457,7 @@
     if (outlinePixels.length > 0) {
       let updatedAny = false;
       for (const p of outlinePixels) {
-        setPixelColor(layer.id, p.x, p.y, primaryColor);
+        setPixelColor(layer.id, p.x, p.y, color);
         updatedAny = true;
       }
 
@@ -8171,6 +8197,12 @@
   on:toast={(e) => showToast(e.detail.msg, e.detail.type)}
 />
 
+<OutlineModal
+  bind:showModal={showOutlineModal}
+  defaultColor={primaryColor}
+  on:apply={handleOutlineApply}
+/>
+
 <!-- ==========================================================================
      2. DASHBOARD PROYEK (SUDAH LOGIN, BELUM MASUK KANVAS)
      ========================================================================== -->
@@ -9171,7 +9203,7 @@
           bind:selectedTool
           bind:isMirrorX
           on:transformTool={activateTransformTool}
-          on:autoOutline={autoOutlineLayer}
+          on:autoOutline={() => (showOutlineModal = true)}
           on:toggleFocusMode={() => {
             focusMode = !focusMode;
             showToast(
