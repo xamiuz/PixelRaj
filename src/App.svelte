@@ -11210,7 +11210,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="mobile-sliders">
         <div class="slider-container">
-          <input type="range" min="1" max="100" bind:value={brushSize} class="brush-slider" />
+          <input type="range" min="1" max="200" bind:value={brushSize} class="brush-slider" />
           <span class="slider-value">{brushSize}</span>
         </div>
       </div>
@@ -15026,20 +15026,33 @@
     gap: 8px;
   }
   .brush-slider {
+    -webkit-appearance: none;
+    appearance: none;
     flex: 1;
     height: 4px;
-    appearance: none;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     outline: none;
+    margin: 0;
   }
   .brush-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
     appearance: none;
     width: 16px;
     height: 16px;
     border-radius: 50%;
     background: white;
     cursor: pointer;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+  }
+  .brush-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
   }
   .slider-value {
     color: white;
