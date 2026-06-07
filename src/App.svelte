@@ -2020,7 +2020,14 @@
     const roomParam = urlParams.get("project");
     if (roomParam) {
       projectId = roomParam;
-      loadProjectDirectly(roomParam);
+      // Tunggu auth selesai sebelum load proyek agar Supabase RLS
+      // tidak menolak request (kritis di Android yang lambat)
+      supabase.auth.getSession().then(() => {
+        loadProjectDirectly(roomParam);
+      }).catch(() => {
+        // Jika getSession gagal, tetap coba load (mungkin proyek publik)
+        loadProjectDirectly(roomParam);
+      });
     }
 
     const savedPalette = localStorage.getItem("pixellab_palette");
@@ -2316,6 +2323,15 @@
 
   async function loadProjectDirectly(id) {
     isOpeningProject = true;
+
+    // Failsafe: paksa overlay hilang setelah 20 detik agar tidak macet selamanya
+    const failsafeTimer = setTimeout(() => {
+      if (isOpeningProject) {
+        console.warn("loadProjectDirectly: failsafe timeout triggered");
+        isOpeningProject = false;
+      }
+    }, 20000);
+
     try {
       const fetchPromise = supabase
         .from("projects")
@@ -2323,7 +2339,7 @@
         .eq("id", id)
         .maybeSingle();
       
-      const { data, error } = await withTimeout(fetchPromise, 15000);
+      const { data, error } = await withTimeout(fetchPromise, 12000);
       if (error) throw error;
       if (data) {
         project = data.project_data;
@@ -2334,7 +2350,15 @@
         setupRealtime(id);
         joined = true;
         initHistory();
-        setTimeout(initCanvases, 100);
+        // Bungkus initCanvases dalam try/catch agar crash tidak menyebabkan
+        // overlay loading "Membuka Proyek..." tetap tampil selamanya
+        setTimeout(async () => {
+          try {
+            await initCanvases();
+          } catch (canvasErr) {
+            console.error("initCanvases gagal:", canvasErr);
+          }
+        }, 150);
         isOfflineMode = false;
       } else {
         await loadProjectFromLocal(id);
@@ -2345,8 +2369,13 @@
         err.message || err,
       );
       isOfflineMode = true;
-      await loadProjectFromLocal(id);
+      try {
+        await loadProjectFromLocal(id);
+      } catch (localErr) {
+        console.error("loadProjectFromLocal juga gagal:", localErr);
+      }
     } finally {
+      clearTimeout(failsafeTimer);
       isOpeningProject = false;
     }
   }
@@ -2381,6 +2410,14 @@
   async function openProject(proj) {
     if (isOpeningProject) return;
     isOpeningProject = true;
+
+    const failsafeTimer = setTimeout(() => {
+      if (isOpeningProject) {
+        console.warn("openProject: failsafe timeout triggered");
+        isOpeningProject = false;
+      }
+    }, 20000);
+
     try {
       const fetchPromise = supabase
         .from("projects")
@@ -2388,7 +2425,7 @@
         .eq("id", proj.id)
         .maybeSingle();
       
-      const { data, error } = await withTimeout(fetchPromise, 15000);
+      const { data, error } = await withTimeout(fetchPromise, 12000);
       if (error) throw error;
 
       if (data) {
@@ -2403,7 +2440,13 @@
         window.history.pushState({ path: newUrl }, "", newUrl);
         joined = true;
         initHistory();
-        setTimeout(initCanvases, 100);
+        setTimeout(async () => {
+          try {
+            await initCanvases();
+          } catch (canvasErr) {
+            console.error("initCanvases gagal:", canvasErr);
+          }
+        }, 150);
         isOfflineMode = false;
         showToast("Proyek berhasil dimuat!");
       } else {
@@ -2419,12 +2462,17 @@
         err.message || err,
       );
       isOfflineMode = true;
-      const success = await loadProjectFromLocal(proj.id);
-      if (success) {
-        const newUrl = `${window.location.origin}${window.location.pathname}?project=${proj.id}`;
-        window.history.pushState({ path: newUrl }, "", newUrl);
+      try {
+        const success = await loadProjectFromLocal(proj.id);
+        if (success) {
+          const newUrl = `${window.location.origin}${window.location.pathname}?project=${proj.id}`;
+          window.history.pushState({ path: newUrl }, "", newUrl);
+        }
+      } catch (localErr) {
+        console.error("loadProjectFromLocal juga gagal:", localErr);
       }
     } finally {
+      clearTimeout(failsafeTimer);
       isOpeningProject = false;
     }
   }
