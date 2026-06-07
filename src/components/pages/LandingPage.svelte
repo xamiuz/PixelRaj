@@ -1873,6 +1873,13 @@
     .use-case-section, .features-section, .testimonials-section, .bottom-cta-section {
       padding: 60px 15px;
     }
+    .bottom-cta-container {
+      padding: 40px 20px;
+      border-radius: 20px;
+    }
+    .bottom-cta-container p {
+      font-size: 0.95rem;
+    }
     .pro-footer, .landing-footer {
       padding: 40px 15px;
       margin-top: 50px;
@@ -1886,6 +1893,7 @@
     .pro-footer p, .landing-footer p, .footer-text {
       font-size: 0.8rem;
       line-height: 1.5;
+      word-break: break-word;
     }
   }
 
