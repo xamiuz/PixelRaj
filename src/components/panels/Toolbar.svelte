@@ -144,36 +144,36 @@
 
 <style>
 .toolbar-vertical {
-  width: 48px;
+  width: 44px;
   background: var(--surface-light, #1e1e24);
   border-right: 1px solid var(--border-color, #333);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px 0;
-  gap: 8px;
+  padding: 4px 0;
+  gap: 4px;
   z-index: 100;
-  flex-shrink: 0;
+  flex-shrink: 1; /* Allow shrinking so it doesn't break out of the grid */
   overflow: visible;
 }
 
 .tool-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   width: 100%;
   align-items: center;
 }
 .tool-btn {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   color: var(--text-color, #a1a1aa);
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
   padding: 0;
