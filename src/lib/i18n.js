@@ -7,7 +7,13 @@ const translations = {
   en
 };
 
-const savedLocale = typeof localStorage !== 'undefined' ? localStorage.getItem('pixellab_locale') || 'id' : 'id';
+let defaultLocale = 'id';
+if (typeof navigator !== 'undefined' && navigator.language) {
+  if (navigator.language.toLowerCase().startsWith('en')) {
+    defaultLocale = 'en';
+  }
+}
+const savedLocale = typeof localStorage !== 'undefined' ? localStorage.getItem('pixellab_locale') || defaultLocale : defaultLocale;
 export const locale = writable(savedLocale);
 
 locale.subscribe(val => {
