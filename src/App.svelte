@@ -8307,70 +8307,47 @@
   }
 
   function handleWheel(e) {
-    if (e.ctrlKey && e.deltaMode !== 0) {
-      // Ctrl + Mouse Wheel = Ubah ukuran brush
-      e.preventDefault();
-      if (e.deltaY < 0) {
-        brushSize = Math.min(128, brushSize + 1);
-      } else {
-        brushSize = Math.max(1, brushSize - 1);
-      }
-      return;
-    }
+    e.preventDefault();
 
-    // e.ctrlKey = true saat PINCH di touchpad
     if (e.ctrlKey) {
-      // === PINCH TO ZOOM (touchpad) atau Ctrl+Scroll (mouse) ===
-      // Zoom terpusat di posisi kursor agar lebih natural
+      // Ctrl + Scroll = Ubah ukuran brush
+      // Batasi kecepatan agar tidak terlalu liar di touchpad
+      wheelAccumulator += e.deltaY;
+      if (Math.abs(wheelAccumulator) > 10) {
+        if (wheelAccumulator < 0) {
+          brushSize = Math.min(128, brushSize + 1);
+        } else {
+          brushSize = Math.max(1, brushSize - 1);
+        }
+        wheelAccumulator = 0;
+      }
+    } else {
+      // Scroll biasa = Zoom (pusatkan di kursor agar natural)
       const zoomBefore = zoom / 100;
-      const delta = e.deltaY;
+      
+      // Sensitivitas zoom: lebih halus jika delta kecil (touchpad)
+      let zoomFactor = Math.abs(e.deltaY) < 15 ? 15 : 50;
+      let newZoom = zoom;
 
-      // Sensitivitas berbeda: touchpad deltaMode=0 (pixel), mouse deltaMode=1 (line)
-      let zoomFactor;
-      if (e.deltaMode === 0) {
-        // Touchpad pinch: deltaY dalam pixel, lebih halus
-        zoomFactor = 1 - delta * 0.005;
-      } else {
-        // Mouse wheel: step kasar
-        zoomFactor = delta < 0 ? 1.15 : 0.87;
+      if (e.deltaY < 0) {
+        newZoom = Math.min(10000, zoom + zoomFactor);
+      } else if (e.deltaY > 0) {
+        newZoom = Math.max(50, zoom - zoomFactor);
       }
 
-      const newZoom = Math.max(10, Math.min(10000, zoom * zoomFactor));
       const zoomAfter = newZoom / 100;
 
-      // Pusat zoom di kursor (bukan tengah layar) agar terasa seperti aplikasi grafis profesional
       if (canvasViewportEl) {
         const rect = canvasViewportEl.getBoundingClientRect();
         const cursorX = e.clientX - rect.left - rect.width / 2;
         const cursorY = e.clientY - rect.top - rect.height / 2;
 
-        // Sesuaikan translateX/Y agar piksel di bawah kursor tidak bergeser
         const scale = zoomAfter / zoomBefore;
         translateX = cursorX + (translateX - cursorX) * scale;
         translateY = cursorY + (translateY - cursorY) * scale;
       }
 
       zoom = newZoom;
-    } else if (
-      !e.shiftKey &&
-      Math.abs(e.deltaX) < 5 &&
-      e.deltaMode === 0 &&
-      !isDrawing
-    ) {
-      // === DUA JARI SCROLL VERTICAL (touchpad) → PAN VERTIKAL ===
-      // Deteksi: bukan Ctrl, bukan Shift, deltaX kecil (scroll vertikal murni), pixel mode
-      translateY -= e.deltaY * 0.8;
-    } else if (e.shiftKey || (e.deltaMode === 0 && Math.abs(e.deltaX) > 5)) {
-      // === SCROLL HORIZONTAL (touchpad dua jari geser kiri-kanan) → PAN HORIZONTAL ===
-      translateX -= (e.deltaX || e.deltaY) * 0.8;
-      translateY -= e.deltaY * 0.8;
-    } else {
-      // === MOUSE SCROLL BIASA (tanpa touchpad) → ZOOM ===
-      if (e.deltaY < 0) {
-        zoom = Math.min(10000, zoom + 50);
-      } else {
-        zoom = Math.max(50, zoom - 50);
-      }
     }
   }
 
