@@ -137,8 +137,8 @@
   <!-- Floating Navbar -->
   <nav class="navbar-wrapper">
     <div class="navbar-pill">
-      <div class="logo">
-        <div class="logo-icon"><Palette size={20} color="#fff" /></div>
+      <div class="logo" style="display: flex; align-items: center; gap: 12px;">
+        <img src="/logo.png" alt="Pirex Logo" style="width: 48px; height: 48px; image-rendering: pixelated; border-radius: 8px; filter: invert(1);" />
         <span>Pirex</span>
       </div>
       <div class="nav-links">
@@ -405,8 +405,8 @@
           on:mouseleave={() => (activeFeature = null)}
         >
           <div class="mockup-menu-left">
-            <div class="mockup-logo-text">
-              <Palette size={16} color="#6366f1" />
+            <div class="mockup-doc-brand" style="display: flex; align-items: center; gap: 8px;">
+              <img src="/logo.png" alt="Pirex Logo" style="width: 20px; height: 20px; image-rendering: pixelated;" />
               <span>Pirex</span>
             </div>
             <div class="mockup-doc-title">
@@ -821,8 +821,9 @@
 
           <!-- Pixel Artist -->
           <div class="use-case-item-new" use:reveal={{ delay: 300 }}>
-            <div class="uc-icon">
-              <Palette />
+            <div class="mockup-logo-text" style="display: flex; align-items: center; gap: 8px;">
+              <img src="/logo.png" alt="Pirex Logo" style="width: 32px; height: 32px; image-rendering: pixelated; border-radius: 4px; filter: invert(1);" />
+              <span style="font-size: 1.1rem; font-weight: bold;">Pirex</span>
             </div>
             <div class="uc-text">
               <h4>{$t('usecases.uc2_title')}</h4>
@@ -991,15 +992,16 @@
   <!-- FOOTER -->
   <footer class="pro-footer">
     <div class="footer-content">
-      <div class="footer-logo">
-        <Palette size={20} color="#6366f1" />
-        <span>Pirex</span>
+      <div class="footer-logo" style="display: flex; align-items: center; gap: 12px;">
+        <img src="/logo.png" alt="Pirex Logo" style="width: 40px; height: 40px; image-rendering: pixelated; border-radius: 6px; filter: invert(1);" />
+        <span style="font-size: 1.5rem; font-weight: bold;">Pirex</span>
       </div>
       <p>&copy; {new Date().getFullYear()} {$t('footer.rights')}</p>
-      <p style="margin-top: 8px; font-size: 0.85rem; color: #94a3b8;">
-        {$t('footer.contact')} <a
+      <p style="margin-top: 8px; font-size: 0.85rem; color: #94a3b8; display: flex; flex-direction: column; gap: 4px; padding-bottom: 40px;">
+        <span>{$t('footer.contact')}</span>
+        <a
           href="mailto:panduwirayuda12345@gmail.com"
-          style="color: #a855f7; text-decoration: none; font-weight: 500;"
+          style="color: #a855f7; text-decoration: none; font-weight: 500; word-break: break-all;"
           >panduwirayuda12345@gmail.com</a
         >
       </p>
@@ -1021,8 +1023,6 @@
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100vw;
-    height: 100vh;
     background-color: #030712;
     color: #f8fafc;
     font-family: "Inter", sans-serif;
@@ -1896,6 +1896,8 @@
     border: none;
     padding: 0;
     max-width: 1200px;
+    width: 100%;
+    box-sizing: border-box;
     text-align: center;
     backdrop-filter: none;
   }
@@ -1999,6 +2001,8 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .footer-logo {
     display: flex;
@@ -2038,6 +2042,8 @@
     align-items: center;
     text-align: center;
     gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .footer-logo {
     font-family: "Plus Jakarta Sans", sans-serif;
@@ -2070,7 +2076,11 @@
     display: none;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1024px) {
+    .pro-footer,
+    .landing-footer {
+      padding-bottom: 80px;
+    }
     .hero-section {
       padding-top: 100px;
     }
@@ -2262,7 +2272,7 @@
     }
     .pro-footer,
     .landing-footer {
-      padding: 40px 15px;
+      padding: 40px 15px 80px 15px;
       margin-top: 50px;
     }
     .footer-content {

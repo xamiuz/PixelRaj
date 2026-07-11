@@ -77,13 +77,21 @@
   import Toolbar from "./components/panels/Toolbar.svelte";
   import CreateFolderModal from "./components/modals/CreateFolderModal.svelte";
   import CreateProjectModal from "./components/modals/CreateProjectModal.svelte";
+  import ResizeCanvasModal from "./components/modals/ResizeCanvasModal.svelte";
   import PremiumLoginModal from "./components/modals/PremiumLoginModal.svelte";
   import ResetPasswordModal from "./components/modals/ResetPasswordModal.svelte";
   import ShareProjectModal from "./components/modals/ShareProjectModal.svelte";
   import OutlineModal from "./components/modals/OutlineModal.svelte";
   import LandingPage from "./components/pages/LandingPage.svelte";
+  import ChromeColorPicker from "./components/ChromeColorPicker.svelte";
   import { theme } from "./store.js";
   import { t, locale } from "./lib/i18n.js";
+
+  function handleMobilePipette() {
+    selectedTool = "picker";
+    showMobilePanel = false;
+    showToast("Gunakan sentuhan di kanvas untuk mengambil warna (Pipet)", "info");
+  }
 
   function toggleTheme() {
     $theme = $theme === "dark" ? "light" : "dark";
@@ -182,6 +190,7 @@
   let isLoadingProjects = false;
   let isOpeningProject = false;
   let showCreateProjectModal = false;
+  let showResizeCanvasModal = false;
   let showShareModal = false;
   let showOutlineModal = false;
   let showFileMenu = false;
@@ -777,10 +786,12 @@
       localStorage.setItem("pixellab_sidebar_width", sidebarWidth.toString());
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
     }
 
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
   }
 
   function startHeightResize(e) {
@@ -800,10 +811,12 @@
       localStorage.setItem("pixellab_layers_height", layersHeight.toString());
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
     }
 
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
   }
 
   function startLayerRename(index, name) {
@@ -953,10 +966,12 @@
       isResizingPreview = false;
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
     }
 
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
   }
 
   function startTimelineResize(e) {
@@ -993,10 +1008,12 @@
       );
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
     }
 
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
   }
 
   function toggleTimelineCollapse() {
@@ -1647,15 +1664,16 @@
       const c2 = theme === "light" ? "#e6e6e6" : "#3a3a3a";
       // Buat warna dengan opacity
       function hexToRgba(hex, a) {
-        const r = parseInt(hex.slice(1,3),16);
-        const g = parseInt(hex.slice(3,5),16);
-        const b = parseInt(hex.slice(5,7),16);
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
         return `rgba(${r},${g},${b},${a})`;
       }
       ctx.clearRect(0, 0, w, h);
       for (let y = 0; y < h; y += size) {
         for (let x = 0; x < w; x += size) {
-          const isEven = ((Math.floor(x / size) + Math.floor(y / size)) % 2 === 0);
+          const isEven =
+            (Math.floor(x / size) + Math.floor(y / size)) % 2 === 0;
           ctx.fillStyle = hexToRgba(isEven ? c1 : c2, opacity);
           ctx.fillRect(x, y, size, size);
         }
@@ -1663,11 +1681,11 @@
     }
     render(params);
     return {
-      update(newParams) { render(newParams); }
+      update(newParams) {
+        render(newParams);
+      },
     };
   }
-
-
 
   let gridSize = 8;
   let selectionGridSize = 0;
@@ -1984,9 +2002,16 @@
       console.error(event.reason);
     };
 
-    supabase.auth
-      .getSession()
-      .then(({ data: { session } }) => {
+    const authTimeout = setTimeout(() => {
+      isInitializingAuth = false;
+    }, 4000);
+
+    Promise.race([
+      supabase.auth.getSession(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000))
+    ])
+      .then((res) => {
+        const session = res?.data?.session;
         if (session) {
           authenticated = true;
           showLandingPage = false;
@@ -1997,14 +2022,19 @@
           showLandingPage = true;
         }
       })
+      .catch((err) => {
+        console.warn("Sesi auth error atau timeout:", err);
+        showLandingPage = true;
+      })
       .finally(() => {
+        clearTimeout(authTimeout);
         isInitializingAuth = false;
       });
 
     window.addEventListener("touchmove", blockTouchScroll, { passive: false });
 
     supabase.auth.onAuthStateChange((_event, session) => {
-      if (_event === 'PASSWORD_RECOVERY') {
+      if (_event === "PASSWORD_RECOVERY") {
         showResetPasswordModal = true;
       }
 
@@ -2046,14 +2076,16 @@
     }
 
     // Mobile detection
-    function checkMobile() {
-      isMobile = window.innerWidth <= 1024;
+    function checkDevice() {
+      if (typeof window !== "undefined") {
+        isMobile = window.innerWidth <= 800;
+      }
     }
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
 
     return () => {
-      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("resize", checkDevice);
     };
   });
 
@@ -2064,6 +2096,17 @@
       window.removeEventListener("touchmove", blockTouchScroll);
     }
   });
+
+  function translateAuthError(errorMsg) {
+    if (!errorMsg) return "Terjadi kesalahan.";
+    const msg = errorMsg.toLowerCase();
+    if (msg.includes("invalid login credentials")) return "Password atau email salah.";
+    if (msg.includes("user already registered")) return "Email ini sudah terdaftar.";
+    if (msg.includes("password should be at least")) return "Password minimal 6 karakter.";
+    if (msg.includes("email not confirmed")) return "Email belum diverifikasi. Cek inbox Anda.";
+    if (msg.includes("rate limit")) return "Terlalu banyak percobaan. Silakan tunggu sebentar.";
+    return errorMsg; // Fallback
+  }
 
   // --- AUTH LOGIC ---
   async function handleAuthEvent(e) {
@@ -2102,7 +2145,7 @@
         password: loginPassword,
       });
       if (error) {
-        showToast(`Gagal mendaftar: ${error.message}`, "error");
+        showToast(`Gagal mendaftar: ${translateAuthError(error.message)}`, "error");
       } else {
         showToast("Pendaftaran berhasil!", "success");
       }
@@ -2112,7 +2155,7 @@
         password: loginPassword,
       });
       if (error) {
-        showToast(`Gagal masuk: ${error.message}`, "error");
+        showToast(`Gagal masuk: ${translateAuthError(error.message)}`, "error");
       } else {
         showToast("Berhasil masuk!", "success");
       }
@@ -2127,7 +2170,7 @@
       },
     });
     if (error) {
-      showToast(`Gagal login dengan Google: ${error.message}`, "error");
+      showToast(`Gagal login dengan Google: ${translateAuthError(error.message)}`, "error");
     }
   }
 
@@ -2141,9 +2184,12 @@
       redirectTo: window.location.origin,
     });
     if (error) {
-      showToast(`Gagal: ${error.message}`, "error");
+      showToast(`Gagal: ${translateAuthError(error.message)}`, "error");
     } else {
-      showToast("Tautan reset password telah dikirim ke email Anda.", "success");
+      showToast(
+        "Tautan reset password telah dikirim ke email Anda.",
+        "success",
+      );
     }
   }
 
@@ -2153,11 +2199,13 @@
       return;
     }
     isResettingPassword = true;
-    const { error } = await supabase.auth.updateUser({ password: resetPasswordValue });
+    const { error } = await supabase.auth.updateUser({
+      password: resetPasswordValue,
+    });
     isResettingPassword = false;
-    
+
     if (error) {
-      showToast("Gagal mengubah password: " + error.message, "error");
+      showToast("Gagal mengubah password: " + translateAuthError(error.message), "error");
     } else {
       showToast("Password berhasil diperbarui!", "success");
       showResetPasswordModal = false;
@@ -2210,7 +2258,11 @@
       // Pertahankan proyek lokal yang belum tersinkronisasi ke remote (tidak ada di remoteData)
       const remoteIds = new Set(remoteData.map((item) => item.id));
       const unsyncedLocal = localData.filter(
-        (item) => item && item.id && !remoteIds.has(item.id) && (!item.owner_id || item.owner_id === currentUserId),
+        (item) =>
+          item &&
+          item.id &&
+          !remoteIds.has(item.id) &&
+          (!item.owner_id || item.owner_id === currentUserId),
       );
 
       // Sinkronisasi otomatis proyek lokal yang belum ada di remote
@@ -2246,7 +2298,7 @@
             } catch (err) {
               console.error("Gagal sinkronisasi item:", item.id, err);
             }
-          })
+          }),
         );
         // Simpan pembaruan status owner_id ke cache agar tidak dicek ulang di masa depan
         await saveLocalProjects(localData);
@@ -2342,8 +2394,8 @@
     return Promise.race([
       promise,
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout")), ms)
-      )
+        setTimeout(() => reject(new Error("Timeout")), ms),
+      ),
     ]);
   }
 
@@ -2377,10 +2429,15 @@
         .select("*")
         .eq("id", id)
         .maybeSingle();
-      
+
       const { data, error } = await withTimeout(fetchPromise, 6000);
-      console.log("[Pirex] Supabase result:", data ? "found" : "null", "error:", error?.message);
-      
+      console.log(
+        "[Pirex] Supabase result:",
+        data ? "found" : "null",
+        "error:",
+        error?.message,
+      );
+
       if (error) throw error;
       if (data) {
         project = data.project_data;
@@ -2418,7 +2475,12 @@
     } finally {
       clearTimeout(failsafeTimer);
       isOpeningProject = false;
-      console.log("[Pirex] loadProjectDirectly done. joined:", joined, "isOpeningProject:", isOpeningProject);
+      console.log(
+        "[Pirex] loadProjectDirectly done. joined:",
+        joined,
+        "isOpeningProject:",
+        isOpeningProject,
+      );
     }
   }
 
@@ -2449,10 +2511,7 @@
     } catch (e) {
       console.error("loadProjectFromLocal error:", e);
     }
-    showToast(
-      "Proyek tidak ditemukan di penyimpanan lokal.",
-      "error",
-    );
+    showToast("Proyek tidak ditemukan di penyimpanan lokal.", "error");
     return false;
   }
 
@@ -2473,7 +2532,7 @@
         .select("*")
         .eq("id", proj.id)
         .maybeSingle();
-      
+
       const { data, error } = await withTimeout(fetchPromise, 12000);
       if (error) throw error;
 
@@ -2796,11 +2855,7 @@
   }
   async function deleteFolder(folderId) {
     if (folderId === "root") return;
-    if (
-      confirm(
-        $t('dashboard.delete_folder_confirm'),
-      )
-    ) {
+    if (confirm($t("dashboard.delete_folder_confirm"))) {
       // Pindahkan semua proyek ke root
       let localData = await getLocalProjects();
 
@@ -3008,7 +3063,10 @@
                   );
                 }
               } else {
-                showToast("Proyek diimpor secara lokal (Mode Offline).", "success");
+                showToast(
+                  "Proyek diimpor secara lokal (Mode Offline).",
+                  "success",
+                );
               }
             }
             isOfflineMode = false;
@@ -3050,7 +3108,7 @@
           layers: [
             {
               id: "layer-1",
-              name: "Layer 1",
+              name: "Lapisan 1",
               visible: true,
               locked: false,
               opacity: 1,
@@ -3079,22 +3137,25 @@
     } else {
       isOfflineMode = true;
     }
-      
-      showCreateProjectModal = false;
-      projectId = cleanId;
-      projectOwnerId = currentUserId;
-      lastLayerUpdateSeq = 0;
-      broadcastSeq = 0;
-      project = newProject;
-      setupRealtime(cleanId);
 
-      const newUrl = `${window.location.origin}${window.location.pathname}?project=${projectId}`;
-      window.history.pushState({ path: newUrl }, "", newUrl);
-      joined = true;
-      initHistory();
-      setTimeout(initCanvases, 100);
-      showToast(isOfflineMode ? "Proyek baru (Offline Mode) berhasil dibuat!" : "Proyek baru berhasil dibuat!");
+    showCreateProjectModal = false;
+    projectId = cleanId;
+    projectOwnerId = currentUserId;
+    lastLayerUpdateSeq = 0;
+    broadcastSeq = 0;
+    project = newProject;
+    setupRealtime(cleanId);
 
+    const newUrl = `${window.location.origin}${window.location.pathname}?project=${projectId}`;
+    window.history.pushState({ path: newUrl }, "", newUrl);
+    joined = true;
+    initHistory();
+    setTimeout(initCanvases, 100);
+    showToast(
+      isOfflineMode
+        ? "Proyek baru (Offline Mode) berhasil dibuat!"
+        : "Proyek baru berhasil dibuat!",
+    );
   }
 
   async function saveToLocalCache(id, projectData) {
@@ -3397,6 +3458,26 @@
     return `#${r}${g}${b}`;
   }
 
+  function getCompositePixelColor(x, y) {
+    if (!ctxMain) return undefined;
+    const p = ctxMain.getImageData(x, y, 1, 1).data;
+    if (p[3] === 0) return undefined;
+    const r = p[0].toString(16).padStart(2, "0");
+    const g = p[1].toString(16).padStart(2, "0");
+    const b = p[2].toString(16).padStart(2, "0");
+    return `#${r}${g}${b}`;
+  }
+
+  function getFastPixelColor(imgData, x, y) {
+    if (!imgData || x < 0 || y < 0 || x >= imgData.width || y >= imgData.height) return undefined;
+    const idx = (y * imgData.width + x) * 4;
+    if (imgData.data[idx+3] === 0) return undefined;
+    const r = imgData.data[idx].toString(16).padStart(2, "0");
+    const g = imgData.data[idx+1].toString(16).padStart(2, "0");
+    const b = imgData.data[idx+2].toString(16).padStart(2, "0");
+    return `#${r}${g}${b}`;
+  }
+
   function setPixelColor(layerId, x, y, color) {
     const { ctx } = getLayerCanvas(layerId, project.width, project.height);
     if (!color) {
@@ -3461,16 +3542,16 @@
           for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
               if (dx === 0 && dy === 0) continue;
-              
+
               let inShape = false;
               if (shape === "square") {
                 inShape = true;
               } else if (shape === "diamond") {
                 inShape = Math.abs(dx) + Math.abs(dy) <= radius;
               } else {
-                inShape = Math.sqrt(dx*dx + dy*dy) <= radius + 0.5;
+                inShape = Math.sqrt(dx * dx + dy * dy) <= radius + 0.5;
               }
-              
+
               // Only consider a neighbor opaque if its alpha >= 128
               if (inShape && getAlpha(x + dx, y + dy) >= 128) {
                 hasOpaqueNeighbor = true;
@@ -3502,6 +3583,61 @@
     }
   }
 
+  function resizeProjectCanvas(event) {
+    const { width: newW, height: newH, anchor } = event.detail;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    if (anchor.includes('center')) {
+      if (anchor === 'top-center' || anchor === 'bottom-center' || anchor === 'center') {
+        offsetX = Math.floor((newW - project.width) / 2);
+      }
+      if (anchor === 'center-left' || anchor === 'center-right' || anchor === 'center') {
+        offsetY = Math.floor((newH - project.height) / 2);
+      }
+    }
+    
+    if (anchor.includes('right')) offsetX = newW - project.width;
+    if (anchor.includes('bottom')) offsetY = newH - project.height;
+    
+    const backups = new Map();
+    for (const [layerId, canvas] of layerCanvases.entries()) {
+      const temp = document.createElement('canvas');
+      temp.width = canvas.width;
+      temp.height = canvas.height;
+      temp.getContext('2d', { willReadFrequently: true }).drawImage(canvas, 0, 0);
+      backups.set(layerId, temp);
+    }
+
+    project.width = newW;
+    project.height = newH;
+    
+    for (const [layerId, backup] of backups.entries()) {
+      const { canvas, ctx } = getLayerCanvas(layerId, newW, newH);
+      ctx.clearRect(0, 0, newW, newH);
+      ctx.drawImage(backup, offsetX, offsetY);
+      
+      let foundLayer = null;
+      for (const frame of project.frames) {
+        if (!frame.layers) continue;
+        for (const layer of frame.layers) {
+          if (layer.id === layerId) { foundLayer = layer; break; }
+        }
+        if (foundLayer) break;
+      }
+      if (foundLayer) commitLayerBase64(foundLayer, false);
+    }
+    
+    if (mainCanvas) {
+      mainCanvas.width = newW;
+      mainCanvas.height = newH;
+      if (ctxMain) ctxMain.clearRect(0, 0, newW, newH);
+    }
+    renderAllLayers();
+    updateThumbnail();
+    
+    saveHistoryState("Ubah Ukuran Canvas");
+  }
 
   function commitLayerBase64(layer, keepUnclipped = false) {
     if (!layer || !layer.id) return;
@@ -3510,30 +3646,36 @@
 
     if (!keepUnclipped) {
       const uCanvasOld = layerUnclippedCanvases.get(layer.id);
-      
-      if (uCanvasOld && (layer.unclippedX < 0 || layer.unclippedY < 0 || layer.unclippedX + uCanvasOld.width > project.width || layer.unclippedY + uCanvasOld.height > project.height)) {
-         const oldX = layer.unclippedX || 0;
-         const oldY = layer.unclippedY || 0;
-         
-         const minX = Math.min(oldX, 0);
-         const minY = Math.min(oldY, 0);
-         const maxX = Math.max(oldX + uCanvasOld.width, project.width);
-         const maxY = Math.max(oldY + uCanvasOld.height, project.height);
 
-         const newUCanvas = document.createElement("canvas");
-         newUCanvas.width = Math.max(1, maxX - minX);
-         newUCanvas.height = Math.max(1, maxY - minY);
-         const newUCtx = newUCanvas.getContext("2d");
-         newUCtx.imageSmoothingEnabled = false;
+      if (
+        uCanvasOld &&
+        (layer.unclippedX < 0 ||
+          layer.unclippedY < 0 ||
+          layer.unclippedX + uCanvasOld.width > project.width ||
+          layer.unclippedY + uCanvasOld.height > project.height)
+      ) {
+        const oldX = layer.unclippedX || 0;
+        const oldY = layer.unclippedY || 0;
 
-         newUCtx.drawImage(uCanvasOld, oldX - minX, oldY - minY);
-         newUCtx.clearRect(0 - minX, 0 - minY, project.width, project.height);
-         newUCtx.drawImage(canvas, 0 - minX, 0 - minY);
+        const minX = Math.min(oldX, 0);
+        const minY = Math.min(oldY, 0);
+        const maxX = Math.max(oldX + uCanvasOld.width, project.width);
+        const maxY = Math.max(oldY + uCanvasOld.height, project.height);
 
-         layerUnclippedCanvases.set(layer.id, newUCanvas);
-         layer.unclippedX = minX;
-         layer.unclippedY = minY;
-         layer.unclippedData = newUCanvas.toDataURL("image/png");
+        const newUCanvas = document.createElement("canvas");
+        newUCanvas.width = Math.max(1, maxX - minX);
+        newUCanvas.height = Math.max(1, maxY - minY);
+        const newUCtx = newUCanvas.getContext("2d");
+        newUCtx.imageSmoothingEnabled = false;
+
+        newUCtx.drawImage(uCanvasOld, oldX - minX, oldY - minY);
+        newUCtx.clearRect(0 - minX, 0 - minY, project.width, project.height);
+        newUCtx.drawImage(canvas, 0 - minX, 0 - minY);
+
+        layerUnclippedCanvases.set(layer.id, newUCanvas);
+        layer.unclippedX = minX;
+        layer.unclippedY = minY;
+        layer.unclippedData = newUCanvas.toDataURL("image/png");
       } else {
         if (!layerUnclippedCanvases.has(layer.id)) {
           const uCanvas = document.createElement("canvas");
@@ -3551,7 +3693,6 @@
         layer.unclippedY = 0;
       }
     }
-
     project = project; // Trigger Svelte reactivity
   }
 
@@ -3561,8 +3702,6 @@
     if (shouldResetViewport) {
       resetViewportTranslation();
       if (project) mirrorXPos = Math.floor(project.width / 2);
-
-      // Auto-fit zoom to screen on load
       if (project && project.width) {
         const containerWidth = window.innerWidth;
         const containerHeight = window.innerHeight;
@@ -3771,7 +3910,10 @@
         if (project) {
           colorPalette = payload.payload;
           project.palette = [...colorPalette];
-          localStorage.setItem("pixellab_palette", JSON.stringify(colorPalette));
+          localStorage.setItem(
+            "pixellab_palette",
+            JSON.stringify(colorPalette),
+          );
         }
       })
       .on("broadcast", { event: "pixel-update" }, (payload) => {
@@ -3938,9 +4080,11 @@
     // Simpan ke local cache
     saveToLocalCache(projectId, payload);
 
-    // Hanya pemilik proyek yang boleh menimpa data di Supabase. 
+    // Hanya pemilik proyek yang boleh menimpa data di Supabase.
     // Kolaborator hanya dibolehkan menyimpan di lokal cache (baris di atas).
-    const isOwner = (projectOwnerId && projectOwnerId === currentUserId) || projectsList.some(p => p.id === projectId);
+    const isOwner =
+      (projectOwnerId && projectOwnerId === currentUserId) ||
+      projectsList.some((p) => p.id === projectId);
     if (!isOwner) return;
 
     // Debounce server save - jangan lakukan jika sedang offline untuk menghindari spam DB
@@ -4002,10 +4146,12 @@
     let x = Math.floor((clientX - cachedRect.left) * cachedScaleX);
     let y = Math.floor((clientY - cachedRect.top) * cachedScaleY);
 
-    if (x < 0) x = 0;
-    if (x >= project.width) x = project.width - 1;
-    if (y < 0) y = 0;
-    if (y >= project.height) y = project.height - 1;
+    if (selectedTool !== "lassofill" && selectedTool !== "selection") {
+      if (x < 0) x = 0;
+      if (x >= project.width) x = project.width - 1;
+      if (y < 0) y = 0;
+      if (y >= project.height) y = project.height - 1;
+    }
 
     return { x, y };
   }
@@ -4222,7 +4368,7 @@
 
   function handleCanvasPointerDown(e) {
     if (isDraggingRefImage) return;
-    
+
     // Cegah event bocor ke viewport yang bisa memicu panning secara tidak sengaja
     e.stopPropagation();
 
@@ -4270,6 +4416,9 @@
     }
 
     drawingPointerId = e.pointerId; // Tandai pointer ini sebagai satu-satunya yang boleh menggambar
+    if (e.target && typeof e.target.setPointerCapture === "function") {
+      try { e.target.setPointerCapture(e.pointerId); } catch(err) {}
+    }
     // ------------------------------------------
 
     // Cegah double-fire touch vs mouse dan blokir browser scroll gesture
@@ -4333,7 +4482,7 @@
           w: activeSelection.w,
           h: activeSelection.h,
         };
-        
+
         // Auto-expand jika mendekati tepi (untuk mengambil piksel di luar kanvas yang tidak terlihat)
         const unclippedBBox = getUnclippedLayerBoundingBox(layer.id);
         if (unclippedBBox) {
@@ -4344,16 +4493,22 @@
           if (bbox.minY <= EDGE_TOLERANCE && unclippedBBox.minY < 0) {
             bbox.minY = unclippedBBox.minY;
           }
-          if (bbox.maxX >= project.width - 1 - EDGE_TOLERANCE && unclippedBBox.maxX > project.width - 1) {
+          if (
+            bbox.maxX >= project.width - 1 - EDGE_TOLERANCE &&
+            unclippedBBox.maxX > project.width - 1
+          ) {
             bbox.maxX = unclippedBBox.maxX;
           }
-          if (bbox.maxY >= project.height - 1 - EDGE_TOLERANCE && unclippedBBox.maxY > project.height - 1) {
+          if (
+            bbox.maxY >= project.height - 1 - EDGE_TOLERANCE &&
+            unclippedBBox.maxY > project.height - 1
+          ) {
             bbox.maxY = unclippedBBox.maxY;
           }
           bbox.w = bbox.maxX - bbox.minX + 1;
           bbox.h = bbox.maxY - bbox.minY + 1;
         }
-        
+
         isTransformingSelection = true;
       }
 
@@ -4561,33 +4716,40 @@
   }
   function expandPointsForBrush(points, bSize, bType) {
     if (bSize <= 1) return points;
-    const expanded = new Set();
-    const result = [];
     const centerOffset = (bSize - 1) / 2;
     const radius = bSize / 2;
 
+    // PRE-CALCULATE FOOTPRINT ONCE
+    const footprint = [];
+    for (let dx = 0; dx < bSize; dx++) {
+      for (let dy = 0; dy < bSize; dy++) {
+        let shouldPaint = false;
+        if (bType === "square") {
+          shouldPaint = true;
+        } else if (bType === "circle") {
+          const dist = Math.sqrt(
+            Math.pow(dx - centerOffset, 2) + Math.pow(dy - centerOffset, 2),
+          );
+          shouldPaint = dist <= radius + 0.1;
+        }
+        if (shouldPaint) {
+          footprint.push({ dx: dx - centerOffset, dy: dy - centerOffset });
+        }
+      }
+    }
+
+    const expanded = new Set();
+    const result = [];
+
     for (let i = 0; i < points.length; i++) {
       const p = points[i];
-      for (let dx = 0; dx < bSize; dx++) {
-        for (let dy = 0; dy < bSize; dy++) {
-          let shouldPaint = false;
-          if (bType === "square") {
-            shouldPaint = true;
-          } else if (bType === "circle") {
-            const dist = Math.sqrt(
-              Math.pow(dx - centerOffset, 2) + Math.pow(dy - centerOffset, 2),
-            );
-            shouldPaint = dist <= radius + 0.1;
-          }
-          if (shouldPaint) {
-            const tx = Math.floor(p.x - centerOffset + dx);
-            const ty = Math.floor(p.y - centerOffset + dy);
-            const key = `${tx},${ty}`;
-            if (!expanded.has(key)) {
-              expanded.add(key);
-              result.push({ x: tx, y: ty });
-            }
-          }
+      for (let j = 0; j < footprint.length; j++) {
+        const px = Math.floor(p.x + footprint[j].dx);
+        const py = Math.floor(p.y + footprint[j].dy);
+        const key = px + "," + py;
+        if (!expanded.has(key)) {
+          expanded.add(key);
+          result.push({ x: px, y: py });
         }
       }
     }
@@ -4695,15 +4857,13 @@
             const panDy = currentCenter.y - multiTouchCenterStart.y;
 
             translateX =
-              multiTouchStartPan.x +
+              multiTouchStartPan.x * zScale +
               panDx +
-              (cursorX - panDx) -
-              (cursorX - panDx) * zScale;
+              (cursorX - panDx) * (1 - zScale);
             translateY =
-              multiTouchStartPan.y +
+              multiTouchStartPan.y * zScale +
               panDy +
-              (cursorY - panDy) -
-              (cursorY - panDy) * zScale;
+              (cursorY - panDy) * (1 - zScale);
           }
           zoom = newZoom;
         }
@@ -4979,7 +5139,21 @@
                 brushSize,
                 brushType,
               );
-              expanded.forEach((p) => ctxCursor.fillRect(p.x, p.y, 1, 1));
+              // --- OPTIMASI EKSTRIM PREVIEW: Gunakan buffer memori alih-alih fillRect berulang ---
+              const w = project.width;
+              const h = project.height;
+              const idata = new ImageData(w, h);
+              const d = idata.data;
+              expanded.forEach((p) => {
+                if (p.x >= 0 && p.x < w && p.y >= 0 && p.y < h) {
+                  const idx = (p.y * w + p.x) * 4;
+                  d[idx] = 130;
+                  d[idx+1] = 140;
+                  d[idx+2] = 150;
+                  d[idx+3] = 204;
+                }
+              });
+              ctxCursor.putImageData(idata, 0, 0);
             }
           }
         }
@@ -5185,7 +5359,9 @@
                     paintColor = null;
                   } else if (selectedTool === "magicpen") {
                     if (magicPenMode === "shading") {
-                      const existingColor = getPixelColor(layer.id, px, py);
+                      const existingColor = strokeBackupImageData 
+                        ? getFastPixelColor(strokeBackupImageData, px, py) 
+                        : getPixelColor(layer.id, px, py);
                       if (existingColor) {
                         const targetFactor =
                           magicPenShadingType === "darken"
@@ -5291,11 +5467,14 @@
         drawState.pendingRender = true;
       }
     } else if (selectedTool === "picker") {
-      const pixelColor = getPixelColor(layer.id, x, y);
+      const pixelColor = getCompositePixelColor(x, y);
       if (pixelColor) {
         primaryColor = pixelColor;
         selectedTool = "pencil"; // Kembalikan ke pensil setelah menyalin warna
         showToast(`Warna diserap: ${pixelColor}`);
+      } else {
+        selectedTool = "pencil";
+        showToast(`Area kosong (transparan), batal menyerap warna.`, "info");
       }
     } else if (selectedTool === "bucket" || selectedTool === "bucketeraser") {
       const isErasing = selectedTool === "bucketeraser";
@@ -5327,9 +5506,15 @@
         );
       };
 
-      const fillR = isErasing ? 0 : parseInt(fillColor.substring(1, 3), 16) || 0;
-      const fillG = isErasing ? 0 : parseInt(fillColor.substring(3, 5), 16) || 0;
-      const fillB = isErasing ? 0 : parseInt(fillColor.substring(5, 7), 16) || 0;
+      const fillR = isErasing
+        ? 0
+        : parseInt(fillColor.substring(1, 3), 16) || 0;
+      const fillG = isErasing
+        ? 0
+        : parseInt(fillColor.substring(3, 5), 16) || 0;
+      const fillB = isErasing
+        ? 0
+        : parseInt(fillColor.substring(5, 7), 16) || 0;
       const fillA = isErasing ? 0 : 255;
 
       const queue = [[x, y]];
@@ -5392,6 +5577,9 @@
 
   function handleCanvasPointerUp(e) {
     if (e && e.pointerId) {
+      if (e.target && typeof e.target.releasePointerCapture === "function") {
+        try { e.target.releasePointerCapture(e.pointerId); } catch(err) {}
+      }
       activePointers.delete(e.pointerId);
       // Jika ada pointer utama yang sedang aktif (menggambar/transform), dan yang dilepas BUKAN pointer utama, abaikan!
       if (drawingPointerId !== null && e.pointerId !== drawingPointerId) {
@@ -5653,8 +5841,13 @@
           rotateCurrentAngle = 0;
         }
 
-        const { canvas: clippedCanvas } = getLayerCanvas(layer.id, project.width, project.height);
-        const uCanvasOld = layerUnclippedCanvases.get(layer.id) || clippedCanvas;
+        const { canvas: clippedCanvas } = getLayerCanvas(
+          layer.id,
+          project.width,
+          project.height,
+        );
+        const uCanvasOld =
+          layerUnclippedCanvases.get(layer.id) || clippedCanvas;
         const oldX = layer.unclippedX || 0;
         const oldY = layer.unclippedY || 0;
 
@@ -5688,7 +5881,7 @@
           newUCtx.drawImage(
             transformOriginalData,
             transformBBox.minX - minX,
-            transformBBox.minY - minY
+            transformBBox.minY - minY,
           );
         }
 
@@ -5773,13 +5966,13 @@
         let points = [];
         if (selectedTool === "line") {
           points = getLinePoints(x0, y0, x1, y1);
-          actionName = $t('tools.tool_shape_line');
+          actionName = $t("tools.tool_shape_line");
         } else if (selectedTool === "rectangle") {
           points = getRectPoints(x0, y0, x1, y1);
-          actionName = $t('tools.tool_shape_rect');
+          actionName = $t("tools.tool_shape_rect");
         } else if (selectedTool === "ellipse") {
           points = getEllipsePoints(x0, y0, x1, y1);
-          actionName = $t('tools.tool_shape_ellipse');
+          actionName = $t("tools.tool_shape_ellipse");
         } else if (selectedTool === "selection") {
           // Jika ada floating selection, bake dulu sebelum seleksi baru
           if (dragSelectionCanvas) commitFloatingSelection("Geser Seleksi");
@@ -5789,11 +5982,11 @@
           const h = Math.abs(y1 - y0) + 1;
           activeSelection = { x: xMin, y: yMin, w, h };
           localGridDef = { x: xMin, y: yMin, w, h };
-          actionName = $t('tools.tool_select_rect');
+          actionName = $t("tools.tool_select_rect");
           showToast("Seleksi aktif. Tekan ESC untuk membatalkan.");
           renderGrid(); // langsung render grid setelah seleksi dibuat
         } else if (selectedTool === "lassofill") {
-          actionName = $t('tools.tool_select_lasso');
+          actionName = $t("tools.tool_select_lasso");
           if (lassoPath.length > 2) {
             const tempCanvas = document.createElement("canvas");
             tempCanvas.width = project.width;
@@ -5814,6 +6007,16 @@
               project.width,
               project.height,
             );
+            
+            const fillR = parseInt(primaryColor.substring(1, 3), 16) || 0;
+            const fillG = parseInt(primaryColor.substring(3, 5), 16) || 0;
+            const fillB = parseInt(primaryColor.substring(5, 7), 16) || 0;
+            const fillA = 255;
+            
+            const layerCtx = getLayerCanvas(layer.id, project.width, project.height).ctx;
+            const layerImgData = layerCtx.getImageData(0, 0, project.width, project.height);
+            const lData = layerImgData.data;
+
             for (let y = 0; y < project.height; y++) {
               for (let x = 0; x < project.width; x++) {
                 const idx = (y * project.width + x) * 4;
@@ -5830,20 +6033,47 @@
                   )
                     continue;
 
-                  if (getPixelColor(layer.id, x, y) !== primaryColor) {
-                    setPixelColor(layer.id, x, y, primaryColor);
+                  const r = lData[idx];
+                  const g = lData[idx + 1];
+                  const b = lData[idx + 2];
+                  const a = lData[idx + 3];
+
+                  if (r !== fillR || g !== fillG || b !== fillB || a !== fillA) {
+                    lData[idx] = fillR;
+                    lData[idx + 1] = fillG;
+                    lData[idx + 2] = fillB;
+                    lData[idx + 3] = fillA;
                     localStrokeUpdates.push({ x, y, color: primaryColor });
                     updatedAny = true;
                   }
                 }
               }
             }
+            layerCtx.putImageData(layerImgData, 0, 0);
           }
           lassoPath = [];
         }
 
         if (points.length > 0) {
           const expanded = expandPointsForBrush(points, brushSize, brushType);
+          
+          // --- OPTIMASI EKSTRIM: Batch modify via ImageData untuk performa instan ---
+          const { ctx: lCtx } = getLayerCanvas(layer.id, project.width, project.height);
+          const w = project.width;
+          const h = project.height;
+          const lData = lCtx.getImageData(0, 0, w, h);
+          const d = lData.data;
+          
+          let r = 0, g = 0, b = 0, a = 255;
+          if (primaryColor) {
+            const hex = primaryColor.replace("#", "");
+            if (hex.length >= 6) {
+              r = parseInt(hex.substring(0, 2), 16);
+              g = parseInt(hex.substring(2, 4), 16);
+              b = parseInt(hex.substring(4, 6), 16);
+            }
+          }
+
           expanded.forEach((p) => {
             const isOutside = activeSelection
               ? p.x < activeSelection.x ||
@@ -5857,12 +6087,24 @@
             ) {
               return;
             }
-            if (getPixelColor(layer.id, p.x, p.y) !== primaryColor) {
-              setPixelColor(layer.id, p.x, p.y, primaryColor);
-              localStrokeUpdates.push({ x: p.x, y: p.y, color: primaryColor });
-              updatedAny = true;
+            if (p.x >= 0 && p.x < w && p.y >= 0 && p.y < h) {
+              const idx = (p.y * w + p.x) * 4;
+              const oldR = d[idx], oldG = d[idx+1], oldB = d[idx+2], oldA = d[idx+3];
+              // only update if pixel is different
+              if (oldA === 0 || oldR !== r || oldG !== g || oldB !== b) {
+                 d[idx] = r;
+                 d[idx+1] = g;
+                 d[idx+2] = b;
+                 d[idx+3] = a;
+                 localStrokeUpdates.push({ x: p.x, y: p.y, color: primaryColor });
+                 updatedAny = true;
+              }
             }
           });
+
+          if (updatedAny) {
+            lCtx.putImageData(lData, 0, 0);
+          }
         }
 
         if (updatedAny) {
@@ -5941,9 +6183,11 @@
           else if (selectedTool === "bucket") label = "Fill Ember";
           else if (selectedTool === "bucketeraser") label = "Hapus Ember";
           else if (selectedTool === "spray") label = "Spray Semprotan";
-          else if (selectedTool === "line") label = $t('tools.tool_shape_line');
-          else if (selectedTool === "rectangle") label = $t('tools.tool_shape_rect');
-          else if (selectedTool === "ellipse") label = $t('tools.tool_shape_ellipse');
+          else if (selectedTool === "line") label = $t("tools.tool_shape_line");
+          else if (selectedTool === "rectangle")
+            label = $t("tools.tool_shape_rect");
+          else if (selectedTool === "ellipse")
+            label = $t("tools.tool_shape_ellipse");
 
           saveHistoryState(label);
           strokeBackupImageData = null;
@@ -5954,6 +6198,8 @@
   }
 
   function handleCanvasPointerLeave(e) {
+    if (isDrawing) return; // JANGAN batalkan jika sedang menggambar (termasuk lasso)
+
     if (e && e.pointerId) {
       activePointers.delete(e.pointerId);
     }
@@ -5962,7 +6208,9 @@
     const coordEl = document.getElementById("coord-display");
     if (coordEl) coordEl.innerText = `X: - Y: -`;
 
-    if (ctxCursor) ctxCursor.clearRect(0, 0, project.width, project.height);
+    if (!showImportPlacement && ctxCursor) {
+      ctxCursor.clearRect(0, 0, project.width, project.height);
+    }
     handleCanvasPointerUp();
   }
 
@@ -6232,7 +6480,11 @@
     const layer = frame.layers.find((l) => l.id === transformLayerId);
     if (!layer) return;
 
-    const { canvas: mainCanvas2, ctx } = getLayerCanvas(layer.id, project.width, project.height);
+    const { canvas: mainCanvas2, ctx } = getLayerCanvas(
+      layer.id,
+      project.width,
+      project.height,
+    );
 
     // === KASUS SELEKSI: perlu preserve off-canvas pixels ===
     if (isTransformingSelection) {
@@ -6244,12 +6496,16 @@
       // Hitung bounding box gabungan: mencakup old unclipped + area transform baru
       const combinedMinX = Math.min(0, oldUX, transformBBox.minX);
       const combinedMinY = Math.min(0, oldUY, transformBBox.minY);
-      const combinedMaxX = Math.max(project.width, 
+      const combinedMaxX = Math.max(
+        project.width,
         oldUCanvas ? oldUX + oldUCanvas.width : project.width,
-        transformBBox.minX + transformBBox.w);
-      const combinedMaxY = Math.max(project.height,
+        transformBBox.minX + transformBBox.w,
+      );
+      const combinedMaxY = Math.max(
+        project.height,
         oldUCanvas ? oldUY + oldUCanvas.height : project.height,
-        transformBBox.minY + transformBBox.h);
+        transformBBox.minY + transformBBox.h,
+      );
 
       // Buat canvas gabungan besar
       const mergedCanvas = document.createElement("canvas");
@@ -6285,9 +6541,18 @@
       // Update main canvas (clipped to project bounds)
       // Source offset di mergedCanvas = posisi project (0,0) di dalam merged space
       ctx.clearRect(0, 0, project.width, project.height);
-      ctx.drawImage(mergedCanvas, -combinedMinX, -combinedMinY, project.width, project.height, 0, 0, project.width, project.height);
+      ctx.drawImage(
+        mergedCanvas,
+        -combinedMinX,
+        -combinedMinY,
+        project.width,
+        project.height,
+        0,
+        0,
+        project.width,
+        project.height,
+      );
       layer.data = mainCanvas2.toDataURL("image/png");
-
     } else {
       // === KASUS FULL LAYER (tanpa seleksi) ===
       ctx.clearRect(0, 0, project.width, project.height);
@@ -6324,7 +6589,6 @@
     broadcastAndSyncStructure();
     saveHistoryState("Selesai Transformasi");
   }
-
 
   let selectionClipboard = null;
 
@@ -6825,7 +7089,7 @@
   function addLayer() {
     const newLayer = {
       id: "layer-" + Date.now(),
-      name: `Layer ${project.frames[activeFrameIndex].layers.length + 1}`,
+      name: `Lapisan ${project.frames[activeFrameIndex].layers.length + 1}`,
       visible: true,
       locked: false,
       opacity: 1,
@@ -7798,6 +8062,114 @@
     link.click();
   }
 
+  function exportToSVG() {
+    const W = project.width;
+    const H = project.height;
+    const ctx = mainCanvas.getContext("2d");
+    const imgData = ctx.getImageData(0, 0, W, H).data;
+
+    let svgData = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">\n`;
+    svgData += `<style>rect { shape-rendering: crispEdges; }</style>\n`;
+
+    for (let y = 0; y < H; y++) {
+      let startX = -1;
+      let currentColor = null;
+
+      const drawSegment = (x) => {
+        if (startX !== -1) {
+          const width = x - startX;
+          svgData += `  <rect x="${startX}" y="${y}" width="${width}" height="1" fill="${currentColor}" />\n`;
+          startX = -1;
+          currentColor = null;
+        }
+      };
+
+      for (let x = 0; x < W; x++) {
+        const idx = (y * W + x) * 4;
+        const a = imgData[idx + 3];
+        
+        if (a === 0) {
+          drawSegment(x);
+        } else {
+          const r = imgData[idx];
+          const g = imgData[idx + 1];
+          const b = imgData[idx + 2];
+          const colorStr = (a === 255) 
+            ? `rgb(${r},${g},${b})` 
+            : `rgba(${r},${g},${b},${(a/255).toFixed(3)})`;
+
+          if (currentColor !== colorStr) {
+            drawSegment(x);
+            startX = x;
+            currentColor = colorStr;
+          }
+        }
+      }
+      drawSegment(W);
+    }
+    svgData += `</svg>`;
+
+    const blob = new Blob([svgData], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = `${project.name}-${Date.now()}.svg`;
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportToBMP() {
+    const W = project.width;
+    const H = project.height;
+    const ctx = mainCanvas.getContext("2d");
+    const imgData = ctx.getImageData(0, 0, W, H).data;
+
+    const headerSize = 54;
+    const dataSize = W * H * 4;
+    const fileSize = headerSize + dataSize;
+    const buffer = new ArrayBuffer(fileSize);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, 0x42); 
+    view.setUint8(1, 0x4D); 
+    view.setUint32(2, fileSize, true); 
+    view.setUint32(6, 0, true); 
+    view.setUint32(10, headerSize, true); 
+
+    view.setUint32(14, 40, true); 
+    view.setUint32(18, W, true); 
+    view.setInt32(22, -H, true); 
+    view.setUint16(26, 1, true); 
+    view.setUint16(28, 32, true); 
+    view.setUint32(30, 0, true); 
+    view.setUint32(34, dataSize, true); 
+    view.setUint32(38, 2835, true); 
+    view.setUint32(42, 2835, true); 
+    view.setUint32(46, 0, true); 
+    view.setUint32(50, 0, true); 
+
+    let offset = headerSize;
+    for (let i = 0; i < imgData.length; i += 4) {
+      const a = imgData[i + 3] / 255;
+      const r = Math.round(imgData[i + 0] * a + 255 * (1 - a));
+      const g = Math.round(imgData[i + 1] * a + 255 * (1 - a));
+      const b = Math.round(imgData[i + 2] * a + 255 * (1 - a));
+
+      view.setUint8(offset++, b); 
+      view.setUint8(offset++, g); 
+      view.setUint8(offset++, r); 
+      view.setUint8(offset++, 255); 
+    }
+
+    const blob = new Blob([buffer], { type: "image/bmp" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = `${project.name}-${Date.now()}.bmp`;
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   function exportSpritesheet() {
     const W = project.width;
     const H = project.height;
@@ -7979,20 +8351,30 @@
 
     if (e.pointerType === "touch") {
       activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      
+
       if (activePointers.size >= 2) {
         e.preventDefault();
         if (isPanning) isPanning = false; // Batal pan 1 jari jika berubah jadi pinch
 
-        if (isDrawing && typeof strokeBackupImageData !== 'undefined' && strokeBackupImageData && activeLayerIndex !== null) {
-          const layer = project.frames[activeFrameIndex].layers[activeLayerIndex];
-          const { ctx } = getLayerCanvas(layer.id, project.width, project.height);
+        if (
+          isDrawing &&
+          typeof strokeBackupImageData !== "undefined" &&
+          strokeBackupImageData &&
+          activeLayerIndex !== null
+        ) {
+          const layer =
+            project.frames[activeFrameIndex].layers[activeLayerIndex];
+          const { ctx } = getLayerCanvas(
+            layer.id,
+            project.width,
+            project.height,
+          );
           ctx.putImageData(strokeBackupImageData, 0, 0);
           isDrawing = false;
           drawingPointerId = null;
           localStrokeUpdates = [];
         }
-        
+
         const pts = Array.from(activePointers.values());
         multiTouchStartDist = Math.hypot(
           pts[0].x - pts[1].x,
@@ -8006,7 +8388,7 @@
         };
         return;
       }
-      
+
       // 1 jari di background -> Pan
       e.preventDefault();
       isPanning = true;
@@ -8057,7 +8439,7 @@
     if (e && e.pointerId) {
       activePointers.delete(e.pointerId);
     }
-    
+
     if (isPanning) {
       isPanning = false;
       if (canvasViewportEl) {
@@ -8362,7 +8744,7 @@
 
 {#if showResetPasswordModal}
   <ResetPasswordModal
-    isResettingPassword={isResettingPassword}
+    {isResettingPassword}
     on:submit={(e) => {
       resetPasswordValue = e.detail.newPassword;
       handleConfirmResetPassword();
@@ -8380,6 +8762,13 @@
   bind:showModal={showOutlineModal}
   defaultColor={primaryColor}
   on:apply={handleOutlineApply}
+/>
+
+<ResizeCanvasModal
+  bind:showModal={showResizeCanvasModal}
+  currentWidth={project ? project.width : 64}
+  currentHeight={project ? project.height : 64}
+  on:resize={resizeProjectCanvas}
 />
 
 <!-- ==========================================================================
@@ -8402,6 +8791,7 @@
         : ''}"
     >
       <div class="sidebar-brand">
+        <img src="/logo.png" alt="Pirex Logo" style="width: 42px; height: 42px; image-rendering: pixelated; margin-right: 12px; border-radius: 6px; {$theme === 'dark' ? 'filter: invert(1);' : ''}" />
         <h2>Pirex</h2>
         <button
           class="btn-icon mobile-only"
@@ -8444,7 +8834,9 @@
               {:else}
                 <Folder size={16} style="margin-right:8px;" />
               {/if}
-              {#if folder.id === "root"}{$t('dashboard.all_projects')}{:else}{folder.name}{/if}
+              {#if folder.id === "root"}{$t(
+                  "dashboard.all_projects",
+                )}{:else}{folder.name}{/if}
             </button>
             {#if folder.id !== "root"}
               <button
@@ -8470,7 +8862,8 @@
             style="width: 100%; font-size: 13px; justify-content: center;"
             on:click={() => (showCreateFolderModal = true)}
           >
-            <FolderPlus size={14} style="margin-right:6px;" /> {$t('dashboard.create_folder')}
+            <FolderPlus size={14} style="margin-right:6px;" />
+            {$t("dashboard.create_folder")}
           </button>
         </div>
       </nav>
@@ -8486,7 +8879,7 @@
               title={currentUserEmail || "Pengguna"}
               >{currentUserEmail || "Pengguna"}</span
             >
-            <span class="admin-role">{$t('dashboard.member')}</span>
+            <span class="admin-role">{$t("dashboard.member")}</span>
           </div>
         </div>
         {#if currentUserEmail === "admin@pixellab.com"}
@@ -8504,13 +8897,15 @@
           on:click={toggleTheme}
         >
           {#if $theme === "dark"}
-            <Sun size={14} style="margin-right: 8px;" /> {$t('dashboard.light_mode')}
+            <Sun size={14} style="margin-right: 8px;" />
+            {$t("dashboard.light_mode")}
           {:else}
-            <Moon size={14} style="margin-right: 8px;" /> {$t('dashboard.dark_mode')}
+            <Moon size={14} style="margin-right: 8px;" />
+            {$t("dashboard.dark_mode")}
           {/if}
         </button>
         <button class="btn-logout-sidebar" on:click={handleLogoutAdmin}>
-          {$t('dashboard.logout')}
+          {$t("dashboard.logout")}
         </button>
       </div>
     </aside>
@@ -8526,11 +8921,22 @@
           >
             <Menu size={20} />
           </button>
-          <span class="dashboard-title hide-mobile">{$t('dashboard.recents')}</span>
+          <span class="dashboard-title hide-mobile"
+            >{$t("dashboard.recents")}</span
+          >
           <div style="margin-left: 12px; display: flex; align-items: center;">
-            <select bind:value={$locale} style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 13px;">
-              <option value="id" style="background: var(--bg-panel); color: white;">ID</option>
-              <option value="en" style="background: var(--bg-panel); color: white;">EN</option>
+            <select
+              bind:value={$locale}
+              style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 13px;"
+            >
+              <option
+                value="id"
+                style="background: var(--bg-panel); color: white;">ID</option
+              >
+              <option
+                value="en"
+                style="background: var(--bg-panel); color: white;">EN</option
+              >
             </select>
           </div>
           <div class="search-input-wrapper">
@@ -8543,7 +8949,7 @@
               type="text"
               bind:value={searchQuery}
               class="search-input"
-              placeholder={$t('dashboard.search')}
+              placeholder={$t("dashboard.search")}
             />
           </div>
           {#if isOfflineMode}
@@ -8556,7 +8962,8 @@
           class="btn-primary dashboard-create-btn"
           on:click={() => (showCreateProjectModal = true)}
         >
-          <Plus size={16} /> {$t('dashboard.create_canvas')}
+          <Plus size={16} />
+          {$t("dashboard.create_canvas")}
         </button>
       </header>
 
@@ -8571,8 +8978,10 @@
             <div class="create-icon-wrapper">
               <Plus size={32} />
             </div>
-            <span class="create-label">{$t('dashboard.create_canvas')}</span>
-            <span class="create-sublabel">{$t('dashboard.create_canvas_desc')}</span>
+            <span class="create-label">{$t("dashboard.create_canvas")}</span>
+            <span class="create-sublabel"
+              >{$t("dashboard.create_canvas_desc")}</span
+            >
           </div>
 
           <!-- Indikator Loading -->
@@ -8587,7 +8996,7 @@
               ></div>
               <span
                 style="margin-top: 12px; font-size: 12px; color: var(--text-muted);"
-                >{$t('dashboard.loading')}</span
+                >{$t("dashboard.loading")}</span
               >
             </div>
           {/if}
@@ -8698,9 +9107,9 @@
           <div class="modal-hero-icon-wrap">
             <Palette size={28} color="white" />
           </div>
-          <h2 class="modal-title">{$t('dashboard.create_modal.title')}</h2>
+          <h2 class="modal-title">{$t("dashboard.create_modal.title")}</h2>
           <p class="modal-subtitle">
-            {$t('dashboard.create_modal.subtitle')}
+            {$t("dashboard.create_modal.subtitle")}
           </p>
         </div>
 
@@ -8708,14 +9117,14 @@
           <!-- Nama Proyek -->
           <div class="form-field">
             <label for="new-proj-name" class="field-label"
-              >{$t('dashboard.create_modal.name_label')}</label
+              >{$t("dashboard.create_modal.name_label")}</label
             >
             <input
               type="text"
               id="new-proj-name"
               class="field-input"
               bind:value={newProjectName}
-              placeholder={$t('dashboard.create_modal.name_placeholder')}
+              placeholder={$t("dashboard.create_modal.name_placeholder")}
               required
             />
           </div>
@@ -8723,7 +9132,9 @@
           <!-- Resolusi -->
           <div class="form-field">
             <!-- svelte-ignore a11y-label-has-associated-control -->
-            <label class="field-label">{$t('dashboard.create_modal.res_label')}</label>
+            <label class="field-label"
+              >{$t("dashboard.create_modal.res_label")}</label
+            >
             <div class="resolution-inputs-row">
               <div class="resolution-input-wrap">
                 <span class="res-label">W</span>
@@ -8774,7 +9185,9 @@
           <!-- Background -->
           <!-- svelte-ignore a11y-label-has-associated-control -->
           <div class="form-field">
-            <label class="field-label">{$t('dashboard.create_modal.bg_label')}</label>
+            <label class="field-label"
+              >{$t("dashboard.create_modal.bg_label")}</label
+            >
             <div class="bg-options">
               <button
                 type="button"
@@ -8784,7 +9197,7 @@
                 on:click={() => (newProjectBg = "transparent")}
               >
                 <div class="bg-tile-preview bg-checker"></div>
-                <span>{$t('dashboard.create_modal.bg_trans')}</span>
+                <span>{$t("dashboard.create_modal.bg_trans")}</span>
               </button>
               <button
                 type="button"
@@ -8794,7 +9207,7 @@
                 on:click={() => (newProjectBg = "white")}
               >
                 <div class="bg-tile-preview" style="background:#ffffff;"></div>
-                <span>{$t('dashboard.create_modal.bg_white')}</span>
+                <span>{$t("dashboard.create_modal.bg_white")}</span>
               </button>
               <button
                 type="button"
@@ -8804,7 +9217,7 @@
                 on:click={() => (newProjectBg = "black")}
               >
                 <div class="bg-tile-preview" style="background:#111;"></div>
-                <span>{$t('dashboard.create_modal.bg_black')}</span>
+                <span>{$t("dashboard.create_modal.bg_black")}</span>
               </button>
             </div>
           </div>
@@ -8812,7 +9225,9 @@
           <!-- Import -->
           <div class="form-field">
             <!-- svelte-ignore a11y-label-has-associated-control -->
-            <label class="field-label">{$t('dashboard.create_modal.import_label')}</label>
+            <label class="field-label"
+              >{$t("dashboard.create_modal.import_label")}</label
+            >
             <div style="display:flex; gap:8px; flex-direction:column;">
               <label
                 for="new-canvas-import-file"
@@ -8822,7 +9237,7 @@
                 <Upload size={16} style="margin-right:8px;" />
                 {importedFileName
                   ? `✓ ${importedFileName}`
-                  : $t('dashboard.create_modal.import_btn')}
+                  : $t("dashboard.create_modal.import_btn")}
               </label>
               <input
                 id="new-canvas-import-file"
@@ -8835,7 +9250,7 @@
                 <p
                   style="font-size:11px; color:var(--text-muted); margin:0; text-align:center;"
                 >
-                  {$t('dashboard.create_modal.import_help')}
+                  {$t("dashboard.create_modal.import_help")}
                 </p>
               {/if}
             </div>
@@ -8847,12 +9262,14 @@
               ><Sparkles
                 size={16}
                 style="margin-right:8px;vertical-align:middle;"
-              /> {$t('dashboard.create_modal.btn_create')}</button
+              />
+              {$t("dashboard.create_modal.btn_create")}</button
             >
             <button
               type="button"
               class="btn-cancel"
-              on:click={() => (showCreateProjectModal = false)}>{$t('dashboard.create_modal.btn_cancel')}</button
+              on:click={() => (showCreateProjectModal = false)}
+              >{$t("dashboard.create_modal.btn_cancel")}</button
             >
           </div>
         </form>
@@ -8874,10 +9291,18 @@
      3. WORKSPACE EDITOR (SUDAH LOGIN & MEMILIH KANVAS)
      ========================================================================== -->
 {#if (authenticated || joined) && joined}
-  <div 
-    class="app-container pro-layout" 
+  <div
+    class="app-container pro-layout"
     class:focus-mode={focusMode}
-    style="--canvas-checker-1: {canvasBgTheme === 'light' ? '#b3b3b3' : '#2a2a2a'}{Math.round(canvasBgOpacity * 255).toString(16).padStart(2, '0')}; --canvas-checker-2: {canvasBgTheme === 'light' ? '#e6e6e6' : '#3a3a3a'}{Math.round(canvasBgOpacity * 255).toString(16).padStart(2, '0')};"
+    style="--canvas-checker-1: {canvasBgTheme === 'light'
+      ? '#b3b3b3'
+      : '#2a2a2a'}{Math.round(canvasBgOpacity * 255)
+      .toString(16)
+      .padStart(2, '0')}; --canvas-checker-2: {canvasBgTheme === 'light'
+      ? '#e6e6e6'
+      : '#3a3a3a'}{Math.round(canvasBgOpacity * 255)
+      .toString(16)
+      .padStart(2, '0')};"
   >
     <!-- Top Menu Bar -->
     <header class="top-menu-bar">
@@ -8889,7 +9314,8 @@
         >
           <ArrowLeft size={16} />
         </button>
-        <h2 class="logo-text-xs hide-mobile">Pirex</h2>
+        <img src="/logo.png" alt="Pirex Logo" class="hide-mobile" style="width: 36px; height: 36px; image-rendering: pixelated; margin-right: 10px; border-radius: 6px; {$theme === 'dark' ? 'filter: invert(1);' : ''}" />
+        <h2 class="logo-text-xs hide-mobile" style="font-size: 1.1rem;">Pirex</h2>
 
         <!-- File Dropdown -->
         <div
@@ -8901,7 +9327,8 @@
             style="margin-left: 8px;"
             on:click={() => (showFileMenu = !showFileMenu)}
           >
-            <FileIcon size={16} /> <span class="hide-mobile">{$t("mockup.file")}</span>
+            <FileIcon size={16} />
+            <span class="hide-mobile">{$t("mockup.file")}</span>
           </button>
 
           {#if showFileMenu}
@@ -8924,9 +9351,19 @@
                   document.getElementById("image-import-input").click();
                   showFileMenu = false;
                 }}
-                title="{$t('tools.action_import_image')}"
+                title={$t("tools.action_import_image")}
               >
                 <Plus size={16} /> Impor Gambar
+              </button>
+              <button
+                class="dropdown-item"
+                on:click={() => {
+                  showResizeCanvasModal = true;
+                  showFileMenu = false;
+                }}
+                title="Ubah ukuran kanvas"
+              >
+                <Maximize2 size={16} /> Ukuran Canvas
               </button>
               <button
                 class="dropdown-item"
@@ -8934,9 +9371,29 @@
                   exportToPNG();
                   showFileMenu = false;
                 }}
-                title="{$t('tools.action_export_png')}"
+                title={$t("tools.action_export_png")}
               >
                 <Image size={16} /> Ekspor PNG
+              </button>
+              <button
+                class="dropdown-item"
+                on:click={() => {
+                  exportToBMP();
+                  showFileMenu = false;
+                }}
+                title="Ekspor sebagai Bitmap (.bmp)"
+              >
+                <Image size={16} /> Ekspor BMP
+              </button>
+              <button
+                class="dropdown-item"
+                on:click={() => {
+                  exportToSVG();
+                  showFileMenu = false;
+                }}
+                title="Ekspor sebagai Vektor (.svg)"
+              >
+                <Image size={16} /> Ekspor SVG
               </button>
               <button
                 class="dropdown-item"
@@ -8944,7 +9401,7 @@
                   exportSpritesheet();
                   showFileMenu = false;
                 }}
-                title="{$t('tools.action_export_sprite')}"
+                title={$t("tools.action_export_sprite")}
                 style="color: #a78bfa;"
               >
                 <Film size={16} /> Sprite Sheet
@@ -8996,7 +9453,8 @@
       <div class="menu-actions">
         <div class="active-users">
           <Users size={14} />
-          {activeUsersCount} {$t("mockup.collaborator")}
+          {activeUsersCount}
+          {$t("mockup.collaborator")}
         </div>
         <button class="btn-share" on:click={() => (showShareModal = true)}>
           <svg
@@ -9098,7 +9556,8 @@
           on:click={() => (showGrid = !showGrid)}
           title="Aktifkan/Matikan Grid"
         >
-          <GridIcon size={14} /> {showGrid ? $t("mockup.grid_on") : $t("mockup.grid_off")}
+          <GridIcon size={14} />
+          {showGrid ? $t("mockup.grid_on") : $t("mockup.grid_off")}
         </button>
       </div>
 
@@ -9110,7 +9569,8 @@
           on:click={() => (isPixelPerfect = !isPixelPerfect)}
           title="Aktifkan/Matikan Pixel Perfect"
         >
-          <Crosshair size={14} /> {isPixelPerfect ? $t("mockup.pixel_on") : $t("mockup.pixel_off")}
+          <Crosshair size={14} />
+          {isPixelPerfect ? $t("mockup.pixel_on") : $t("mockup.pixel_off")}
         </button>
       </div>
 
@@ -9119,10 +9579,11 @@
       <div class="context-item">
         <button
           class="btn-toggle-grid {canvasBgTheme === 'light' ? 'active' : ''}"
-          on:click={() => (canvasBgTheme = canvasBgTheme === 'dark' ? 'light' : 'dark')}
+          on:click={() =>
+            (canvasBgTheme = canvasBgTheme === "dark" ? "light" : "dark")}
           title="Ubah Warna Latar Kanvas"
         >
-          {#if canvasBgTheme === 'light'}
+          {#if canvasBgTheme === "light"}
             <Sun size={14} /> {$t("mockup.canvas_light")}
           {:else}
             <Moon size={14} /> {$t("mockup.canvas_dark")}
@@ -9130,17 +9591,24 @@
         </button>
       </div>
 
-      <div class="context-item" style="display: flex; align-items: center; gap: 6px;">
+      <div
+        class="context-item"
+        style="display: flex; align-items: center; gap: 6px;"
+      >
         <span class="context-label">{$t("mockup.canvas_opacity")}</span>
-        <input 
-          type="range" 
-          min="0" max="1" step="0.05" 
-          bind:value={canvasBgOpacity} 
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          bind:value={canvasBgOpacity}
           class="slider-custom"
           title="Transparansi Background Kanvas"
           style="width: 60px;"
         />
-        <span class="context-value" style="width: 32px; font-size: 11px;">{Math.round(canvasBgOpacity * 100)}%</span>
+        <span class="context-value" style="width: 32px; font-size: 11px;"
+          >{Math.round(canvasBgOpacity * 100)}%</span
+        >
       </div>
 
       {#if showGrid}
@@ -9439,28 +9907,33 @@
                     ? 'active'
                     : ''}"
                   on:click={() => (selectedTool = "pencil")}
-                  title="{$t('tools.tool_pencil')} (B)"><Pencil size={14} /></button
+                  title="{$t('tools.tool_pencil')} (B)"
+                  ><Pencil size={14} /></button
                 >
                 <button
                   class="focus-hud-tool {selectedTool === 'eraser'
                     ? 'active'
                     : ''}"
                   on:click={() => (selectedTool = "eraser")}
-                  title="{$t('tools.tool_eraser')} (E)"><Eraser size={14} /></button
+                  title="{$t('tools.tool_eraser')} (E)"
+                  ><Eraser size={14} /></button
                 >
                 <button
-                  class="focus-hud-tool {selectedTool === 'bucket' || selectedTool === 'bucketeraser'
+                  class="focus-hud-tool {selectedTool === 'bucket' ||
+                  selectedTool === 'bucketeraser'
                     ? 'active'
                     : ''}"
                   on:click={() => (selectedTool = "bucket")}
-                  title="{$t('tools.tool_bucket')} (G)"><PaintBucket size={14} /></button
+                  title="{$t('tools.tool_bucket')} (G)"
+                  ><PaintBucket size={14} /></button
                 >
                 <button
                   class="focus-hud-tool {selectedTool === 'picker'
                     ? 'active'
                     : ''}"
                   on:click={() => (selectedTool = "picker")}
-                  title="{$t('tools.tool_pipette')} (I)"><Pipette size={14} /></button
+                  title="{$t('tools.tool_pipette')} (I)"
+                  ><Pipette size={14} /></button
                 >
               </div>
 
@@ -9473,7 +9946,7 @@
                   type="color"
                   bind:value={primaryColor}
                   class="focus-hud-color-input"
-                  title="{$t('tools.action_custom_color')}"
+                  title={$t("tools.action_custom_color")}
                 />
               </div>
 
@@ -9533,7 +10006,7 @@
                   <button
                     class="btn-icon-small"
                     on:click={addLayer}
-                    title="{$t('tools.action_add_layer')}"
+                    title={$t("tools.action_add_layer")}
                     style="color: white; padding: 2px;"
                   >
                     <Plus size={12} />
@@ -9599,7 +10072,12 @@
               style="position:absolute;top:0;left:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:0;"
               width={project.width}
               height={project.height}
-              use:drawCheckerboard={{w: project.width, h: project.height, theme: canvasBgTheme, opacity: canvasBgOpacity}}
+              use:drawCheckerboard={{
+                w: project.width,
+                h: project.height,
+                theme: canvasBgTheme,
+                opacity: canvasBgOpacity,
+              }}
             ></canvas>
             <!-- LAPISAN REFERENSI RESOLUSI TINGGI (DI BAWAH KANVAS UTAMA) -->
             {#if referenceImage && referenceVisible && referenceBehind}
@@ -9855,10 +10333,18 @@
               </svg>
             {/if}
 
-
             <!-- AUTO PIXEL GRID (Hanya Muncul Saat Zoom Besar >= 1500%) -->
             {#if zoom >= 1500 && project && project.width && project.height}
-              {@const gridPath = Array.from({ length: project.width - 1 }, (_, i) => `M${i + 1} 0 V${project.height}`).join(" ") + " " + Array.from({ length: project.height - 1 }, (_, i) => `M0 ${i + 1} H${project.width}`).join(" ")}
+              {@const gridPath =
+                Array.from(
+                  { length: project.width - 1 },
+                  (_, i) => `M${i + 1} 0 V${project.height}`,
+                ).join(" ") +
+                " " +
+                Array.from(
+                  { length: project.height - 1 },
+                  (_, i) => `M0 ${i + 1} H${project.width}`,
+                ).join(" ")}
               <svg
                 class="auto-pixel-grid"
                 width="100%"
@@ -9874,7 +10360,13 @@
                 "
               >
                 <!-- shape-rendering="crispEdges" untuk mencegah anti-aliasing buram pada zoom tinggi -->
-                <path d={gridPath} fill="none" stroke="rgba(128,128,128,0.5)" stroke-width={100 / zoom} shape-rendering="crispEdges" />
+                <path
+                  d={gridPath}
+                  fill="none"
+                  stroke="rgba(128,128,128,0.5)"
+                  stroke-width={100 / zoom}
+                  shape-rendering="crispEdges"
+                />
               </svg>
             {/if}
 
@@ -10576,6 +11068,7 @@
           <div
             class="sidebar-resizer-w {isResizingWidth ? 'dragging' : ''}"
             on:pointerdown={startWidthResize}
+            style="touch-action: none;"
             title="Geser untuk mengubah lebar panel sidebar"
           ></div>
 
@@ -10594,14 +11087,14 @@
                   <button
                     class="btn-icon-small"
                     on:click={addGroupLayer}
-                    title="{$t('tools.action_add_folder')}"
+                    title={$t("tools.action_add_folder")}
                   >
                     <FolderPlus size={14} />
                   </button>
                   <button
                     class="btn-icon-small"
                     on:click={addLayer}
-                    title="{$t('tools.action_add_layer')}"
+                    title={$t("tools.action_add_layer")}
                   >
                     <Plus size={14} />
                   </button>
@@ -10748,7 +11241,7 @@
                           class="layer-name"
                           on:dblclick|stopPropagation={() =>
                             startLayerRename(layer.originalIndex, layer.name)}
-                          title="{$t('tools.action_rename')}"
+                          title={$t("tools.action_rename")}
                         >
                           {#if layer.isGroup}
                             <Folder
@@ -10764,7 +11257,6 @@
                         class="layer-order-controls"
                         style="display:flex; flex-direction:column; margin-left: auto; margin-right: 6px; align-items:center;"
                       >
-
                         <div style="display:flex;">
                           <button
                             on:click|stopPropagation={() =>
@@ -10798,7 +11290,7 @@
                           class="layer-copy-btn"
                           on:click|stopPropagation={() =>
                             releaseFromGroup(layer.originalIndex)}
-                          title="{$t('tools.action_remove_folder')}"
+                          title={$t("tools.action_remove_folder")}
                           style="color: var(--warning-color);"
                         >
                           <FolderMinus size={12} />
@@ -10809,7 +11301,7 @@
                         class="layer-copy-btn"
                         on:click|stopPropagation={() =>
                           copyLayer(layer.originalIndex)}
-                        title="{$t('tools.action_duplicate_layer')}"
+                        title={$t("tools.action_duplicate_layer")}
                       >
                         <Copy size={12} />
                       </button>
@@ -10818,7 +11310,7 @@
                           class="layer-delete-btn"
                           on:click|stopPropagation={() =>
                             deleteLayer(layer.originalIndex)}
-                          title="{$t('tools.action_delete_layer')}"
+                          title={$t("tools.action_delete_layer")}
                         >
                           <Trash2 size={12} />
                         </button>
@@ -10828,7 +11320,9 @@
                     {#if activeLayerIndex === layer.originalIndex}
                       <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
                       <div class="layer-opacity-row" on:click|stopPropagation>
-                        <span class="opacity-label">{$t("mockup.transparency")}</span>
+                        <span class="opacity-label"
+                          >{$t("mockup.transparency")}</span
+                        >
                         <input
                           type="range"
                           min="0"
@@ -10863,6 +11357,7 @@
               <div
                 class="panel-resizer-h {isResizingHeight ? 'dragging' : ''}"
                 on:pointerdown={startHeightResize}
+                style="touch-action: none;"
                 title="Geser untuk mengubah tinggi panel layers"
               ></div>
             </div>
@@ -11171,7 +11666,7 @@
                   <button
                     class="btn-icon-small"
                     on:click={addColorToPalette}
-                    title="{$t('tools.action_add_color')}"
+                    title={$t("tools.action_add_color")}
                   >
                     <Plus size={12} />
                   </button>
@@ -11214,7 +11709,7 @@
                       class="delete-swatch-btn"
                       on:click|stopPropagation={() =>
                         removeColorFromPalette(color)}
-                      title="{$t('tools.action_remove_color')}"
+                      title={$t("tools.action_remove_color")}
                     >
                       &times;
                     </button>
@@ -11223,7 +11718,7 @@
               </div>
 
               <!-- Input Kode Hex -->
-              <div class="palette-hex-input-row">
+              <form class="palette-hex-input-row" on:submit|preventDefault={addColorByHex}>
                 <span class="palette-hex-hash">#</span>
                 <input
                   type="text"
@@ -11244,13 +11739,13 @@
                     : '#ccc'};"
                 ></div>
                 <button
+                  type="submit"
                   class="btn-icon-small"
-                  on:click={addColorByHex}
                   title="Tambah ke Palet"
                 >
                   <Plus size={12} />
                 </button>
-              </div>
+              </form>
             </div>
           </aside>
         </div>
@@ -11263,7 +11758,6 @@
         class="timeline-panel"
         style="
         height: {timelineHeight}px; 
-        background: rgba(18, 24, 32, 0.95); 
         border-top: 1px solid var(--border-color); 
         display: flex; 
         flex-direction: column; 
@@ -11290,6 +11784,7 @@
           z-index: 100;
           background: transparent;
           transition: background 0.2s;
+          touch-action: none;
         "
           title="Seret ke atas atau bawah untuk mengubah tinggi timeline"
         ></div>
@@ -11305,7 +11800,8 @@
             <h4
               style="margin: 0; font-size: 13px; font-weight: 700; color: #f1f5f9; display: flex; align-items: center; gap: 6px;"
             >
-              <Film size={14} style="color: #a855f7;" /> {$t("mockup.timeline_title")}
+              <Film size={14} style="color: #a855f7;" />
+              {$t("mockup.timeline_title")}
             </h4>
             <span style="font-size: 11px; color: var(--text-muted);"
               >({animationLayers.length} {$t("mockup.frame_active")})</span
@@ -11359,7 +11855,9 @@
                     ? '#c084fc'
                     : '#cbd5e1'}; padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer;"
                 >
-                  {showAnimPreviewWindow ? $t("mockup.preview_open") : $t("mockup.preview_close")}
+                  {showAnimPreviewWindow
+                    ? $t("mockup.preview_open")
+                    : $t("mockup.preview_close")}
                 </button>
               </div>
 
@@ -11373,7 +11871,8 @@
               >
                 <span
                   style="font-size: 11px; color: var(--text-muted); white-space: nowrap;"
-                  >{$t("mockup.speed")}</span>
+                  >{$t("mockup.speed")}</span
+                >
                 >
                 <input
                   type="range"
@@ -11476,7 +11975,10 @@
                       style="position: absolute; inset: 0; background-image: linear-gradient(45deg, var(--canvas-checker-1) 25%, transparent 25%), linear-gradient(-45deg, var(--canvas-checker-1) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--canvas-checker-1) 75%), linear-gradient(-45deg, transparent 75%, var(--canvas-checker-1) 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px; opacity: 1;"
                     ></div>
                     {#if layer.isGroup}
-                      <Folder size={24} style="color: var(--accent-color); z-index: 2; position: relative;" />
+                      <Folder
+                        size={24}
+                        style="color: var(--accent-color); z-index: 2; position: relative;"
+                      />
                     {:else}
                       <img
                         src={layer.data}
@@ -11518,7 +12020,9 @@
                   >
                     <Pin size={8} style="transform: rotate(45deg);" />
                     <span
-                      >{layer.keepStaticInAnimation ? "Statis" : $t("mockup.hold")}</span
+                      >{layer.keepStaticInAnimation
+                        ? "Statis"
+                        : $t("mockup.hold")}</span
                     >
                   </button>
                 </div>
@@ -11535,25 +12039,61 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="mobile-sliders">
         <div class="slider-container">
-          <input type="range" min="1" max="200" bind:value={brushSize} class="brush-slider" />
+          <input
+            type="range"
+            min="1"
+            max="200"
+            bind:value={brushSize}
+            class="brush-slider"
+          />
           <span class="slider-value">{brushSize}</span>
         </div>
       </div>
       <div class="mobile-bottom-bar" style="justify-content: space-around;">
-        <button class="mobile-tool-btn" on:click={() => selectedTool = selectedTool === 'eraser' ? 'pencil' : 'eraser'} title="Ganti Kuas/Penghapus">
-          {#if selectedTool === 'eraser'}<Pencil size={24}/>{:else}<Eraser size={24}/>{/if}
+        <button
+          class="mobile-tool-btn"
+          on:click={() =>
+            (selectedTool = selectedTool === "eraser" ? "pencil" : "eraser")}
+          title="Ganti Kuas/Penghapus"
+        >
+          {#if selectedTool === "eraser"}<Pencil size={24} />{:else}<Eraser
+              size={24}
+            />{/if}
         </button>
-        <button class="mobile-color-swatch" on:click={() => {showMobilePanel = true; mobilePanelTab = 'colors';}}>
-          <span class="mobile-color-preview" style="background: {primaryColor}; width: 28px; height: 28px; display: inline-block; border-radius: 50%; border: 2px solid white;"></span>
+        <button
+          class="mobile-color-swatch"
+          on:click={() => {
+            showMobilePanel = true;
+            mobilePanelTab = "colors";
+          }}
+        >
+          <span
+            class="mobile-color-preview"
+            style="background: {primaryColor}; width: 28px; height: 28px; display: inline-block; border-radius: 50%; border: 2px solid white;"
+          ></span>
         </button>
-        <button class="mobile-tool-btn" on:click={triggerUndo} disabled={historyIndex <= 0} title="{$t('tools.action_undo')}">
-          <UndoIcon size={24}/>
+        <button
+          class="mobile-tool-btn"
+          on:click={triggerUndo}
+          disabled={historyIndex <= 0}
+          title={$t("tools.action_undo")}
+        >
+          <UndoIcon size={24} />
         </button>
-        <button class="mobile-tool-btn" on:click={triggerRedo} disabled={historyIndex >= historyList.length - 1} title="{$t('tools.action_redo')}">
-          <RedoIcon size={24}/>
+        <button
+          class="mobile-tool-btn"
+          on:click={triggerRedo}
+          disabled={historyIndex >= historyList.length - 1}
+          title={$t("tools.action_redo")}
+        >
+          <RedoIcon size={24} />
         </button>
-        <button class="mobile-tool-btn" on:click={() => (showMobilePanel = !showMobilePanel)} title="Layer">
-          <Layers size={24}/>
+        <button
+          class="mobile-tool-btn"
+          on:click={() => (showMobilePanel = !showMobilePanel)}
+          title="Layer"
+        >
+          <Layers size={24} />
         </button>
       </div>
 
@@ -11790,7 +12330,7 @@
                           on:click|stopPropagation={() =>
                             releaseFromGroup(layer.originalIndex)}
                           style="background:none;border:none;color:var(--warning-color);cursor:pointer;padding:4px;"
-                          title="{$t('tools.action_remove_folder')}"
+                          title={$t("tools.action_remove_folder")}
                         >
                           <FolderMinus size={14} />
                         </button>
@@ -11843,13 +12383,18 @@
           {:else if mobilePanelTab === "colors"}
             <div class="mobile-panel-content">
               <div
-                style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;"
+                style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;"
               >
                 <label style="font-size:12px;color:var(--text-muted);"
                   >Warna Aktif & Palet</label
                 >
-                <div style="display:flex; gap:4px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <ChromeColorPicker 
+                    bind:hex={primaryColor} 
+                    on:pipette={handleMobilePipette} 
+                  />
                   <button
+                    type="button"
                     class="btn-icon-small"
                     on:click={addColorToPalette}
                     title="Tambah ke Palet"><Plus size={12} /></button
@@ -11871,11 +12416,6 @@
                   >
                 </div>
               </div>
-              <input
-                type="color"
-                bind:value={primaryColor}
-                style="width:100%;height:40px;border:none;border-radius:8px;cursor:pointer;margin-bottom:12px;"
-              />
 
               <div class="mobile-palette-grid">
                 {#each colorPalette as col}
@@ -11901,8 +12441,9 @@
               </div>
 
               <!-- Input Kode Hex -->
-              <div
+              <form
                 class="palette-hex-input-row"
+                on:submit|preventDefault={addColorByHex}
                 style="margin-top: 12px; display:flex; align-items:center; gap:6px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 4px 8px;"
               >
                 <span
@@ -11928,13 +12469,13 @@
                     : '#ccc'};"
                 ></div>
                 <button
+                  type="submit"
                   class="btn-icon-small"
-                  on:click={addColorByHex}
                   style="padding:4px;"
                 >
                   <Plus size={12} />
                 </button>
-              </div>
+              </form>
             </div>
           {:else if mobilePanelTab === "undo"}
             <div class="mobile-panel-content">
@@ -11964,7 +12505,8 @@
                   showMobilePanel = false;
                 }}
               >
-                <SaveIcon size={16} /> {$t("mockup.save")}
+                <SaveIcon size={16} />
+                {$t("mockup.save")}
               </button>
               <div class="history-list" style="max-height:160px;">
                 {#each historyList as hist, idx}
@@ -12100,7 +12642,8 @@
                       >{$t("mockup.timeline_title")}</span
                     >
                     <span style="font-size:10px; color:var(--text-muted);"
-                      >({animationLayers.length} {$t("mockup.frame_active")})</span
+                      >({animationLayers.length}
+                      {$t("mockup.frame_active")})</span
                     >
                   </div>
                   <div style="display:flex; gap:6px;">
@@ -12214,7 +12757,10 @@
                             style="position:absolute; inset:0; background-image: linear-gradient(45deg, var(--canvas-checker-1) 25%, transparent 25%), linear-gradient(-45deg, var(--canvas-checker-1) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--canvas-checker-1) 75%), linear-gradient(-45deg, transparent 75%, var(--canvas-checker-1) 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px;"
                           ></div>
                           {#if layer.isGroup}
-                            <Folder size={20} style="color: var(--accent-color); z-index: 2; position: relative;" />
+                            <Folder
+                              size={20}
+                              style="color: var(--accent-color); z-index: 2; position: relative;"
+                            />
                           {:else}
                             <img
                               src={layer.data}
@@ -12345,7 +12891,8 @@
       <div class="floating-preview-title">
         <Film size={12} style="color: #a855f7;" />
         <span
-          >{$t("mockup.anim_preview")} {isAnimPreviewMinimized ? "(Menciut)" : ""}</span
+          >{$t("mockup.anim_preview")}
+          {isAnimPreviewMinimized ? "(Menciut)" : ""}</span
         >
       </div>
       <div
@@ -12499,7 +13046,7 @@
               <!-- Bulatan Dark Checker -->
               <button
                 on:click={() => setAnimPreviewBg("dark-checker")}
-                title="{$t('mockup.bg_dark')}"
+                title={$t("mockup.bg_dark")}
                 style="
                   width: 15px;
                   height: 15px;
@@ -12521,7 +13068,7 @@
               <!-- Bulatan Light Checker -->
               <button
                 on:click={() => setAnimPreviewBg("light-checker")}
-                title="{$t('mockup.bg_light')}"
+                title={$t("mockup.bg_light")}
                 style="
                   width: 15px;
                   height: 15px;
@@ -12719,7 +13266,7 @@
     border-radius: 20px;
     width: 92%;
     max-width: 460px;
-    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
     padding: 0;
     color: var(--text-main);
     overflow-y: auto;
@@ -12743,8 +13290,12 @@
 
   /* Hero header */
   .modal-hero {
-    background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(168,85,247,0.1) 100%);
-    border-bottom: 1px solid rgba(99,102,241,0.15);
+    background: linear-gradient(
+      135deg,
+      rgba(99, 102, 241, 0.15) 0%,
+      rgba(168, 85, 247, 0.1) 100%
+    );
+    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
     padding: 32px 28px 24px;
     text-align: center;
     display: flex;
@@ -12760,7 +13311,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 12px 28px rgba(99,102,241,0.45), 0 0 0 1px rgba(255,255,255,0.08) inset;
+    box-shadow:
+      0 12px 28px rgba(99, 102, 241, 0.45),
+      0 0 0 1px rgba(255, 255, 255, 0.08) inset;
     margin-bottom: 4px;
   }
   .modal-title {
@@ -13164,6 +13717,7 @@
     display: flex;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     background-color: var(--bg-darkest);
     color: var(--text-main);
   }
@@ -13175,6 +13729,8 @@
     display: flex;
     flex-direction: column;
     padding: 20px;
+    max-height: 100dvh;
+    overflow-y: auto;
   }
 
   .sidebar-brand h2 {
@@ -13551,7 +14107,7 @@
   .app-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100dvh;
     width: 100vw;
     overflow: hidden;
   }
@@ -13950,9 +14506,9 @@
     padding: 50px;
     touch-action: none;
   }
-  
+
   /* Di mobile kurangi padding agar canvas lebih besar karena ada sidebar */
-  @media (max-width: 1024px) {
+  @media (max-width: 800px) {
     .canvas-viewport {
       padding: 16px;
     }
@@ -13986,7 +14542,7 @@
   .canvas-layers-container {
     position: relative;
     image-rendering: pixelated;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    box-shadow: var(--canvas-shadow, 0 25px 60px rgba(0, 0, 0, 0.8));
   }
 
   .layer-canvas {
@@ -14120,6 +14676,7 @@
     z-index: 50;
     background: var(--border-color);
     transition: background 0.15s ease;
+    touch-action: none;
   }
   .panel-resizer-h:hover,
   .panel-resizer-h.dragging {
@@ -14434,7 +14991,7 @@
   .floating-preview-window {
     position: fixed;
     z-index: 1000;
-    background: rgba(18, 24, 32, 0.75);
+    background: var(--floating-window-bg, rgba(18, 24, 32, 0.75));
     backdrop-filter: blur(16px) saturate(120%);
     -webkit-backdrop-filter: blur(16px) saturate(120%);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -15366,14 +15923,14 @@
     pointer-events: auto;
     background: rgba(30, 30, 36, 0.85);
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 8px 16px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     width: 200px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
   .slider-container {
     display: flex;
@@ -15572,7 +16129,7 @@
     transform: scale(1.1);
     box-shadow: 0 0 0 2px var(--accent-primary);
   }
-  @media (max-width: 1024px) {
+  @media (max-width: 800px) {
     .sidebar-wrapper {
       display: none !important;
     }

@@ -1,5 +1,14 @@
 import './app.css'
 import App from './App.svelte'
+import { polyfill } from "mobile-drag-drop";
+import { scrollBehaviourDragImageTranslateOverride } from "mobile-drag-drop/scroll-behaviour";
+import "mobile-drag-drop/default.css";
+
+// Polyfill HTML5 drag and drop untuk perangkat sentuh (seperti iPad)
+polyfill({
+    dragImageTranslateOverride: scrollBehaviourDragImageTranslateOverride,
+    holdToDrag: 300 // Tekan 300ms untuk mulai drag (memungkinkan scroll normal)
+});
 
 const app = new App({
   target: document.getElementById('app'),

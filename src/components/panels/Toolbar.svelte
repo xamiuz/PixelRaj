@@ -178,8 +178,8 @@
 <style>
 .toolbar-vertical {
   width: 44px;
-  background: var(--surface-light, #1e1e24);
-  border-right: 1px solid var(--border-color, #333);
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -204,7 +204,7 @@
   align-items: center;
   justify-content: center;
   background: transparent;
-  color: var(--text-color, #a1a1aa);
+  color: var(--text-muted);
   border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
@@ -212,19 +212,19 @@
   padding: 0;
 }
 .tool-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: var(--bg-hover);
+  color: var(--text-main);
 }
 .tool-btn.active {
-  background: var(--accent-color, #6366f1);
+  background: var(--accent-color);
   color: white;
 }
 .flyout-menu {
   position: absolute;
   left: 100%;
   top: 0;
-  background: var(--surface-light, #1e1e24);
-  border: 1px solid var(--border-color, #333);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   display: flex;
   padding: 4px;
@@ -287,9 +287,9 @@
     border-radius: 0 12px 12px 0;
     overflow: visible;
     padding: 12px 0;
-    background: rgba(30, 30, 36, 0.9);
+    background: var(--bg-panel);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     border-left: none;
   }
   .tool-btn {

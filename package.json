@@ -12,8 +12,11 @@
     "@pixelation/aseprite": "^1.2.6",
     "@supabase/supabase-js": "^2.43.2",
     "idb-keyval": "^6.2.4",
+    "jimp": "^1.6.1",
     "lucide-svelte": "^0.368.0",
-    "svelte": "^4.2.12"
+    "mobile-drag-drop": "^3.0.0-rc.0",
+    "svelte": "^4.2.12",
+    "svelte-awesome-color-picker": "^3.1.4"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
