@@ -1763,6 +1763,7 @@
     e.target.releasePointerCapture(e.pointerId);
   }
   let isDrawing = false;
+  let smudgeBuffer = null;
   let lassoPath = [];
   let lastPenTime = 0; // Waktu terakhir stylus/pen terdeteksi untuk palm rejection
   let activePointers = new Map(); // Untuk multi-touch tracking
@@ -4714,6 +4715,17 @@
 
     if (selectedTool === "lassofill") {
       lassoPath = [{ x: pos.x, y: pos.y }];
+    } else if (selectedTool === "smudge" && activeLayerIndex !== null) {
+      smudgeBuffer = [];
+      const layerId = project.frames[activeFrameIndex].layers[activeLayerIndex].id;
+      const pts = expandPointsForBrush([{ x: pos.x, y: pos.y }], brushSize, brushType);
+      pts.forEach(p => {
+        smudgeBuffer.push({
+          dx: p.x - pos.x,
+          dy: p.y - pos.y,
+          color: getPixelColor(layerId, p.x, p.y)
+        });
+      });
     }
 
     if (activeLayerIndex !== null) {
@@ -5209,6 +5221,7 @@
       (selectedTool === "pencil" ||
         selectedTool === "eraser" ||
         selectedTool === "magicpen" ||
+        selectedTool === "smudge" ||
         selectedTool === "move")
     ) {
       const x1 = pos.x;
@@ -5227,9 +5240,37 @@
           y1,
         );
         let stepAcc = 0;
+        const handlePoint = (px, py) => {
+          if (selectedTool === "smudge" && smudgeBuffer) {
+            const layerId = project.frames[activeFrameIndex].layers[activeLayerIndex].id;
+            let updatedAnySmudge = false;
+            smudgeBuffer.forEach(b => {
+              if (b.color) {
+                const tx = px + b.dx;
+                const ty = py + b.dy;
+                if (tx >= 0 && tx < project.width && ty >= 0 && ty < project.height) {
+                  const existing = getPixelColor(layerId, tx, ty);
+                  setPixelColor(layerId, tx, ty, b.color);
+                  localStrokeUpdates.push({ x: tx, y: ty, color: b.color });
+                  updatedAnySmudge = true;
+                  
+                  if (existing) {
+                    if (Math.random() < 0.15) b.color = existing;
+                  } else {
+                    if (Math.random() < 0.05) b.color = null;
+                  }
+                }
+              }
+            });
+            if (updatedAnySmudge) scheduleRenderAllLayers();
+          } else {
+            applyTool(e, px, py);
+          }
+        };
+
         for (const p of points) {
           if (stepAcc === 0) {
-            applyTool(e, p.x, p.y);
+            handlePoint(p.x, p.y);
           }
           stepAcc = (stepAcc + 1) % stepSize;
         }
@@ -5237,7 +5278,7 @@
         if (points.length > 0) {
           const last = points[points.length - 1];
           if (last.x !== x1 || last.y !== y1) {
-            applyTool(e, x1, y1);
+            handlePoint(x1, y1);
           }
         }
       } else {
@@ -6225,6 +6266,7 @@
           else if (selectedTool === "bucket") label = "Fill Ember";
           else if (selectedTool === "bucketeraser") label = "Hapus Ember";
           else if (selectedTool === "spray") label = "Spray Semprotan";
+          else if (selectedTool === "smudge") label = "Smudge Tool";
           else if (selectedTool === "line") label = $t("tools.tool_shape_line");
           else if (selectedTool === "rectangle")
             label = $t("tools.tool_shape_rect");
@@ -7088,6 +7130,10 @@
     if (e.key === "t" || e.key === "T") selectedTool = "text";
     if (e.key === "w" || e.key === "W") selectedTool = "magicpen";
     if (e.key === "x" || e.key === "X") selectedTool = "mirror";
+    if (e.key === "s" || e.key === "S") {
+      // Pastikan bukan Ctrl+S
+      if (!e.ctrlKey && !e.metaKey) selectedTool = "smudge";
+    }
     if (e.key === "r" || e.key === "R") {
       e.preventDefault();
       activateTransformTool();
