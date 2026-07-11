@@ -4751,16 +4751,16 @@
     if (selectedTool === "lassofill") {
       lassoPath = [{ x: pos.x, y: pos.y }];
     } else if (selectedTool === "smudge" && activeLayerIndex !== null) {
-      smudgeBuffer = [];
-      const layerId = project.frames[activeFrameIndex].layers[activeLayerIndex].id;
-      const pts = expandPointsForBrush([{ x: pos.x, y: pos.y }], brushSize, brushType);
-      pts.forEach(p => {
-        smudgeBuffer.push({
-          dx: p.x - pos.x,
-          dy: p.y - pos.y,
-          color: getPixelColor(layerId, p.x, p.y)
-        });
-      });
+      const layer = project.frames[activeFrameIndex].layers[activeLayerIndex];
+      const { canvas: layerCanvas } = getLayerCanvas(layer.id, project.width, project.height);
+      smudgeBuffer = document.createElement("canvas");
+      smudgeBuffer.width = brushSize + 4;
+      smudgeBuffer.height = brushSize + 4;
+      const sCtx = smudgeBuffer.getContext("2d");
+      sCtx.imageSmoothingEnabled = false;
+      const sx = pos.x - brushSize / 2;
+      const sy = pos.y - brushSize / 2;
+      sCtx.drawImage(layerCanvas, sx, sy, brushSize, brushSize, 2, 2, brushSize, brushSize);
     } else if (selectedTool === "blur") {
       // no buffer needed for blur
     } else if (selectedTool === "text") {  }
@@ -5281,72 +5281,58 @@
         const handlePoint = (px, py) => {
           if (selectedTool === "smudge" && smudgeBuffer) {
             const layerId = project.frames[activeFrameIndex].layers[activeLayerIndex].id;
-            let updatedAnySmudge = false;
-            smudgeBuffer.forEach(b => {
-              if (b.color) {
-                const tx = px + b.dx;
-                const ty = py + b.dy;
-                if (tx >= 0 && tx < project.width && ty >= 0 && ty < project.height) {
-                  const existing = getPixelColor(layerId, tx, ty);
-                  
-                  // Blend warna smudgeBuffer dengan warna asli kanvas menggunakan toolOpacity
-                  const blendedColor = existing ? blendHexColors(b.color, existing, toolOpacity) : b.color;
-                  
-                  setPixelColor(layerId, tx, ty, blendedColor);
-                  localStrokeUpdates.push({ x: tx, y: ty, color: blendedColor });
-                  updatedAnySmudge = true;
-                  
-                  if (existing) {
-                    b.color = blendHexColors(existing, b.color, 0.2 * toolOpacity);
-                  } else {
-                    if (Math.random() < 0.05) b.color = null;
-                  }
-                }
-              }
-            });
-            if (updatedAnySmudge) scheduleRenderAllLayers();
+            const { ctx: layerCtx, canvas: layerCanvas } = getLayerCanvas(layerId, project.width, project.height);
+            
+            const destX = Math.round(px - brushSize / 2);
+            const destY = Math.round(py - brushSize / 2);
+            
+            layerCtx.save();
+            layerCtx.globalAlpha = toolOpacity;
+            layerCtx.beginPath();
+            if (brushType === "circle") {
+              layerCtx.arc(px, py, brushSize/2, 0, Math.PI*2);
+            } else {
+              layerCtx.rect(destX, destY, brushSize, brushSize);
+            }
+            layerCtx.clip();
+            layerCtx.drawImage(smudgeBuffer, destX - 2, destY - 2);
+            layerCtx.restore();
+
+            const sCtx = smudgeBuffer.getContext("2d");
+            sCtx.globalAlpha = 0.2 * toolOpacity;
+            sCtx.drawImage(layerCanvas, destX, destY, brushSize, brushSize, 2, 2, brushSize, brushSize);
+            sCtx.globalAlpha = 1.0;
+            
+            scheduleRenderAllLayers();
           } else if (selectedTool === "blur") {
             const layerId = project.frames[activeFrameIndex].layers[activeLayerIndex].id;
-            const pts = expandPointsForBrush([{ x: px, y: py }], brushSize, brushType);
-            let updatedAnyBlur = false;
+            const { ctx: layerCtx, canvas: layerCanvas } = getLayerCanvas(layerId, project.width, project.height);
             
-            pts.forEach(p => {
-              // Untuk setiap titik di footprint kuas, ambil rata-rata sekitarnya
-              let sumR = 0, sumG = 0, sumB = 0, sumA = 0, count = 0;
-              for (let dy = -1; dy <= 1; dy++) {
-                for (let dx = -1; dx <= 1; dx++) {
-                  const cx = p.x + dx;
-                  const cy = p.y + dy;
-                  if (cx >= 0 && cx < project.width && cy >= 0 && cy < project.height) {
-                    const c = getPixelColor(layerId, cx, cy);
-                    if (c) {
-                      sumR += parseInt(c.slice(1, 3), 16);
-                      sumG += parseInt(c.slice(3, 5), 16);
-                      sumB += parseInt(c.slice(5, 7), 16);
-                      sumA += c.length === 9 ? parseInt(c.slice(7, 9), 16) : 255;
-                      count++;
-                    }
-                  }
-                }
-              }
-              if (count > 0) {
-                const avgR = Math.round(sumR / count);
-                const avgG = Math.round(sumG / count);
-                const avgB = Math.round(sumB / count);
-                const avgA = Math.round(sumA / count);
-                const avgHex = "#" + [avgR, avgG, avgB, avgA].map(x => x.toString(16).padStart(2, '0')).join('');
-                
-                const existing = getPixelColor(layerId, p.x, p.y);
-                const finalColor = existing ? blendHexColors(avgHex, existing, toolOpacity) : avgHex;
-                
-                if (existing !== finalColor) {
-                  setPixelColor(layerId, p.x, p.y, finalColor);
-                  localStrokeUpdates.push({ x: p.x, y: p.y, color: finalColor });
-                  updatedAnyBlur = true;
-                }
-              }
-            });
-            if (updatedAnyBlur) scheduleRenderAllLayers();
+            const destX = Math.round(px - brushSize / 2);
+            const destY = Math.round(py - brushSize / 2);
+
+            const tempCanvas = document.createElement("canvas");
+            tempCanvas.width = brushSize + 8;
+            tempCanvas.height = brushSize + 8;
+            const tempCtx = tempCanvas.getContext("2d");
+            
+            tempCtx.filter = `blur(${Math.max(1, brushSize / 4)}px)`;
+            tempCtx.drawImage(layerCanvas, destX - 4, destY - 4, brushSize + 8, brushSize + 8, 0, 0, brushSize + 8, brushSize + 8);
+            tempCtx.filter = "none";
+            
+            layerCtx.save();
+            layerCtx.globalAlpha = toolOpacity;
+            layerCtx.beginPath();
+            if (brushType === "circle") {
+              layerCtx.arc(px, py, brushSize/2, 0, Math.PI*2);
+            } else {
+              layerCtx.rect(destX, destY, brushSize, brushSize);
+            }
+            layerCtx.clip();
+            layerCtx.drawImage(tempCanvas, 0, 0, brushSize+8, brushSize+8, destX - 4, destY - 4, brushSize+8, brushSize+8);
+            layerCtx.restore();
+            
+            scheduleRenderAllLayers();
           } else {
             applyTool(e, px, py);
           }
