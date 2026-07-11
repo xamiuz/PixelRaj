@@ -2033,6 +2033,21 @@
 
     window.addEventListener("touchmove", blockTouchScroll, { passive: false });
 
+    // Daftarkan wheel listener secara manual dengan passive:false agar preventDefault() bisa
+    // menghentikan browser-level zoom saat Ctrl+Scroll dan mendapatkan brush resize
+    function globalWheelHandler(e) {
+      // Hanya intersept event yang terjadi di dalam canvas viewport
+      if (canvasViewportEl && canvasViewportEl.contains(e.target)) {
+        e.preventDefault();
+        handleWheel(e);
+      }
+    }
+    window.addEventListener("wheel", globalWheelHandler, { passive: false });
+    
+    return () => {
+      window.removeEventListener("wheel", globalWheelHandler);
+    };
+
     supabase.auth.onAuthStateChange((_event, session) => {
       if (_event === "PASSWORD_RECOVERY") {
         showResetPasswordModal = true;
@@ -8307,19 +8322,21 @@
   }
 
   function handleWheel(e) {
-    e.preventDefault();
 
     if (e.ctrlKey) {
       // Ctrl + Scroll = Ubah ukuran brush
-      // Batasi kecepatan agar tidak terlalu liar di touchpad
+      // Batasi kecepatan agar tidak terlalu liar di touchpad, tapi tetap responsif untuk mouse
       wheelAccumulator += e.deltaY;
-      if (Math.abs(wheelAccumulator) > 10) {
-        if (wheelAccumulator < 0) {
-          brushSize = Math.min(128, brushSize + 1);
-        } else {
-          brushSize = Math.max(1, brushSize - 1);
-        }
-        wheelAccumulator = 0;
+      // Di Windows/Chrome, scroll 1 'klik' mouse = deltaY 100
+      // Kita buat threshold 50 agar 1 klik mouse = ubah ukuran 2 step
+      // Jika deltaMode = 1 (garis, misal Firefox), 1 klik = 3. Maka threshold kita kecilkan jika mode garis.
+      let threshold = e.deltaMode === 1 ? 2 : 50;
+      
+      let steps = Math.trunc(wheelAccumulator / threshold);
+      if (steps !== 0) {
+        // Scroll ke atas (delta negatif) -> perbesar brush
+        brushSize = Math.max(1, Math.min(128, brushSize - steps));
+        wheelAccumulator -= steps * threshold;
       }
     } else {
       // Scroll biasa = Zoom (pusatkan di kursor agar natural)
@@ -9887,7 +9904,6 @@
         data-selected-tool={selectedTool}
         role="application"
         aria-label="Workspace Canvas"
-        on:wheel|preventDefault={handleWheel}
         on:pointerdown={handleViewportPointerDown}
         on:pointermove={handleViewportPointerMove}
         on:pointerup={handleViewportPointerUp}
