@@ -4758,9 +4758,9 @@
       smudgeBuffer.height = brushSize + 4;
       const sCtx = smudgeBuffer.getContext("2d");
       sCtx.imageSmoothingEnabled = false;
-      const sx = pos.x - brushSize / 2;
-      const sy = pos.y - brushSize / 2;
-      sCtx.drawImage(layerCanvas, sx, sy, brushSize, brushSize, 2, 2, brushSize, brushSize);
+      const sx = Math.round(pos.x - brushSize / 2);
+      const sy = Math.round(pos.y - brushSize / 2);
+      sCtx.drawImage(layerCanvas, 2 - sx, 2 - sy);
     } else if (selectedTool === "blur") {
       // no buffer needed for blur
     } else if (selectedTool === "text") {  }
@@ -5300,7 +5300,7 @@
 
             const sCtx = smudgeBuffer.getContext("2d");
             sCtx.globalAlpha = 0.2 * toolOpacity;
-            sCtx.drawImage(layerCanvas, destX, destY, brushSize, brushSize, 2, 2, brushSize, brushSize);
+            sCtx.drawImage(layerCanvas, 2 - destX, 2 - destY);
             sCtx.globalAlpha = 1.0;
             
             scheduleRenderAllLayers();
@@ -5317,7 +5317,7 @@
             const tempCtx = tempCanvas.getContext("2d");
             
             tempCtx.filter = `blur(${Math.max(1, brushSize / 4)}px)`;
-            tempCtx.drawImage(layerCanvas, destX - 4, destY - 4, brushSize + 8, brushSize + 8, 0, 0, brushSize + 8, brushSize + 8);
+            tempCtx.drawImage(layerCanvas, 4 - destX, 4 - destY);
             tempCtx.filter = "none";
             
             layerCtx.save();
