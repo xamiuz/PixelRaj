@@ -87,6 +87,40 @@
   import { theme } from "./store.js";
   import { t, locale } from "./lib/i18n.js";
 
+  function blendHexColors(hex1, hex2, ratio) {
+    if (!hex1 && !hex2) return null;
+    if (!hex1) {
+       // if we blend empty with color, we reduce color alpha
+       // For simple pixel art, if source is null, just return existing.
+       return hex2;
+    }
+    if (!hex2) {
+       // If dest is null, return source.
+       return hex1;
+    }
+    if (ratio >= 1) return hex1;
+    if (ratio <= 0) return hex2;
+    
+    const r1 = parseInt(hex1.slice(1, 3), 16);
+    const g1 = parseInt(hex1.slice(3, 5), 16);
+    const b1 = parseInt(hex1.slice(5, 7), 16);
+    let a1 = 255;
+    if (hex1.length === 9) a1 = parseInt(hex1.slice(7, 9), 16);
+    
+    const r2 = parseInt(hex2.slice(1, 3), 16);
+    const g2 = parseInt(hex2.slice(3, 5), 16);
+    const b2 = parseInt(hex2.slice(5, 7), 16);
+    let a2 = 255;
+    if (hex2.length === 9) a2 = parseInt(hex2.slice(7, 9), 16);
+    
+    const r = Math.round(r1 * ratio + r2 * (1 - ratio));
+    const g = Math.round(g1 * ratio + g2 * (1 - ratio));
+    const b = Math.round(b1 * ratio + b2 * (1 - ratio));
+    const a = Math.round(a1 * ratio + a2 * (1 - ratio));
+    
+    return "#" + [r, g, b, a].map(x => x.toString(16).padStart(2, '0')).join('');
+  }
+
   function handleMobilePipette() {
     selectedTool = "picker";
     showMobilePanel = false;
@@ -614,6 +648,7 @@
 
   // --- STATE KUAS (BRUSH) ---
   let brushSize = 1;
+  let toolOpacity = 0.5;
   const drawState = { pendingRender: false, lastDrawPos: null }; // flag untuk deferred render saat drag selesai
 
   let brushType = "circle"; // 'circle' atau 'square'
@@ -4726,7 +4761,9 @@
           color: getPixelColor(layerId, p.x, p.y)
         });
       });
-    }
+    } else if (selectedTool === "blur") {
+      // no buffer needed for blur
+    } else if (selectedTool === "text") {  }
 
     if (activeLayerIndex !== null) {
       const layer = project.frames[activeFrameIndex].layers[activeLayerIndex];
@@ -5222,6 +5259,7 @@
         selectedTool === "eraser" ||
         selectedTool === "magicpen" ||
         selectedTool === "smudge" ||
+        selectedTool === "blur" ||
         selectedTool === "move")
     ) {
       const x1 = pos.x;
@@ -5250,12 +5288,16 @@
                 const ty = py + b.dy;
                 if (tx >= 0 && tx < project.width && ty >= 0 && ty < project.height) {
                   const existing = getPixelColor(layerId, tx, ty);
-                  setPixelColor(layerId, tx, ty, b.color);
-                  localStrokeUpdates.push({ x: tx, y: ty, color: b.color });
+                  
+                  // Blend warna smudgeBuffer dengan warna asli kanvas menggunakan toolOpacity
+                  const blendedColor = existing ? blendHexColors(b.color, existing, toolOpacity) : b.color;
+                  
+                  setPixelColor(layerId, tx, ty, blendedColor);
+                  localStrokeUpdates.push({ x: tx, y: ty, color: blendedColor });
                   updatedAnySmudge = true;
                   
                   if (existing) {
-                    if (Math.random() < 0.15) b.color = existing;
+                    b.color = blendHexColors(existing, b.color, 0.2 * toolOpacity);
                   } else {
                     if (Math.random() < 0.05) b.color = null;
                   }
@@ -5263,6 +5305,48 @@
               }
             });
             if (updatedAnySmudge) scheduleRenderAllLayers();
+          } else if (selectedTool === "blur") {
+            const layerId = project.frames[activeFrameIndex].layers[activeLayerIndex].id;
+            const pts = expandPointsForBrush([{ x: px, y: py }], brushSize, brushType);
+            let updatedAnyBlur = false;
+            
+            pts.forEach(p => {
+              // Untuk setiap titik di footprint kuas, ambil rata-rata sekitarnya
+              let sumR = 0, sumG = 0, sumB = 0, sumA = 0, count = 0;
+              for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                  const cx = p.x + dx;
+                  const cy = p.y + dy;
+                  if (cx >= 0 && cx < project.width && cy >= 0 && cy < project.height) {
+                    const c = getPixelColor(layerId, cx, cy);
+                    if (c) {
+                      sumR += parseInt(c.slice(1, 3), 16);
+                      sumG += parseInt(c.slice(3, 5), 16);
+                      sumB += parseInt(c.slice(5, 7), 16);
+                      sumA += c.length === 9 ? parseInt(c.slice(7, 9), 16) : 255;
+                      count++;
+                    }
+                  }
+                }
+              }
+              if (count > 0) {
+                const avgR = Math.round(sumR / count);
+                const avgG = Math.round(sumG / count);
+                const avgB = Math.round(sumB / count);
+                const avgA = Math.round(sumA / count);
+                const avgHex = "#" + [avgR, avgG, avgB, avgA].map(x => x.toString(16).padStart(2, '0')).join('');
+                
+                const existing = getPixelColor(layerId, p.x, p.y);
+                const finalColor = existing ? blendHexColors(avgHex, existing, toolOpacity) : avgHex;
+                
+                if (existing !== finalColor) {
+                  setPixelColor(layerId, p.x, p.y, finalColor);
+                  localStrokeUpdates.push({ x: p.x, y: p.y, color: finalColor });
+                  updatedAnyBlur = true;
+                }
+              }
+            });
+            if (updatedAnyBlur) scheduleRenderAllLayers();
           } else {
             applyTool(e, px, py);
           }
@@ -6267,6 +6351,7 @@
           else if (selectedTool === "bucketeraser") label = "Hapus Ember";
           else if (selectedTool === "spray") label = "Spray Semprotan";
           else if (selectedTool === "smudge") label = "Smudge Tool";
+          else if (selectedTool === "blur") label = "Blur Tool";
           else if (selectedTool === "line") label = $t("tools.tool_shape_line");
           else if (selectedTool === "rectangle")
             label = $t("tools.tool_shape_rect");
@@ -7133,6 +7218,9 @@
     if (e.key === "s" || e.key === "S") {
       // Pastikan bukan Ctrl+S
       if (!e.ctrlKey && !e.metaKey) selectedTool = "smudge";
+    }
+    if (e.key === "d" || e.key === "D") {
+      if (!e.ctrlKey && !e.metaKey) selectedTool = "blur";
     }
     if (e.key === "r" || e.key === "R") {
       e.preventDefault();
@@ -9630,6 +9718,23 @@
           >
         </div>
       </div>
+
+      {#if selectedTool === "smudge" || selectedTool === "blur"}
+        <div class="divider-v"></div>
+        <div class="context-item">
+          <span class="context-label">Opacity: {Math.round(toolOpacity * 100)}%</span>
+          <div class="size-control-group" title="Intensitas Blending/Baur">
+            <input
+              type="range"
+              min="0.05"
+              max="1.0"
+              step="0.05"
+              bind:value={toolOpacity}
+              class="size-range-slider"
+            />
+          </div>
+        </div>
+      {/if}
 
       <div class="divider-v"></div>
 

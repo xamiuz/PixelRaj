@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import {
     BoxSelect, Move, Search, Pencil, Eraser, PaintBucket,
-    Pipette, Wand2, Slash, Square, Circle, Sparkles, Type, RotateCw, SprayCan, Expand, FlipHorizontal, LassoSelect, Box, Fingerprint
+    Pipette, Wand2, Slash, Square, Circle, Sparkles, Type, RotateCw, SprayCan, Expand, FlipHorizontal, LassoSelect, Box, Fingerprint, Droplets
   } from 'lucide-svelte';
 
   const dispatch = createEventDispatcher();
@@ -105,6 +105,7 @@
     
     <button class="tool-btn" class:active={selectedTool === 'eraser'} on:click={() => selectedTool = 'eraser'} title="Penghapus (E)"><Eraser size={20} /></button>
     <button class="tool-btn" class:active={selectedTool === 'smudge'} on:click={() => selectedTool = 'smudge'} title="Smudge / Gosok (S)"><Fingerprint size={20} /></button>
+    <button class="tool-btn" class:active={selectedTool === 'blur'} on:click={() => selectedTool = 'blur'} title="Blur / Baur (D)"><Droplets size={20} /></button>
     <div class="bucket-container" style="position: relative;" on:mouseenter={() => handleMenuEnter('bucket')} on:mouseleave={() => handleMenuLeave('bucket')}>
       <button class="tool-btn" class:active={selectedTool === 'bucket' || selectedTool === 'bucketeraser'} on:click={handleBucketClick} title="Ember Cat / Penghapus (G / Shift+G)">
         {#if selectedTool === 'bucketeraser'}
