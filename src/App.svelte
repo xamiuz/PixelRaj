@@ -3634,7 +3634,6 @@
       if (ctxMain) ctxMain.clearRect(0, 0, newW, newH);
     }
     renderAllLayers();
-    updateThumbnail();
     
     saveHistoryState("Ubah Ukuran Canvas");
   }
