@@ -2310,7 +2310,8 @@
       // Simpan kembali cache lokal yang sudah digabung
       await saveLocalProjects(mergedData);
 
-      projectsList = mergedData.map((item) => {
+      const deletedIds = JSON.parse(localStorage.getItem('deletedProjects') || '[]');
+      projectsList = mergedData.filter((item) => !deletedIds.includes(item.id)).map((item) => {
         let dateStr = "Baru";
         if (item.created_at) {
           try {
@@ -2344,7 +2345,8 @@
       const localData = await getLocalProjects();
       if (localData && localData.length > 0) {
         try {
-          projectsList = localData.map((item) => {
+          const deletedIds = JSON.parse(localStorage.getItem('deletedProjects') || '[]');
+          projectsList = localData.filter((item) => !deletedIds.includes(item.id)).map((item) => {
             let dateStr = "Baru";
             if (item.created_at) {
               try {
@@ -3274,8 +3276,15 @@
     )
       return;
 
+    // Catat ID yang dihapus ke localStorage agar tetap tersembunyi
+    let deletedIds = JSON.parse(localStorage.getItem('deletedProjects') || '[]');
+    if (!deletedIds.includes(projId)) {
+      deletedIds.push(projId);
+      localStorage.setItem('deletedProjects', JSON.stringify(deletedIds));
+    }
+
     // Hapus dari UI secara langsung agar terasa responsif
-    savedProjects = savedProjects.filter((p) => p.id !== projId);
+    projectsList = projectsList.filter((p) => !deletedIds.includes(p.id));
 
     // Hapus dari penyimpanan lokal terlebih dahulu
     let localData = await getLocalProjects();
