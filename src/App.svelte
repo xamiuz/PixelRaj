@@ -8446,6 +8446,9 @@
       if (canvasViewportEl) {
         canvasViewportEl.setPointerCapture(e.pointerId);
       }
+    } else if (e.button === 0 && selectedTool !== "move") {
+      // Izinkan menggambar (seperti lasso atau seleksi) dimulai dari luar area canvas
+      handleCanvasPointerDown(e);
     }
   }
 
