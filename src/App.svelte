@@ -5177,21 +5177,11 @@
                 brushSize,
                 brushType,
               );
-              // --- OPTIMASI EKSTRIM PREVIEW: Gunakan buffer memori alih-alih fillRect berulang ---
-              const w = project.width;
-              const h = project.height;
-              const idata = new ImageData(w, h);
-              const d = idata.data;
+              ctxCursor.beginPath();
               expanded.forEach((p) => {
-                if (p.x >= 0 && p.x < w && p.y >= 0 && p.y < h) {
-                  const idx = (p.y * w + p.x) * 4;
-                  d[idx] = 130;
-                  d[idx+1] = 140;
-                  d[idx+2] = 150;
-                  d[idx+3] = 204;
-                }
+                ctxCursor.rect(p.x, p.y, 1, 1);
               });
-              ctxCursor.putImageData(idata, 0, 0);
+              ctxCursor.fill();
             }
           }
         }
