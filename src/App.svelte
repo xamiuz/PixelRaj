@@ -2043,10 +2043,6 @@
       }
     }
     window.addEventListener("wheel", globalWheelHandler, { passive: false });
-    
-    return () => {
-      window.removeEventListener("wheel", globalWheelHandler);
-    };
 
     supabase.auth.onAuthStateChange((_event, session) => {
       if (_event === "PASSWORD_RECOVERY") {
@@ -2100,6 +2096,7 @@
     window.addEventListener("resize", checkDevice);
 
     return () => {
+      window.removeEventListener("wheel", globalWheelHandler);
       window.removeEventListener("resize", checkDevice);
     };
   });
@@ -3312,7 +3309,7 @@
       if (typeof cloudSaveTimeout !== "undefined") clearTimeout(cloudSaveTimeout);
       project = null;
       layers = [];
-      layerCanvases = [];
+      layerCanvases.clear();
       historyList = [];
       historyIndex = -1;
       setTimeout(() => {
@@ -8323,7 +8320,7 @@
 
   function handleWheel(e) {
 
-    if (e.ctrlKey) {
+    if (e.ctrlKey || e.metaKey) {
       // Ctrl + Scroll = Ubah ukuran brush
       // Batasi kecepatan agar tidak terlalu liar di touchpad, tapi tetap responsif untuk mouse
       wheelAccumulator += e.deltaY;
@@ -8335,8 +8332,9 @@
       let steps = Math.trunc(wheelAccumulator / threshold);
       if (steps !== 0) {
         // Scroll ke atas (delta negatif) -> perbesar brush
-        brushSize = Math.max(1, Math.min(128, brushSize - steps));
+        brushSize = Math.max(1, Math.min(200, brushSize - steps));
         wheelAccumulator -= steps * threshold;
+        showToast(`Brush Size: ${brushSize}px`);
       }
     } else {
       // Scroll biasa = Zoom (pusatkan di kursor agar natural)
