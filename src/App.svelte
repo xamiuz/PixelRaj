@@ -4776,18 +4776,32 @@
       }
     }
 
-    const expanded = new Set();
     const result = [];
+    const w = project ? project.width : 2000;
+    const h = project ? project.height : 2000;
+    // Gunakan TypedArray untuk performa instan tanpa alokasi string/objek (menghindari GC pause)
+    const seen = new Uint8Array(w * h);
+    let outOfBoundsSeen = null;
 
     for (let i = 0; i < points.length; i++) {
       const p = points[i];
       for (let j = 0; j < footprint.length; j++) {
         const px = Math.floor(p.x + footprint[j].dx);
         const py = Math.floor(p.y + footprint[j].dy);
-        const key = px + "," + py;
-        if (!expanded.has(key)) {
-          expanded.add(key);
-          result.push({ x: px, y: py });
+        
+        if (px >= 0 && px < w && py >= 0 && py < h) {
+          const idx = py * w + px;
+          if (seen[idx] === 0) {
+            seen[idx] = 1;
+            result.push({ x: px, y: py });
+          }
+        } else {
+          if (!outOfBoundsSeen) outOfBoundsSeen = new Set();
+          const key = px + "," + py;
+          if (!outOfBoundsSeen.has(key)) {
+            outOfBoundsSeen.add(key);
+            result.push({ x: px, y: py });
+          }
         }
       }
     }
