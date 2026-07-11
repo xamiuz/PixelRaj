@@ -7071,6 +7071,7 @@
 
     // Shortcut alat gambar Aseprite-like
     if (e.key === "m" || e.key === "M") selectedTool = "selection";
+    if (e.key === "l" || e.key === "L") selectedTool = "lassofill";
     if (e.key === "b" || e.key === "B") {
       if (e.shiftKey) selectedTool = "spray";
       else selectedTool = "pencil";
