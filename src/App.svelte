@@ -3274,17 +3274,36 @@
     )
       return;
 
+    // Hapus dari UI secara langsung agar terasa responsif
+    savedProjects = savedProjects.filter((p) => p.id !== projId);
+
     // Hapus dari penyimpanan lokal terlebih dahulu
     let localData = await getLocalProjects();
     localData = localData.filter((item) => item.id !== projId);
     await saveLocalProjects(localData);
 
+    // Jika proyek yang dihapus sedang dibuka, kita harus mengosongkannya
+    if (project && project.id === projId) {
+      if (typeof saveTimeout !== "undefined") clearTimeout(saveTimeout);
+      if (typeof cloudSaveTimeout !== "undefined") clearTimeout(cloudSaveTimeout);
+      project = null;
+      layers = [];
+      layerCanvases = [];
+      historyList = [];
+      historyIndex = -1;
+      setTimeout(() => {
+        createNewProject(32, 32);
+      }, 50);
+    }
+
     try {
-      const { error } = await supabase
-        .from("projects")
-        .delete()
-        .eq("id", projId);
-      if (error) throw error;
+      if (supabase && currentUserId) {
+        const { error } = await supabase
+          .from("projects")
+          .delete()
+          .eq("id", projId);
+        if (error) throw error;
+      }
       showToast("Proyek berhasil dihapus.");
       fetchProjects();
     } catch (err) {
@@ -3292,7 +3311,6 @@
         "Gagal menghapus dari Supabase, menghapus dari lokal:",
         err.message || err,
       );
-      isOfflineMode = true;
       showToast("Proyek dihapus dari penyimpanan lokal.");
       fetchProjects();
     }
