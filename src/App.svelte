@@ -8280,7 +8280,18 @@
   }
 
   function handleWheel(e) {
-    // e.ctrlKey = true saat PINCH di touchpad ATAU Ctrl+Scroll di mouse/keyboard
+    if (e.ctrlKey && e.deltaMode !== 0) {
+      // Ctrl + Mouse Wheel = Ubah ukuran brush
+      e.preventDefault();
+      if (e.deltaY < 0) {
+        brushSize = Math.min(128, brushSize + 1);
+      } else {
+        brushSize = Math.max(1, brushSize - 1);
+      }
+      return;
+    }
+
+    // e.ctrlKey = true saat PINCH di touchpad
     if (e.ctrlKey) {
       // === PINCH TO ZOOM (touchpad) atau Ctrl+Scroll (mouse) ===
       // Zoom terpusat di posisi kursor agar lebih natural
